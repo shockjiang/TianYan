@@ -1,5 +1,7 @@
+import fcntl
 import hashlib
 import json
+from contextlib import contextmanager
 from pathlib import Path
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -8,6 +10,34 @@ router = APIRouter()
 
 ALIAS_FILE = Path(__file__).parent.parent / "aliases.json"
 SHARE_FILE = Path(__file__).parent.parent / "shares.json"
+
+
+@contextmanager
+def _locked_json(path: Path):
+    """Context manager that yields (data, save) with an exclusive file lock.
+
+    Usage::
+
+        with _locked_json(ALIAS_FILE) as (data, save):
+            data["key"] = "value"
+            save(data)
+    """
+    path.touch(exist_ok=True)
+    with open(path, "r+") as fh:
+        fcntl.flock(fh, fcntl.LOCK_EX)
+        try:
+            content = fh.read()
+            data = json.loads(content) if content.strip() else {}
+        except (json.JSONDecodeError, ValueError):
+            data = {}
+
+        def _save(new_data: dict) -> None:
+            fh.seek(0)
+            fh.truncate()
+            fh.write(json.dumps(new_data, indent=2))
+
+        yield data, _save
+        # Lock released when the file handle closes
 
 
 def _load_json(path: Path) -> dict:
@@ -47,18 +77,18 @@ async def create_alias(req: AliasRequest):
     if not Path(path).is_dir():
         raise HTTPException(status_code=400, detail="Path is not a directory")
 
-    aliases = _load_json(ALIAS_FILE)
-    for alias_id, alias_path in aliases.items():
-        if alias_path == path:
-            return {"id": alias_id, "path": path}
+    with _locked_json(ALIAS_FILE) as (aliases, save):
+        for alias_id, alias_path in aliases.items():
+            if alias_path == path:
+                return {"id": alias_id, "path": path}
 
-    short_id = _make_short_id(path)
-    while short_id in aliases and aliases[short_id] != path:
-        short_id = short_id + "x"
+        short_id = _make_short_id(path)
+        while short_id in aliases and aliases[short_id] != path:
+            short_id = short_id + "x"
 
-    aliases[short_id] = path
-    _save_json(ALIAS_FILE, aliases)
-    return {"id": short_id, "path": path}
+        aliases[short_id] = path
+        save(aliases)
+        return {"id": short_id, "path": path}
 
 
 @router.get("/api/alias/{alias_id}")
@@ -93,20 +123,19 @@ async def create_share(req: ShareRequest):
     if req.viz and req.viz != "single":
         state += "|" + req.viz
 
-    shares = _load_json(SHARE_FILE)
+    with _locked_json(SHARE_FILE) as (shares, save):
+        # Check if this exact state already has a code
+        for code, stored_state in shares.items():
+            if stored_state == state:
+                return {"code": code}
 
-    # Check if this exact state already has a code
-    for code, stored_state in shares.items():
-        if stored_state == state:
-            return {"code": code}
+        code = _make_short_id(state, length=5)
+        while code in shares and shares[code] != state:
+            code = code + "x"
 
-    code = _make_short_id(state, length=5)
-    while code in shares and shares[code] != state:
-        code = code + "x"
-
-    shares[code] = state
-    _save_json(SHARE_FILE, shares)
-    return {"code": code}
+        shares[code] = state
+        save(shares)
+        return {"code": code}
 
 
 @router.get("/api/share/{code}")
