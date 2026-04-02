@@ -40,6 +40,17 @@ body {
   flex-direction: column;
 }
 
+/* Ant Design Tree selected node highlight */
+.ant-tree .ant-tree-node-selected,
+.ant-tree .ant-tree-node-selected .ant-tree-title {
+  color: var(--accent) !important;
+  font-weight: 600;
+}
+.ant-tree .ant-tree-node-selected {
+  background-color: var(--hover-bg) !important;
+  border-radius: 4px;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
 }

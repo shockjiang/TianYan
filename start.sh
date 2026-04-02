@@ -12,13 +12,13 @@ echo "Backend started (PID: $BACKEND_PID) on http://0.0.0.0:8000"
 
 # Start frontend
 cd /vePFS/shock/TianYan/frontend
-npx vite --host 0.0.0.0 &
+npx vite --host 0.0.0.0 --port 15090 &
 FRONTEND_PID=$!
-echo "Frontend started (PID: $FRONTEND_PID) on http://0.0.0.0:5173"
+echo "Frontend started (PID: $FRONTEND_PID) on http://0.0.0.0:15090"
 
 echo ""
 echo "TianYan is running!"
-echo "  Frontend: http://localhost:5173"
+echo "  Frontend: http://localhost:15090"
 echo "  Backend:  http://localhost:8000"
 echo "  API docs: http://localhost:8000/docs"
 echo ""

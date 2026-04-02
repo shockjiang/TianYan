@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { AutoComplete, Select, Button, Space } from 'antd';
-import { SunOutlined, MoonOutlined } from '@ant-design/icons';
+import { AutoComplete, Select, Button, Space, message } from 'antd';
+import { SunOutlined, MoonOutlined, FullscreenOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { getTupleTypes } from '../tuples/registry';
+import { buildShareUrl } from '../hooks/useUrlState';
 import type { VizMode } from '../types';
 import type { Theme } from '../hooks/useTheme';
 
@@ -10,12 +11,17 @@ interface TopPanelProps {
   dirHistory: string[];
   vizMode: VizMode;
   theme: Theme;
+  autoplay: boolean;
+  fullscreen: boolean;
+  selectedFile?: string;
   onRootSubmit: (path: string) => void;
   onVizChange: (mode: VizMode) => void;
   onThemeToggle: () => void;
+  onAutoplayChange: (val: boolean) => void;
+  onFullscreenToggle: () => void;
 }
 
-export function TopPanel({ rootDir, dirHistory, vizMode, theme, onRootSubmit, onVizChange, onThemeToggle }: TopPanelProps) {
+export function TopPanel({ rootDir, dirHistory, vizMode, theme, autoplay, fullscreen, selectedFile, onRootSubmit, onVizChange, onThemeToggle, onAutoplayChange, onFullscreenToggle }: TopPanelProps) {
   const [inputValue, setInputValue] = useState(rootDir);
   const tupleTypes = getTupleTypes();
 
@@ -42,9 +48,10 @@ export function TopPanel({ rootDir, dirHistory, vizMode, theme, onRootSubmit, on
       gap: 12,
       flexShrink: 0,
     }}>
-      <span style={{ color: 'var(--accent)', fontWeight: 700, fontSize: 16, whiteSpace: 'nowrap' }}>
-        TianYan
-      </span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+        <img src="/favicon.svg" alt="TianYan" style={{ width: 24, height: 24 }} />
+        <span style={{ color: 'var(--accent)', fontWeight: 700, fontSize: 16 }}>TianYan</span>
+      </div>
       <AutoComplete
         style={{ flex: 1, maxWidth: 500 }}
         value={inputValue}
@@ -66,6 +73,58 @@ export function TopPanel({ rootDir, dirHistory, vizMode, theme, onRootSubmit, on
         onChange={onVizChange}
         options={vizOptions}
         size="small"
+      />
+      <label style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+        <input type="checkbox" checked={autoplay} onChange={e => onAutoplayChange(e.target.checked)} />
+        Autoplay
+      </label>
+      <Button
+        type="text"
+        size="small"
+        icon={<ShareAltOutlined />}
+        title="Copy share link"
+        style={{ color: 'var(--text-primary)' }}
+        onClick={() => {
+          // Use ClipboardItem with async blob — works on HTTP because
+          // the ClipboardItem is created synchronously within user gesture
+          const blobPromise = fetch('/api/share', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ root: rootDir, file: selectedFile || null, viz: vizMode || null }),
+          })
+            .then(r => r.json())
+            .then(data => {
+              const url = `${window.location.origin}?s=${data.code}`;
+              (window as any).__lastShareUrl = url;
+              return new Blob([url], { type: 'text/plain' });
+            });
+
+          try {
+            navigator.clipboard.write([
+              new ClipboardItem({ 'text/plain': blobPromise })
+            ]).then(() => {
+              message.success(`Copied: ${(window as any).__lastShareUrl}`);
+            }).catch(() => {
+              // Final fallback: show in prompt
+              blobPromise.then(blob => blob.text()).then(url => {
+                window.prompt('Copy this link:', url);
+              });
+            });
+          } catch {
+            // Browser doesn't support ClipboardItem
+            blobPromise.then(blob => blob.text()).then(url => {
+              window.prompt('Copy this link:', url);
+            });
+          }
+        }}
+      />
+      <Button
+        type="text"
+        size="small"
+        icon={<FullscreenOutlined />}
+        onClick={onFullscreenToggle}
+        title="Fullscreen (F)"
+        style={{ color: 'var(--text-primary)' }}
       />
       <Button
         type="text"

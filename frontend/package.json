@@ -11,7 +11,10 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.1",
+    "@types/prismjs": "^1.26.6",
     "antd": "^6.3.5",
+    "lz-string": "^1.5.0",
+    "prismjs": "^1.30.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-json-view-lite": "^2.5.0"

@@ -10,19 +10,20 @@ interface BreadcrumbProps {
 export function Breadcrumb({ path, rootDir, onNavigate }: BreadcrumbProps) {
   if (!path || !rootDir) return null;
 
-  const relative = path.startsWith(rootDir) ? path.slice(rootDir.length) : path;
+  const normRoot = rootDir.replace(/\/+$/, '');
+  const relative = path.startsWith(normRoot) ? path.slice(normRoot.length) : path;
   const segments = relative.split('/').filter(Boolean);
 
   const items = [
     {
       title: (
-        <span onClick={() => onNavigate(rootDir)} style={{ cursor: 'pointer' }}>
-          <HomeOutlined /> {rootDir.split('/').pop() || rootDir}
+        <span onClick={() => onNavigate(normRoot)} style={{ cursor: 'pointer' }}>
+          <HomeOutlined /> {normRoot.split('/').pop() || normRoot}
         </span>
       ),
     },
     ...segments.map((seg, i) => {
-      const fullPath = rootDir + '/' + segments.slice(0, i + 1).join('/');
+      const fullPath = normRoot + '/' + segments.slice(0, i + 1).join('/');
       return {
         title: (
           <span onClick={() => onNavigate(fullPath)} style={{ cursor: 'pointer' }}>

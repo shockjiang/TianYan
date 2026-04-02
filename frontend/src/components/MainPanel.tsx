@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Tooltip } from 'antd';
+import { Tooltip, Spin } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Breadcrumb } from './Breadcrumb';
 import { DirectoryGallery } from './DirectoryGallery';
@@ -8,6 +8,7 @@ import { DepthViewer } from './viewers/DepthViewer';
 import { MaskViewer } from './viewers/MaskViewer';
 import { JsonViewer } from './viewers/JsonViewer';
 import { TextViewer } from './viewers/TextViewer';
+import { VideoViewer } from './viewers/VideoViewer';
 import { getTupleByKey } from '../tuples/registry';
 import type { FileNode, VizMode, FileInfo } from '../types';
 
@@ -17,20 +18,58 @@ interface MainPanelProps {
   treeData: FileNode | null;
   apiBase: string;
   rootDir?: string;
+  autoplay?: boolean;
   onNavigate?: (path: string) => void;
 }
 
 const IMAGE_EXTS = new Set(['.png', '.jpg', '.jpeg', '.bmp', '.gif', '.webp']);
-const TEXT_EXTS = new Set(['.txt', '.log', '.csv', '.yaml', '.yml', '.xml', '.md']);
+const VIDEO_EXTS = new Set(['.mp4', '.mkv', '.avi', '.mov', '.webm', '.flv', '.wmv']);
+const TEXT_EXTS = new Set([
+  '.txt', '.log', '.csv', '.yaml', '.yml', '.xml', '.md',
+  '.sh', '.bash', '.zsh', '.fish',
+  '.py', '.js', '.ts', '.tsx', '.jsx', '.css', '.html', '.htm',
+  '.c', '.cpp', '.h', '.hpp', '.java', '.go', '.rs', '.rb', '.php',
+  '.toml', '.ini', '.cfg', '.conf', '.env',
+  '.gitignore', '.dockerignore', '.editorconfig',
+  '.makefile', '.cmake',
+]);
 
-function detectFileType(node: FileNode): 'image' | 'depth' | 'mask' | 'json' | 'text' | 'unknown' {
+// Files with no extension that are typically text
+const TEXT_NAMES = new Set([
+  'makefile', 'dockerfile', 'readme', 'license', 'changelog',
+  'authors', 'contributors', 'todo', 'notes',
+  'gemfile', 'rakefile', 'vagrantfile', 'procfile',
+]);
+
+type FileType = 'image' | 'depth' | 'mask' | 'json' | 'text' | 'video' | 'unknown';
+
+function detectFileType(node: FileNode): FileType {
   const ext = node.extension || '';
   const path = node.path.toLowerCase();
+  const nameLower = node.name.toLowerCase();
+
+  // Video
+  if (VIDEO_EXTS.has(ext)) return 'video';
+
+  // Depth/mask by naming convention (must be image extension)
   if (path.includes('depth') && IMAGE_EXTS.has(ext)) return 'depth';
   if (path.includes('mask') && IMAGE_EXTS.has(ext)) return 'mask';
+
+  // Image
   if (IMAGE_EXTS.has(ext)) return 'image';
+
+  // JSON
   if (ext === '.json') return 'json';
+
+  // Text by extension
   if (TEXT_EXTS.has(ext)) return 'text';
+
+  // Text by filename (no extension or known text filename)
+  if (!ext && TEXT_NAMES.has(nameLower)) return 'text';
+
+  // Heuristic: files with no extension or common code-like extensions → treat as text
+  if (!ext || ext === '.') return 'text';
+
   return 'unknown';
 }
 
@@ -66,7 +105,47 @@ function collectFiles(node: FileNode): FileNode[] {
   return (node.children || []).flatMap(collectFiles);
 }
 
-export function MainPanel({ selectedNode, vizMode, treeData, apiBase, rootDir, onNavigate }: MainPanelProps) {
+/**
+ * Hook to lazy-load directory children when a directory node has no children loaded.
+ */
+function useLazyDirectoryChildren(node: FileNode | undefined, apiBase: string): [FileNode | undefined, boolean] {
+  const [enrichedNode, setEnrichedNode] = useState<FileNode | undefined>(node);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!node || node.type !== 'directory') {
+      setEnrichedNode(node);
+      return;
+    }
+
+    // If children are already loaded, use as-is
+    if (node.children && node.children.length > 0) {
+      setEnrichedNode(node);
+      return;
+    }
+
+    // Need to fetch children
+    setLoading(true);
+    fetch(`${apiBase}/api/directory?path=${encodeURIComponent(node.path)}&depth=1`)
+      .then(r => r.json())
+      .then((data: FileNode) => {
+        setEnrichedNode(data);
+      })
+      .catch(() => {
+        setEnrichedNode(node);
+      })
+      .finally(() => setLoading(false));
+  }, [node?.path, node?.type, apiBase]);
+
+  return [enrichedNode, loading];
+}
+
+export function MainPanel({ selectedNode, vizMode, treeData, apiBase, rootDir, autoplay, onNavigate }: MainPanelProps) {
+  const [dirNode, dirLoading] = useLazyDirectoryChildren(
+    selectedNode?.type === 'directory' ? selectedNode : undefined,
+    apiBase
+  );
+
   // Tuple mode
   if (vizMode !== 'single' && treeData) {
     const tupleType = getTupleByKey(vizMode);
@@ -112,14 +191,20 @@ export function MainPanel({ selectedNode, vizMode, treeData, apiBase, rootDir, o
     );
   }
 
-  // Directory → gallery
+  // Directory → gallery (with lazy loading)
   if (selectedNode.type === 'directory') {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         {rootDir && onNavigate && (
           <Breadcrumb path={selectedNode.path} rootDir={rootDir} onNavigate={onNavigate} />
         )}
-        <DirectoryGallery node={selectedNode} apiBase={apiBase} onFileSelect={(f) => onNavigate?.(f.path)} />
+        {dirLoading ? (
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Spin tip="Loading directory..." />
+          </div>
+        ) : (
+          <DirectoryGallery node={dirNode || selectedNode} apiBase={apiBase} autoplay={autoplay} onFileSelect={(f) => onNavigate?.(f.path)} />
+        )}
       </div>
     );
   }
@@ -143,6 +228,7 @@ export function MainPanel({ selectedNode, vizMode, treeData, apiBase, rootDir, o
       {fileType === 'mask' && <MaskViewer src={fileSrc} name={selectedNode.name} />}
       {fileType === 'json' && <JsonViewer src={fileSrc} name={selectedNode.name} />}
       {fileType === 'text' && <TextViewer src={fileSrc} name={selectedNode.name} />}
+      {fileType === 'video' && <VideoViewer src={fileSrc} name={selectedNode.name} autoplay={autoplay} />}
       {fileType === 'unknown' && (
         <div style={{ padding: 24, color: 'var(--text-secondary)' }}>
           Preview not available for this file type ({selectedNode.extension || 'unknown'})

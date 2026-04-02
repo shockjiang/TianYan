@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+aliases.json
+shares.json
+node_modules/
+dist/

@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Tree, Input } from 'antd';
-import { FolderOutlined, FileOutlined, FileImageOutlined, FileTextOutlined } from '@ant-design/icons';
+import { FolderOutlined, FileOutlined, FileImageOutlined, FileTextOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import type { FileNode } from '../types';
 import type { DataNode, EventDataNode } from 'antd/es/tree';
 
@@ -8,24 +8,39 @@ interface FileTreeProps {
   treeData: FileNode | null;
   selectedPath?: string;
   recentFiles: string[];
+  expandedKeys: string[];
+  onExpandedKeysChange: (keys: string[]) => void;
   onSelect: (node: FileNode) => void;
-  onLoadChildren: (path: string) => void;
+  onLoadChildren: (path: string) => Promise<void>;
+  onNavigateToFile: (path: string) => void;
   apiBase: string;
 }
 
 const IMAGE_EXTS = new Set(['.png', '.jpg', '.jpeg', '.bmp', '.gif', '.webp']);
-const TEXT_EXTS = new Set(['.txt', '.log', '.csv', '.yaml', '.yml', '.xml', '.md']);
+const VIDEO_EXTS = new Set(['.mp4', '.mkv', '.avi', '.mov', '.webm', '.flv', '.wmv']);
+const TEXT_EXTS = new Set(['.txt', '.log', '.csv', '.yaml', '.yml', '.xml', '.md', '.sh', '.py', '.js', '.ts', '.tsx', '.jsx']);
 
 function getFileIcon(node: FileNode) {
   if (node.type === 'directory') return <FolderOutlined style={{ color: '#f0c040' }} />;
   if (node.extension && IMAGE_EXTS.has(node.extension)) return <FileImageOutlined style={{ color: '#4fc3f7' }} />;
+  if (node.extension && VIDEO_EXTS.has(node.extension)) return <VideoCameraOutlined style={{ color: '#ff8a65' }} />;
   if (node.extension && (TEXT_EXTS.has(node.extension) || node.extension === '.json')) return <FileTextOutlined style={{ color: '#81c784' }} />;
   return <FileOutlined />;
 }
 
+function matchesFilter(name: string, filter: string): boolean {
+  const f = filter.toLowerCase();
+  const n = name.toLowerCase();
+  if (f.includes('*') || f.includes('?')) {
+    const escaped = f.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*').replace(/\?/g, '.');
+    return new RegExp(`^${escaped}$`).test(n);
+  }
+  return n.includes(f);
+}
+
 function buildTreeData(node: FileNode, filter: string): DataNode | null {
   if (node.type === 'file') {
-    if (filter && !node.name.toLowerCase().includes(filter.toLowerCase())) return null;
+    if (filter && !matchesFilter(node.name, filter)) return null;
     return {
       key: node.path,
       title: node.name,
@@ -33,12 +48,15 @@ function buildTreeData(node: FileNode, filter: string): DataNode | null {
       isLeaf: true,
     };
   }
-  const children = (node.children || [])
-    .map(child => buildTreeData(child, filter))
-    .filter(Boolean) as DataNode[];
-  if (filter && children.length === 0 && !node.name.toLowerCase().includes(filter.toLowerCase())) {
+  const hasLoadedChildren = node.children && node.children.length > 0;
+  const children = hasLoadedChildren
+    ? (node.children!.map(child => buildTreeData(child, filter)).filter(Boolean) as DataNode[])
+    : undefined;
+
+  if (filter && children && children.length === 0 && !matchesFilter(node.name, filter)) {
     return null;
   }
+
   return {
     key: node.path,
     title: node.name,
@@ -55,7 +73,7 @@ function buildNodeMap(node: FileNode, map: Map<string, FileNode>) {
   }
 }
 
-export function FileTree({ treeData, selectedPath, recentFiles, onSelect, onLoadChildren, apiBase }: FileTreeProps) {
+export function FileTree({ treeData, selectedPath, recentFiles, expandedKeys, onExpandedKeysChange, onSelect, onLoadChildren, onNavigateToFile, apiBase }: FileTreeProps) {
   const [filter, setFilter] = useState('');
 
   const nodeMap = useMemo(() => {
@@ -75,11 +93,19 @@ export function FileTree({ treeData, selectedPath, recentFiles, onSelect, onLoad
     if (node) onSelect(node);
   };
 
+  const handleLoadData = useCallback((treeNode: DataNode): Promise<void> => {
+    return onLoadChildren(treeNode.key as string);
+  }, [onLoadChildren]);
+
+  const handleExpand = (keys: any) => {
+    onExpandedKeysChange(keys as string[]);
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div style={{ padding: '8px 8px 4px' }}>
         <Input.Search
-          placeholder="Filter files..."
+          placeholder="Filter files... (supports *.mp4)"
           size="small"
           allowClear
           value={filter}
@@ -91,10 +117,12 @@ export function FileTree({ treeData, selectedPath, recentFiles, onSelect, onLoad
           <Tree
             treeData={antTreeData}
             selectedKeys={selectedPath ? [selectedPath] : []}
+            expandedKeys={expandedKeys}
+            onExpand={handleExpand}
             onSelect={(_, info) => handleSelect(_, info)}
+            loadData={handleLoadData}
             showIcon
             blockNode
-            defaultExpandAll={false}
             autoExpandParent
             style={{ background: 'transparent' }}
           />
@@ -114,10 +142,7 @@ export function FileTree({ treeData, selectedPath, recentFiles, onSelect, onLoad
             return (
               <div
                 key={f}
-                onClick={() => {
-                  const node = nodeMap.get(f);
-                  if (node) onSelect(node);
-                }}
+                onClick={() => onNavigateToFile(f)}
                 style={{
                   fontSize: 12,
                   padding: '2px 4px',
