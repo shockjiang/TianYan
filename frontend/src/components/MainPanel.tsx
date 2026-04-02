@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Tooltip, Spin } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Breadcrumb } from './Breadcrumb';
@@ -146,11 +146,12 @@ export function MainPanel({ selectedNode, vizMode, treeData, apiBase, rootDir, a
     apiBase
   );
 
+  const allFiles = useMemo(() => treeData ? collectFiles(treeData) : [], [treeData]);
+
   // Tuple mode
   if (vizMode !== 'single' && treeData) {
     const tupleType = getTupleByKey(vizMode);
     if (tupleType) {
-      const allFiles = collectFiles(treeData);
       const matches = tupleType.matcher(allFiles, selectedNode);
       const activeMatch = selectedNode
         ? matches.find(m => Object.values(m.files).includes(selectedNode.path))

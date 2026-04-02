@@ -8,6 +8,8 @@ interface JsonViewerProps {
   theme?: 'dark' | 'light';
 }
 
+const MAX_TEXT_SIZE = 10 * 1024 * 1024; // 10MB
+
 export function JsonViewer({ src, name, theme = 'dark' }: JsonViewerProps) {
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -16,6 +18,8 @@ export function JsonViewer({ src, name, theme = 'dark' }: JsonViewerProps) {
     fetch(src)
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const size = parseInt(res.headers.get('content-length') || '0');
+        if (size > MAX_TEXT_SIZE) throw new Error(`File too large to preview (${(size / 1024 / 1024).toFixed(1)} MB). Max: 10 MB`);
         return res.json();
       })
       .then(setData)

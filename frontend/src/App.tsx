@@ -57,6 +57,9 @@ function App() {
   });
   const [fullscreen, setFullscreen] = useState(false);
 
+  const treeDataRef = useRef(treeData);
+  useEffect(() => { treeDataRef.current = treeData; }, [treeData]);
+
   const handleAutoplayChange = (val: boolean) => {
     setAutoplay(val);
     localStorage.setItem('tianyan-video-autoplay', String(val));
@@ -161,7 +164,7 @@ function App() {
     // Select the file
     const fileName = parts[parts.length - 1];
     const ext = fileName.includes('.') ? '.' + fileName.split('.').pop()!.toLowerCase() : '';
-    const fileNode = findNodeByPath(treeData, filePath) || {
+    const fileNode = findNodeByPath(treeDataRef.current, filePath) || {
       name: fileName, path: filePath, type: 'file' as const, extension: ext,
     };
     handleSelect(fileNode);
@@ -201,14 +204,15 @@ function App() {
     e.preventDefault();
     const startX = e.clientX;
     const startWidth = leftWidth;
+    let currentWidth = startWidth;
     const onMove = (ev: MouseEvent) => {
-      const newWidth = Math.min(500, Math.max(200, startWidth + ev.clientX - startX));
-      setLeftWidth(newWidth);
+      currentWidth = Math.min(500, Math.max(200, startWidth + ev.clientX - startX));
+      setLeftWidth(currentWidth);
     };
     const onUp = () => {
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('mouseup', onUp);
-      localStorage.setItem('tianyan-left-width', String(leftWidth));
+      localStorage.setItem('tianyan-left-width', String(currentWidth));
     };
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);

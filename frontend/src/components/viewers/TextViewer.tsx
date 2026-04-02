@@ -79,6 +79,8 @@ function getLanguage(name: string): string | undefined {
   return undefined;
 }
 
+const MAX_TEXT_SIZE = 10 * 1024 * 1024; // 10MB
+
 export function TextViewer({ src, name }: TextViewerProps) {
   const [text, setText] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -88,6 +90,8 @@ export function TextViewer({ src, name }: TextViewerProps) {
     fetch(src)
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const size = parseInt(res.headers.get('content-length') || '0');
+        if (size > MAX_TEXT_SIZE) throw new Error(`File too large to preview (${(size / 1024 / 1024).toFixed(1)} MB). Max: 10 MB`);
         return res.text();
       })
       .then(setText)

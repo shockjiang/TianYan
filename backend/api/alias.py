@@ -4,6 +4,7 @@ import json
 from contextlib import contextmanager
 from pathlib import Path
 from fastapi import APIRouter, HTTPException
+from api.directory import _allowed_roots
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -97,6 +98,7 @@ async def resolve_alias(alias_id: str):
     path = aliases.get(alias_id)
     if not path:
         raise HTTPException(status_code=404, detail="Alias not found")
+    _allowed_roots.add(path)
     return {"id": alias_id, "path": path}
 
 
@@ -155,4 +157,5 @@ async def resolve_share(code: str):
     if rel_file:
         file_path = root + "/" + rel_file
 
+    _allowed_roots.add(root)
     return {"root": root, "file": file_path, "viz": viz}
