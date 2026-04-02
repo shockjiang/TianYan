@@ -1,4 +1,5 @@
 import type { FileNode } from '../types';
+import { IMAGE_EXTS, VIDEO_EXTS } from '../constants';
 
 interface DirectoryGalleryProps {
   node: FileNode;
@@ -6,9 +7,6 @@ interface DirectoryGalleryProps {
   autoplay?: boolean;
   onFileSelect: (node: FileNode) => void;
 }
-
-const IMAGE_EXTS = new Set(['.png', '.jpg', '.jpeg', '.bmp', '.gif', '.webp']);
-const VIDEO_EXTS = new Set(['.mp4', '.mkv', '.avi', '.mov', '.webm', '.flv', '.wmv']);
 
 export function DirectoryGallery({ node, apiBase, autoplay = false, onFileSelect }: DirectoryGalleryProps) {
   // Only direct children files (exclude sub-directory contents)

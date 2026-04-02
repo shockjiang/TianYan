@@ -52,6 +52,9 @@ async def get_thumbnail(path: str = Query(..., description="Absolute image file 
     if not mime_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Not an image file")
 
+    if resolved.stat().st_size > 50 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Image too large for thumbnail generation")
+
     try:
         from PIL import Image
         import io

@@ -11,6 +11,7 @@ import { TextViewer } from './viewers/TextViewer';
 import { VideoViewer } from './viewers/VideoViewer';
 import { getTupleByKey } from '../tuples/registry';
 import type { FileNode, VizMode, FileInfo } from '../types';
+import { IMAGE_EXTS, VIDEO_EXTS, TEXT_EXTS, TEXT_NAMES } from '../constants';
 
 interface MainPanelProps {
   selectedNode?: FileNode;
@@ -21,25 +22,6 @@ interface MainPanelProps {
   autoplay?: boolean;
   onNavigate?: (path: string) => void;
 }
-
-const IMAGE_EXTS = new Set(['.png', '.jpg', '.jpeg', '.bmp', '.gif', '.webp']);
-const VIDEO_EXTS = new Set(['.mp4', '.mkv', '.avi', '.mov', '.webm', '.flv', '.wmv']);
-const TEXT_EXTS = new Set([
-  '.txt', '.log', '.csv', '.yaml', '.yml', '.xml', '.md',
-  '.sh', '.bash', '.zsh', '.fish',
-  '.py', '.js', '.ts', '.tsx', '.jsx', '.css', '.html', '.htm',
-  '.c', '.cpp', '.h', '.hpp', '.java', '.go', '.rs', '.rb', '.php',
-  '.toml', '.ini', '.cfg', '.conf', '.env',
-  '.gitignore', '.dockerignore', '.editorconfig',
-  '.makefile', '.cmake',
-]);
-
-// Files with no extension that are typically text
-const TEXT_NAMES = new Set([
-  'makefile', 'dockerfile', 'readme', 'license', 'changelog',
-  'authors', 'contributors', 'todo', 'notes',
-  'gemfile', 'rakefile', 'vagrantfile', 'procfile',
-]);
 
 type FileType = 'image' | 'depth' | 'mask' | 'json' | 'text' | 'video' | 'unknown';
 

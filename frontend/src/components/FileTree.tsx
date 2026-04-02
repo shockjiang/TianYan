@@ -3,6 +3,7 @@ import { Tree, Input } from 'antd';
 import { FolderOutlined, FileOutlined, FileImageOutlined, FileTextOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import type { FileNode } from '../types';
 import type { DataNode, EventDataNode } from 'antd/es/tree';
+import { IMAGE_EXTS, VIDEO_EXTS, TEXT_EXTS } from '../constants';
 
 interface FileTreeProps {
   treeData: FileNode | null;
@@ -15,10 +16,6 @@ interface FileTreeProps {
   onNavigateToFile: (path: string) => void;
   apiBase: string;
 }
-
-const IMAGE_EXTS = new Set(['.png', '.jpg', '.jpeg', '.bmp', '.gif', '.webp']);
-const VIDEO_EXTS = new Set(['.mp4', '.mkv', '.avi', '.mov', '.webm', '.flv', '.wmv']);
-const TEXT_EXTS = new Set(['.txt', '.log', '.csv', '.yaml', '.yml', '.xml', '.md', '.sh', '.py', '.js', '.ts', '.tsx', '.jsx']);
 
 function getFileIcon(node: FileNode) {
   if (node.type === 'directory') return <FolderOutlined style={{ color: '#f0c040' }} />;

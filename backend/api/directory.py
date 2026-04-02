@@ -50,7 +50,7 @@ def _scan_directory(
     }
     if current_depth >= depth:
         result["children"] = []
-        result["hasChildren"] = any(dir_path.iterdir())
+        result["hasChildren"] = any(not e.name.startswith('.') for e in dir_path.iterdir())
         return result
 
     children = []
@@ -62,6 +62,7 @@ def _scan_directory(
             if entry.name.startswith("."):
                 continue
             if entry.is_dir():
+                _counter[0] += 1
                 children.append(_scan_directory(entry, depth, current_depth + 1, max_entries, _counter))
             elif entry.is_file():
                 _counter[0] += 1
