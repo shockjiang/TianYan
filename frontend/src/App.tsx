@@ -56,6 +56,14 @@ function App() {
     return localStorage.getItem('tianyan-video-autoplay') === 'true';
   });
   const [fullscreen, setFullscreen] = useState(false);
+  const [gridScale, setGridScale] = useState(() => {
+    return parseFloat(localStorage.getItem('tianyan-grid-scale') || '0.3');
+  });
+
+  const handleGridScaleChange = (val: number) => {
+    setGridScale(val);
+    localStorage.setItem('tianyan-grid-scale', String(val));
+  };
 
   const treeDataRef = useRef(treeData);
   useEffect(() => { treeDataRef.current = treeData; }, [treeData]);
@@ -234,12 +242,14 @@ function App() {
             theme={theme}
             autoplay={autoplay}
             fullscreen={fullscreen}
+            gridScale={gridScale}
             selectedFile={selectedPath}
             onRootSubmit={handleRootSubmit}
             onVizChange={setVizMode}
             onThemeToggle={toggleTheme}
             onAutoplayChange={handleAutoplayChange}
             onFullscreenToggle={() => setFullscreen(f => !f)}
+            onGridScaleChange={handleGridScaleChange}
           />
         )}
         <div className="app-body">
@@ -269,6 +279,7 @@ function App() {
               apiBase={API_BASE}
               rootDir={rootDir}
               autoplay={autoplay}
+              gridScale={gridScale}
               onNavigate={(path: string) => {
                 const node = findNodeByPath(treeData, path);
                 if (node) handleSelect(node);

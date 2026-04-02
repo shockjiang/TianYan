@@ -20,6 +20,7 @@ interface MainPanelProps {
   apiBase: string;
   rootDir?: string;
   autoplay?: boolean;
+  gridScale?: number;
   onNavigate?: (path: string) => void;
 }
 
@@ -122,7 +123,7 @@ function useLazyDirectoryChildren(node: FileNode | undefined, apiBase: string): 
   return [enrichedNode, loading];
 }
 
-export function MainPanel({ selectedNode, vizMode, treeData, apiBase, rootDir, autoplay, onNavigate }: MainPanelProps) {
+export function MainPanel({ selectedNode, vizMode, treeData, apiBase, rootDir, autoplay, gridScale = 0.3, onNavigate }: MainPanelProps) {
   const [dirNode, dirLoading] = useLazyDirectoryChildren(
     selectedNode?.type === 'directory' ? selectedNode : undefined,
     apiBase
@@ -135,17 +136,50 @@ export function MainPanel({ selectedNode, vizMode, treeData, apiBase, rootDir, a
     const tupleType = getTupleByKey(vizMode);
     if (tupleType) {
       const matches = tupleType.matcher(allFiles, selectedNode);
-      const activeMatch = selectedNode
-        ? matches.find(m => Object.values(m.files).includes(selectedNode.path))
-        : matches[0];
-      if (activeMatch) {
+      if (matches.length > 0) {
         const TupleComponent = tupleType.component;
+        // Single match → full view; multiple → grid
+        if (matches.length === 1) {
+          return (
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+              {rootDir && onNavigate && (
+                <Breadcrumb path={selectedNode?.path} rootDir={rootDir} onNavigate={onNavigate} />
+              )}
+              <TupleComponent match={matches[0]} apiBase={apiBase} />
+            </div>
+          );
+        }
         return (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             {rootDir && onNavigate && (
               <Breadcrumb path={selectedNode?.path} rootDir={rootDir} onNavigate={onNavigate} />
             )}
-            <TupleComponent match={activeMatch} apiBase={apiBase} />
+            <div style={{ flex: 1, overflow: 'auto', padding: 8 }}>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: `repeat(auto-fill, minmax(${Math.round(gridScale * 100)}%, 1fr))`,
+                gap: 8,
+              }}>
+                {matches.map((match, i) => (
+                  <div key={match.label + i} style={{
+                    border: '1px solid var(--border-color)',
+                    borderRadius: 6,
+                    overflow: 'hidden',
+                    background: 'var(--bg-secondary)',
+                    minHeight: 200,
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}>
+                    <div style={{ padding: '4px 8px', fontSize: 11, color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-color)' }}>
+                      {match.label}
+                    </div>
+                    <div style={{ flex: 1, position: 'relative' }}>
+                      <TupleComponent match={match} apiBase={apiBase} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         );
       }
@@ -186,7 +220,7 @@ export function MainPanel({ selectedNode, vizMode, treeData, apiBase, rootDir, a
             <Spin tip="Loading directory..." />
           </div>
         ) : (
-          <DirectoryGallery node={dirNode || selectedNode} apiBase={apiBase} autoplay={autoplay} onFileSelect={(f) => onNavigate?.(f.path)} />
+          <DirectoryGallery node={dirNode || selectedNode} apiBase={apiBase} autoplay={autoplay} gridScale={gridScale} onFileSelect={(f) => onNavigate?.(f.path)} />
         )}
       </div>
     );

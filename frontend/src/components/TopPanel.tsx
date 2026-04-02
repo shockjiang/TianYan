@@ -13,15 +13,17 @@ interface TopPanelProps {
   theme: Theme;
   autoplay: boolean;
   fullscreen: boolean;
+  gridScale: number;
   selectedFile?: string;
   onRootSubmit: (path: string) => void;
   onVizChange: (mode: VizMode) => void;
   onThemeToggle: () => void;
   onAutoplayChange: (val: boolean) => void;
   onFullscreenToggle: () => void;
+  onGridScaleChange: (val: number) => void;
 }
 
-export function TopPanel({ rootDir, dirHistory, vizMode, theme, autoplay, fullscreen, selectedFile, onRootSubmit, onVizChange, onThemeToggle, onAutoplayChange, onFullscreenToggle }: TopPanelProps) {
+export function TopPanel({ rootDir, dirHistory, vizMode, theme, autoplay, fullscreen, gridScale, selectedFile, onRootSubmit, onVizChange, onThemeToggle, onAutoplayChange, onFullscreenToggle, onGridScaleChange }: TopPanelProps) {
   const [inputValue, setInputValue] = useState(rootDir);
   const tupleTypes = getTupleTypes();
 
@@ -77,6 +79,19 @@ export function TopPanel({ rootDir, dirHistory, vizMode, theme, autoplay, fullsc
       <label style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', whiteSpace: 'nowrap' }}>
         <input type="checkbox" checked={autoplay} onChange={e => onAutoplayChange(e.target.checked)} />
         Autoplay
+      </label>
+      <label style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
+        Scale:
+        <input
+          type="range"
+          min="0.05"
+          max="1"
+          step="0.05"
+          value={gridScale}
+          onChange={e => onGridScaleChange(parseFloat(e.target.value))}
+          style={{ width: 80 }}
+        />
+        {Math.round(gridScale * 100)}%
       </label>
       <Button
         type="text"
