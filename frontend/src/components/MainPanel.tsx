@@ -252,7 +252,7 @@ export function MainPanel({ selectedNode, vizMode, treeData, apiBase, rootDir, a
       {fileType === 'json' && <JsonViewer src={fileSrc} name={selectedNode.name} />}
       {fileType === 'text' && <TextViewer src={fileSrc} name={selectedNode.name} />}
       {fileType === 'pickle' && <PickleViewer path={selectedNode.path} name={selectedNode.name} apiBase={apiBase} />}
-      {fileType === 'video' && <VideoViewer src={fileSrc} name={selectedNode.name} autoplay={autoplay} />}
+      {fileType === 'video' && <VideoViewer src={`${apiBase}/api/video?path=${encodeURIComponent(selectedNode.path)}`} name={selectedNode.name} autoplay={autoplay} />}
       {fileType === 'unknown' && (
         <div style={{ padding: 24, color: 'var(--text-secondary)' }}>
           Preview not available for this file type ({selectedNode.extension || 'unknown'})

@@ -83,7 +83,7 @@ export function DirectoryGallery({ node, apiBase, autoplay = false, gridScale = 
                   style={{ width: '100%', aspectRatio: '16/9', objectFit: 'contain', display: 'block' }}
                   key={f.path}
                 >
-                  <source src={`${apiBase}/api/file?path=${encodeURIComponent(f.path)}`} />
+                  <source src={`${apiBase}/api/video?path=${encodeURIComponent(f.path)}`} />
                 </video>
                 <div
                   onClick={() => onFileSelect(f)}

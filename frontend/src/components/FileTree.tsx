@@ -1,6 +1,6 @@
-import { useState, useMemo, useCallback } from 'react';
-import { Tree, Input } from 'antd';
-import { FolderOutlined, FileOutlined, FileImageOutlined, FileTextOutlined, VideoCameraOutlined } from '@ant-design/icons';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { Tree, Input, message } from 'antd';
+import { FolderOutlined, FileOutlined, FileImageOutlined, FileTextOutlined, VideoCameraOutlined, CopyOutlined, DownloadOutlined } from '@ant-design/icons';
 import type { FileNode } from '../types';
 import type { DataNode, EventDataNode } from 'antd/es/tree';
 import { IMAGE_EXTS, VIDEO_EXTS, TEXT_EXTS } from '../constants';
@@ -78,6 +78,57 @@ function buildNodeMap(node: FileNode, map: Map<string, FileNode>) {
 
 export function FileTree({ treeData, selectedPath, recentFiles, expandedKeys, onExpandedKeysChange, onSelect, onLoadChildren, onNavigateToFile, apiBase }: FileTreeProps) {
   const [filter, setFilter] = useState('');
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; path: string; isFile: boolean } | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close context menu on click anywhere
+  useEffect(() => {
+    if (!contextMenu) return;
+    const close = () => setContextMenu(null);
+    window.addEventListener('click', close);
+    window.addEventListener('contextmenu', close);
+    return () => {
+      window.removeEventListener('click', close);
+      window.removeEventListener('contextmenu', close);
+    };
+  }, [contextMenu]);
+
+  const handleRightClick = ({ event, node }: { event: React.MouseEvent; node: EventDataNode<DataNode> }) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const fileNode = nodeMap.get(node.key as string);
+    setContextMenu({ x: event.clientX, y: event.clientY, path: node.key as string, isFile: fileNode?.type === 'file' });
+  };
+
+  const copyPath = () => {
+    if (!contextMenu) return;
+    const path = contextMenu.path;
+    try {
+      const blob = new Blob([path], { type: 'text/plain' });
+      navigator.clipboard.write([
+        new ClipboardItem({ 'text/plain': blob })
+      ]).then(() => {
+        message.success('Path copied');
+      }).catch(() => {
+        fallbackCopy(path);
+      });
+    } catch {
+      fallbackCopy(path);
+    }
+    setContextMenu(null);
+  };
+
+  const fallbackCopy = (text: string) => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    message.success('Path copied');
+  };
 
   const nodeMap = useMemo(() => {
     const map = new Map<string, FileNode>();
@@ -135,6 +186,7 @@ export function FileTree({ treeData, selectedPath, recentFiles, expandedKeys, on
             expandedKeys={expandedKeys}
             onExpand={handleExpand}
             onSelect={(_, info) => handleSelect(_, info)}
+            onRightClick={handleRightClick}
             loadData={handleLoadData}
             showIcon
             blockNode
@@ -173,6 +225,67 @@ export function FileTree({ treeData, selectedPath, recentFiles, expandedKeys, on
               </div>
             );
           })}
+        </div>
+      )}
+      {contextMenu && (
+        <div
+          ref={menuRef}
+          style={{
+            position: 'fixed',
+            left: contextMenu.x,
+            top: contextMenu.y,
+            background: 'var(--bg-panel)',
+            border: '1px solid var(--border-color)',
+            borderRadius: 6,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            zIndex: 1000,
+            padding: '4px 0',
+            minWidth: 160,
+          }}
+        >
+          <div
+            onClick={copyPath}
+            style={{
+              padding: '6px 12px',
+              fontSize: 13,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              color: 'var(--text-primary)',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--hover-bg)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          >
+            <CopyOutlined /> Copy Path
+          </div>
+          {contextMenu.isFile && (
+            <div
+              onClick={() => {
+                const url = `${apiBase}/api/download?path=${encodeURIComponent(contextMenu.path)}`;
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = contextMenu.path.split('/').pop() || 'download';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setContextMenu(null);
+              }}
+              style={{
+                padding: '6px 12px',
+                fontSize: 13,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                color: 'var(--text-primary)',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--hover-bg)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              <DownloadOutlined /> Download
+            </div>
+          )}
         </div>
       )}
     </div>
