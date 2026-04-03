@@ -51,8 +51,8 @@ export function TopPanel({ rootDir, dirHistory, vizMode, theme, autoplay, fullsc
       flexShrink: 0,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
-        <img src="/favicon.svg" alt="TianYan" style={{ width: 24, height: 24 }} />
-        <span style={{ color: 'var(--accent)', fontWeight: 700, fontSize: 16 }}>TianYan</span>
+        <img src="/favicon.svg" alt="天眼" style={{ width: 24, height: 24 }} />
+        <span style={{ color: 'var(--accent)', fontWeight: 700, fontSize: 16 }}>天眼</span>
       </div>
       <AutoComplete
         style={{ flex: 1, maxWidth: 500 }}

@@ -9,6 +9,7 @@ import { MaskViewer } from './viewers/MaskViewer';
 import { JsonViewer } from './viewers/JsonViewer';
 import { TextViewer } from './viewers/TextViewer';
 import { VideoViewer } from './viewers/VideoViewer';
+import { PickleViewer } from './viewers/PickleViewer';
 import { getTupleByKey } from '../tuples/registry';
 import type { FileNode, VizMode, FileInfo } from '../types';
 import { IMAGE_EXTS, VIDEO_EXTS, TEXT_EXTS, TEXT_NAMES } from '../constants';
@@ -24,7 +25,9 @@ interface MainPanelProps {
   onNavigate?: (path: string) => void;
 }
 
-type FileType = 'image' | 'depth' | 'mask' | 'json' | 'text' | 'video' | 'unknown';
+const PICKLE_EXTS = new Set(['.pkl', '.pickle', '.pth', '.npy', '.npz']);
+
+type FileType = 'image' | 'depth' | 'mask' | 'json' | 'text' | 'video' | 'pickle' | 'unknown';
 
 function detectFileType(node: FileNode): FileType {
   const ext = node.extension || '';
@@ -40,6 +43,9 @@ function detectFileType(node: FileNode): FileType {
 
   // Image
   if (IMAGE_EXTS.has(ext)) return 'image';
+
+  // Pickle / numpy
+  if (PICKLE_EXTS.has(ext)) return 'pickle';
 
   // JSON
   if (ext === '.json') return 'json';
@@ -245,6 +251,7 @@ export function MainPanel({ selectedNode, vizMode, treeData, apiBase, rootDir, a
       {fileType === 'mask' && <MaskViewer src={fileSrc} name={selectedNode.name} />}
       {fileType === 'json' && <JsonViewer src={fileSrc} name={selectedNode.name} />}
       {fileType === 'text' && <TextViewer src={fileSrc} name={selectedNode.name} />}
+      {fileType === 'pickle' && <PickleViewer path={selectedNode.path} name={selectedNode.name} apiBase={apiBase} />}
       {fileType === 'video' && <VideoViewer src={fileSrc} name={selectedNode.name} autoplay={autoplay} />}
       {fileType === 'unknown' && (
         <div style={{ padding: 24, color: 'var(--text-secondary)' }}>

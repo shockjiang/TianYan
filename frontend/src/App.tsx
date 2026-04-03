@@ -14,7 +14,7 @@ const API_BASE = '';
 
 function mergeChildren(tree: FileNode, targetPath: string, children: FileNode[]): FileNode {
   if (tree.path === targetPath) {
-    return { ...tree, children };
+    return { ...tree, children, hasChildren: children.length > 0 };
   }
   if (tree.children) {
     return {
@@ -139,28 +139,29 @@ function App() {
     if (!filePath.startsWith(normRoot)) return;
 
     const relative = filePath.slice(normRoot.length).replace(/^\//, '');
+    if (!relative) return;
     const parts = relative.split('/');
     const keysToExpand: string[] = [normRoot];
 
-    // Load each ancestor directory
+    // Load each segment (ancestors + target itself if it's a directory)
     let currentTree = treeData;
-    for (let i = 0; i < parts.length - 1; i++) {
+    for (let i = 0; i < parts.length; i++) {
       const dirPath = normRoot + '/' + parts.slice(0, i + 1).join('/');
       keysToExpand.push(dirPath);
       const node = findNodeByPath(currentTree, dirPath);
-      if (node && (!node.children || node.children.length === 0)) {
-        // Need to load this directory
+      if (!node || (node.type === 'directory' && (!node.children || node.children.length === 0))) {
         try {
-          const res = await fetch(`${API_BASE}/api/directory?path=${encodeURIComponent(dirPath)}&depth=1`);
+          const parentPath = i === 0 ? normRoot : normRoot + '/' + parts.slice(0, i).join('/');
+          // Load the parent so this segment appears in the tree
+          const res = await fetch(`${API_BASE}/api/directory?path=${encodeURIComponent(parentPath)}&depth=1`);
           if (res.ok) {
             const data: FileNode = await res.json();
             setTreeData(prev => {
               if (!prev) return prev;
-              const updated = mergeChildren(prev, dirPath, data.children || []);
+              const updated = mergeChildren(prev, parentPath, data.children || []);
               currentTree = updated;
               return updated;
             });
-            // Wait for state to settle
             await new Promise(r => setTimeout(r, 50));
           }
         } catch { /* ignore */ }
@@ -169,13 +170,21 @@ function App() {
 
     setExpandedKeys(prev => [...new Set([...prev, ...keysToExpand])]);
 
-    // Select the file
-    const fileName = parts[parts.length - 1];
-    const ext = fileName.includes('.') ? '.' + fileName.split('.').pop()!.toLowerCase() : '';
-    const fileNode = findNodeByPath(treeDataRef.current, filePath) || {
-      name: fileName, path: filePath, type: 'file' as const, extension: ext,
-    };
-    handleSelect(fileNode);
+    // Select the target — look it up from the now-updated tree
+    const found = findNodeByPath(treeDataRef.current, filePath);
+    if (found) {
+      handleSelect(found);
+    } else {
+      // Fallback: construct a node (detect type by presence of extension)
+      const name = parts[parts.length - 1];
+      const ext = name.includes('.') ? '.' + name.split('.').pop()!.toLowerCase() : '';
+      const hasExt = name.includes('.');
+      handleSelect({
+        name, path: filePath,
+        type: hasExt ? 'file' : 'directory',
+        extension: hasExt ? ext : undefined,
+      });
+    }
   }, [rootDir, treeData]);
 
   const pendingFileNav = useRef<string | undefined>(urlState.file);
@@ -282,7 +291,11 @@ function App() {
               gridScale={gridScale}
               onNavigate={(path: string) => {
                 const node = findNodeByPath(treeData, path);
-                if (node) handleSelect(node);
+                if (node) {
+                  handleSelect(node);
+                } else {
+                  navigateToFile(path);
+                }
               }}
             />
           </div>

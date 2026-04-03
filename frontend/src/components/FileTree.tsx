@@ -45,8 +45,11 @@ function buildTreeData(node: FileNode, filter: string): DataNode | null {
       isLeaf: true,
     };
   }
-  const hasLoadedChildren = node.children && node.children.length > 0;
-  const children = hasLoadedChildren
+
+  // children: undefined → not loaded; children: [] → loaded but may or may not be empty
+  // Use hasChildren from backend to determine if directory truly has no children
+  const hasRealChildren = node.children && node.children.length > 0;
+  const children = hasRealChildren
     ? (node.children!.map(child => buildTreeData(child, filter)).filter(Boolean) as DataNode[])
     : undefined;
 
@@ -54,12 +57,15 @@ function buildTreeData(node: FileNode, filter: string): DataNode | null {
     return null;
   }
 
+  // Only mark as leaf if backend explicitly says no children
+  const isLeaf = node.hasChildren === false;
+
   return {
     key: node.path,
     title: node.name,
     icon: getFileIcon(node),
     children,
-    isLeaf: false,
+    isLeaf,
   };
 }
 
@@ -86,8 +92,20 @@ export function FileTree({ treeData, selectedPath, recentFiles, expandedKeys, on
   }, [treeData, filter]);
 
   const handleSelect = (_: any, info: { node: EventDataNode<DataNode> }) => {
-    const node = nodeMap.get(info.node.key as string);
-    if (node) onSelect(node);
+    const key = info.node.key as string;
+    const node = nodeMap.get(key);
+    if (node) {
+      onSelect(node);
+      // Toggle expand/collapse for directories (onSelect fires on label click,
+      // onExpand fires on triangle click — they are separate events, no conflict)
+      if (node.type === 'directory') {
+        if (expandedKeys.includes(key)) {
+          onExpandedKeysChange(expandedKeys.filter(k => k !== key));
+        } else {
+          onExpandedKeysChange([...expandedKeys, key]);
+        }
+      }
+    }
   };
 
   const handleLoadData = useCallback((treeNode: DataNode): Promise<void> => {
@@ -120,7 +138,7 @@ export function FileTree({ treeData, selectedPath, recentFiles, expandedKeys, on
             loadData={handleLoadData}
             showIcon
             blockNode
-            autoExpandParent
+            autoExpandParent={false}
             style={{ background: 'transparent' }}
           />
         ) : (
