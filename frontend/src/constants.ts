@@ -9,6 +9,7 @@ export const TEXT_EXTS = new Set([
   '.gitignore', '.dockerignore', '.editorconfig',
   '.makefile', '.cmake',
 ]);
+export const TABULAR_EXTS = new Set(['.jsonl', '.jsonlines', '.parquet', '.pq']);
 export const TEXT_NAMES = new Set([
   'makefile', 'dockerfile', 'readme', 'license', 'changelog',
   'authors', 'contributors', 'todo', 'notes',

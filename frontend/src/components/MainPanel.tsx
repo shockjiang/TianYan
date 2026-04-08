@@ -10,9 +10,11 @@ import { JsonViewer } from './viewers/JsonViewer';
 import { TextViewer } from './viewers/TextViewer';
 import { VideoViewer } from './viewers/VideoViewer';
 import { PickleViewer } from './viewers/PickleViewer';
+import { TabularViewer } from './viewers/TabularViewer';
+import { NpyViewer } from './viewers/NpyViewer';
 import { getTupleByKey } from '../tuples/registry';
 import type { FileNode, VizMode, FileInfo } from '../types';
-import { IMAGE_EXTS, VIDEO_EXTS, TEXT_EXTS, TEXT_NAMES } from '../constants';
+import { IMAGE_EXTS, VIDEO_EXTS, TEXT_EXTS, TEXT_NAMES, TABULAR_EXTS } from '../constants';
 
 interface MainPanelProps {
   selectedNode?: FileNode;
@@ -25,9 +27,10 @@ interface MainPanelProps {
   onNavigate?: (path: string) => void;
 }
 
-const PICKLE_EXTS = new Set(['.pkl', '.pickle', '.pth', '.npy', '.npz']);
+const PICKLE_EXTS = new Set(['.pkl', '.pickle', '.pth']);
+const NPY_EXTS = new Set(['.npy', '.npz']);
 
-type FileType = 'image' | 'depth' | 'mask' | 'json' | 'text' | 'video' | 'pickle' | 'unknown';
+type FileType = 'image' | 'depth' | 'mask' | 'json' | 'text' | 'video' | 'pickle' | 'tabular' | 'npy' | 'unknown';
 
 function detectFileType(node: FileNode): FileType {
   const ext = node.extension || '';
@@ -37,6 +40,9 @@ function detectFileType(node: FileNode): FileType {
   // Video
   if (VIDEO_EXTS.has(ext)) return 'video';
 
+  // Tabular (jsonl, parquet) — check before text/json
+  if (TABULAR_EXTS.has(ext)) return 'tabular';
+
   // Depth/mask by naming convention (must be image extension)
   if (path.includes('depth') && IMAGE_EXTS.has(ext)) return 'depth';
   if (path.includes('mask') && IMAGE_EXTS.has(ext)) return 'mask';
@@ -44,7 +50,10 @@ function detectFileType(node: FileNode): FileType {
   // Image
   if (IMAGE_EXTS.has(ext)) return 'image';
 
-  // Pickle / numpy
+  // Numpy arrays
+  if (NPY_EXTS.has(ext)) return 'npy';
+
+  // Pickle
   if (PICKLE_EXTS.has(ext)) return 'pickle';
 
   // JSON
@@ -137,11 +146,16 @@ export function MainPanel({ selectedNode, vizMode, treeData, apiBase, rootDir, a
 
   const allFiles = useMemo(() => treeData ? collectFiles(treeData) : [], [treeData]);
 
+  const tupleType = vizMode !== 'single' ? getTupleByKey(vizMode) : undefined;
+  const tupleMatches = useMemo(() => {
+    if (!tupleType || !allFiles.length) return [];
+    return tupleType.matcher(allFiles, selectedNode);
+  }, [tupleType, allFiles, selectedNode]);
+
   // Tuple mode
   if (vizMode !== 'single' && treeData) {
-    const tupleType = getTupleByKey(vizMode);
     if (tupleType) {
-      const matches = tupleType.matcher(allFiles, selectedNode);
+      const matches = tupleMatches;
       if (matches.length > 0) {
         const TupleComponent = tupleType.component;
         // Single match → full view; multiple → grid
@@ -252,6 +266,8 @@ export function MainPanel({ selectedNode, vizMode, treeData, apiBase, rootDir, a
       {fileType === 'json' && <JsonViewer src={fileSrc} name={selectedNode.name} />}
       {fileType === 'text' && <TextViewer src={fileSrc} name={selectedNode.name} />}
       {fileType === 'pickle' && <PickleViewer path={selectedNode.path} name={selectedNode.name} apiBase={apiBase} />}
+      {fileType === 'npy' && <NpyViewer path={selectedNode.path} name={selectedNode.name} apiBase={apiBase} />}
+      {fileType === 'tabular' && <TabularViewer path={selectedNode.path} name={selectedNode.name} apiBase={apiBase} />}
       {fileType === 'video' && <VideoViewer src={`${apiBase}/api/video?path=${encodeURIComponent(selectedNode.path)}`} name={selectedNode.name} autoplay={autoplay} />}
       {fileType === 'unknown' && (
         <div style={{ padding: 24, color: 'var(--text-secondary)' }}>

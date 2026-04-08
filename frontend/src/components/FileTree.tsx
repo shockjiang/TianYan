@@ -1,9 +1,9 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { Tree, Input, message } from 'antd';
-import { FolderOutlined, FileOutlined, FileImageOutlined, FileTextOutlined, VideoCameraOutlined, CopyOutlined, DownloadOutlined } from '@ant-design/icons';
+import { FolderOutlined, FileOutlined, FileImageOutlined, FileTextOutlined, VideoCameraOutlined, TableOutlined, CopyOutlined, DownloadOutlined, LoadingOutlined, EllipsisOutlined } from '@ant-design/icons';
 import type { FileNode } from '../types';
 import type { DataNode, EventDataNode } from 'antd/es/tree';
-import { IMAGE_EXTS, VIDEO_EXTS, TEXT_EXTS } from '../constants';
+import { IMAGE_EXTS, VIDEO_EXTS, TEXT_EXTS, TABULAR_EXTS } from '../constants';
 
 interface FileTreeProps {
   treeData: FileNode | null;
@@ -15,12 +15,17 @@ interface FileTreeProps {
   onLoadChildren: (path: string) => Promise<void>;
   onNavigateToFile: (path: string) => void;
   apiBase: string;
+  scanning?: boolean;
+  scanProgress?: { scanned: number };
 }
+
+const MAX_VISIBLE_CHILDREN = 500;
 
 function getFileIcon(node: FileNode) {
   if (node.type === 'directory') return <FolderOutlined style={{ color: '#f0c040' }} />;
   if (node.extension && IMAGE_EXTS.has(node.extension)) return <FileImageOutlined style={{ color: '#4fc3f7' }} />;
   if (node.extension && VIDEO_EXTS.has(node.extension)) return <VideoCameraOutlined style={{ color: '#ff8a65' }} />;
+  if (node.extension && TABULAR_EXTS.has(node.extension)) return <TableOutlined style={{ color: '#ce93d8' }} />;
   if (node.extension && (TEXT_EXTS.has(node.extension) || node.extension === '.json')) return <FileTextOutlined style={{ color: '#81c784' }} />;
   return <FileOutlined />;
 }
@@ -29,8 +34,12 @@ function matchesFilter(name: string, filter: string): boolean {
   const f = filter.toLowerCase();
   const n = name.toLowerCase();
   if (f.includes('*') || f.includes('?')) {
-    const escaped = f.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*').replace(/\?/g, '.');
-    return new RegExp(`^${escaped}$`).test(n);
+    try {
+      const escaped = f.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*').replace(/\?/g, '.');
+      return new RegExp(`^${escaped}$`).test(n);
+    } catch {
+      return n.includes(f);
+    }
   }
   return n.includes(f);
 }
@@ -49,12 +58,27 @@ function buildTreeData(node: FileNode, filter: string): DataNode | null {
   // children: undefined → not loaded; children: [] → loaded but may or may not be empty
   // Use hasChildren from backend to determine if directory truly has no children
   const hasRealChildren = node.children && node.children.length > 0;
-  const children = hasRealChildren
+  let children = hasRealChildren
     ? (node.children!.map(child => buildTreeData(child, filter)).filter(Boolean) as DataNode[])
     : undefined;
 
   if (filter && children && children.length === 0 && !matchesFilter(node.name, filter)) {
     return null;
+  }
+
+  // Truncate large directories in the tree view (filter still searches all)
+  if (!filter && children && children.length > MAX_VISIBLE_CHILDREN) {
+    const remaining = children.length - MAX_VISIBLE_CHILDREN;
+    children = [
+      ...children.slice(0, MAX_VISIBLE_CHILDREN),
+      {
+        key: `${node.path}/__more__`,
+        title: `... ${remaining} more items (use filter to find)`,
+        isLeaf: true,
+        selectable: false,
+        icon: <EllipsisOutlined style={{ color: 'var(--text-secondary)' }} />,
+      },
+    ];
   }
 
   // Only mark as leaf if backend explicitly says no children
@@ -76,7 +100,7 @@ function buildNodeMap(node: FileNode, map: Map<string, FileNode>) {
   }
 }
 
-export function FileTree({ treeData, selectedPath, recentFiles, expandedKeys, onExpandedKeysChange, onSelect, onLoadChildren, onNavigateToFile, apiBase }: FileTreeProps) {
+export function FileTree({ treeData, selectedPath, recentFiles, expandedKeys, onExpandedKeysChange, onSelect, onLoadChildren, onNavigateToFile, apiBase, scanning, scanProgress }: FileTreeProps) {
   const [filter, setFilter] = useState('');
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; path: string; isFile: boolean } | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -178,6 +202,11 @@ export function FileTree({ treeData, selectedPath, recentFiles, expandedKeys, on
           onChange={e => setFilter(e.target.value)}
         />
       </div>
+      {scanning && (
+        <div style={{ padding: '2px 8px', fontSize: 11, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <LoadingOutlined spin /> Scanning... {scanProgress?.scanned ?? 0} entries
+        </div>
+      )}
       <div style={{ flex: 1, overflow: 'auto', padding: '0 4px' }}>
         {antTreeData.length > 0 ? (
           <Tree
@@ -259,33 +288,32 @@ export function FileTree({ treeData, selectedPath, recentFiles, expandedKeys, on
           >
             <CopyOutlined /> Copy Path
           </div>
-          {contextMenu.isFile && (
-            <div
-              onClick={() => {
-                const url = `${apiBase}/api/download?path=${encodeURIComponent(contextMenu.path)}`;
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = contextMenu.path.split('/').pop() || 'download';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                setContextMenu(null);
-              }}
-              style={{
-                padding: '6px 12px',
-                fontSize: 13,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                color: 'var(--text-primary)',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--hover-bg)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-            >
-              <DownloadOutlined /> Download
-            </div>
-          )}
+          <div
+            onClick={() => {
+              const url = `${apiBase}/api/download?path=${encodeURIComponent(contextMenu.path)}`;
+              const a = document.createElement('a');
+              a.href = url;
+              const name = contextMenu.path.split('/').pop() || 'download';
+              a.download = contextMenu.isFile ? name : name + '.zip';
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              setContextMenu(null);
+            }}
+            style={{
+              padding: '6px 12px',
+              fontSize: 13,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              color: 'var(--text-primary)',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--hover-bg)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          >
+            <DownloadOutlined /> {contextMenu.isFile ? 'Download' : 'Download as ZIP'}
+          </div>
         </div>
       )}
     </div>

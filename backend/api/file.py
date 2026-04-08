@@ -2,6 +2,7 @@ import mimetypes
 import subprocess
 import shutil
 from pathlib import Path
+from email.utils import formatdate
 from fastapi import APIRouter, Query, HTTPException
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from api.directory import _safe_resolve
@@ -39,23 +40,55 @@ async def get_file(path: str = Query(..., description="Absolute file path")):
         raise HTTPException(status_code=400, detail="Path is not a file")
 
     mime_type = mimetypes.guess_type(str(resolved))[0] or "application/octet-stream"
-    return FileResponse(str(resolved), media_type=mime_type)
+    stat = resolved.stat()
+    last_mod = formatdate(stat.st_mtime, usegmt=True)
+    return FileResponse(str(resolved), media_type=mime_type, headers={"Last-Modified": last_mod, "Cache-Control": "public, max-age=300"})
 
 
 @router.get("/api/download")
-async def download_file(path: str = Query(..., description="Absolute file path")):
+async def download_file(path: str = Query(..., description="Absolute file or directory path")):
     resolved = _safe_resolve(path)
-    if not resolved.is_file():
-        raise HTTPException(status_code=400, detail="Path is not a file")
 
-    mime_type = mimetypes.guess_type(str(resolved))[0] or "application/octet-stream"
-    return FileResponse(str(resolved), media_type=mime_type, filename=resolved.name)
+    if resolved.is_file():
+        mime_type = mimetypes.guess_type(str(resolved))[0] or "application/octet-stream"
+        return FileResponse(str(resolved), media_type=mime_type, filename=resolved.name)
+
+    if resolved.is_dir():
+        import zipfile
+        import io
+
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            for file in sorted(resolved.rglob("*")):
+                if file.is_file() and not any(p.startswith(".") for p in file.relative_to(resolved).parts):
+                    arcname = str(file.relative_to(resolved))
+                    zf.write(file, arcname)
+        buf.seek(0)
+
+        filename = resolved.name + ".zip"
+        safe_name = filename.replace('"', '_')
+        return StreamingResponse(
+            buf,
+            media_type="application/zip",
+            headers={
+                "Content-Disposition": f'attachment; filename="{safe_name}"',
+                "Content-Length": str(buf.getbuffer().nbytes),
+            },
+        )
+
+    raise HTTPException(status_code=400, detail="Path is not a file or directory")
+
+
+import hashlib
+
+_THUMB_CACHE_DIR = Path("/vePFS/shock/.CACHE/tianyan_thumbs")
+_THUMB_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 
 @router.get("/api/thumbnail")
 async def get_thumbnail(path: str = Query(..., description="Absolute image file path"),
-                        size: int = Query(48, ge=16, le=256)):
-    """Return a small thumbnail of an image file."""
+                        size: int = Query(48, ge=16, le=1024)):
+    """Return a small thumbnail of an image file, with disk cache."""
     resolved = _safe_resolve(path)
     if not resolved.is_file():
         raise HTTPException(status_code=400, detail="Path is not a file")
@@ -64,8 +97,16 @@ async def get_thumbnail(path: str = Query(..., description="Absolute image file 
     if not mime_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Not an image file")
 
-    if resolved.stat().st_size > 50 * 1024 * 1024:
+    stat = resolved.stat()
+    if stat.st_size > 50 * 1024 * 1024:
         raise HTTPException(status_code=400, detail="Image too large for thumbnail generation")
+
+    # Check disk cache (keyed by path + mtime + size)
+    cache_key = hashlib.md5(f"{resolved}|{stat.st_mtime}|{size}".encode()).hexdigest()
+    cache_path = _THUMB_CACHE_DIR / f"{cache_key}.png"
+    if cache_path.exists():
+        return FileResponse(str(cache_path), media_type="image/png",
+                            headers={"Cache-Control": "public, max-age=3600"})
 
     try:
         from PIL import Image
@@ -74,8 +115,13 @@ async def get_thumbnail(path: str = Query(..., description="Absolute image file 
         img.thumbnail((size, size))
         buf = io.BytesIO()
         img.save(buf, format="PNG")
-        buf.seek(0)
-        return Response(content=buf.read(), media_type="image/png")
+        thumb_bytes = buf.getvalue()
+        # Write to cache (atomic via temp file)
+        tmp = cache_path.with_suffix('.tmp')
+        tmp.write_bytes(thumb_bytes)
+        tmp.rename(cache_path)
+        return Response(content=thumb_bytes, media_type="image/png",
+                        headers={"Cache-Control": "public, max-age=3600"})
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Thumbnail generation failed: {e}")
 

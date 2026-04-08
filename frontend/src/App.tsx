@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { ConfigProvider, theme as antdTheme } from 'antd';
+import { ConfigProvider, theme as antdTheme, message } from 'antd';
 import { TopPanel } from './components/TopPanel';
 import { FileTree } from './components/FileTree';
 import { MainPanel } from './components/MainPanel';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { useTheme } from './hooks/useTheme';
 import { getUrlState, useUrlStateSync, useResolveAlias } from './hooks/useUrlState';
 import { useDirectoryHistory } from './hooks/useDirectoryHistory';
 import { useRecentFiles } from './hooks/useRecentFiles';
+import { useTreeStream } from './hooks/useTreeStream';
 import type { FileNode, VizMode } from './types';
 import './App.css';
 
@@ -68,6 +70,8 @@ function App() {
   const treeDataRef = useRef(treeData);
   useEffect(() => { treeDataRef.current = treeData; }, [treeData]);
 
+  const { scanning, scanProgress } = useTreeStream(rootDir, treeData, setTreeData);
+
   const handleAutoplayChange = (val: boolean) => {
     setAutoplay(val);
     localStorage.setItem('tianyan-video-autoplay', String(val));
@@ -112,17 +116,24 @@ function App() {
       addToHistory(path);
     } catch (err: any) {
       console.error('Failed to load directory:', err);
+      message.error(`Failed to load directory: ${err.message || 'Unknown error'}`);
       setTreeData(null);
     }
   }, [addToHistory]);
 
   // Load children for a directory node and merge into tree
   const loadChildren = useCallback(async (dirPath: string) => {
+    // If children already loaded by background stream, just force a re-render
+    // so Ant Design Tree picks up the existing children in the DataNode
+    const existing = findNodeByPath(treeDataRef.current, dirPath);
+    if (existing?.children && existing.children.length > 0) {
+      setTreeData(prev => prev ? { ...prev } : prev);
+      return;
+    }
     try {
       const res = await fetch(`${API_BASE}/api/directory?path=${encodeURIComponent(dirPath)}&depth=1`);
       if (!res.ok) return;
       const data: FileNode = await res.json();
-      // Merge children into existing tree
       setTreeData(prev => {
         if (!prev) return prev;
         return mergeChildren(prev, dirPath, data.children || []);
@@ -203,9 +214,11 @@ function App() {
   }, [treeData]);
 
   const handleRootSubmit = (path: string) => {
+    pendingFileNav.current = undefined;
     setRootDir(path);
     setSelectedPath(undefined);
     setSelectedNode(undefined);
+    setExpandedKeys([]);
     loadDirectory(path);
   };
 
@@ -236,6 +249,7 @@ function App() {
   }, [leftWidth]);
 
   return (
+    <ErrorBoundary>
     <ConfigProvider
       theme={{
         algorithm: theme === 'dark' ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
@@ -275,6 +289,8 @@ function App() {
                   onLoadChildren={loadChildren}
                   onNavigateToFile={navigateToFile}
                   apiBase={API_BASE}
+                  scanning={scanning}
+                  scanProgress={scanProgress}
                 />
               </div>
               <div className="panel-divider" onMouseDown={handleDragStart} />
@@ -293,6 +309,19 @@ function App() {
                 const node = findNodeByPath(treeData, path);
                 if (node) {
                   handleSelect(node);
+                  // Expand the tree to this node's path
+                  if (rootDir) {
+                    const normRoot = rootDir.replace(/\/+$/, '');
+                    const keysToExpand: string[] = [normRoot];
+                    const relative = path.slice(normRoot.length).replace(/^\//, '');
+                    if (relative) {
+                      const parts = relative.split('/');
+                      for (let i = 0; i < parts.length; i++) {
+                        keysToExpand.push(normRoot + '/' + parts.slice(0, i + 1).join('/'));
+                      }
+                    }
+                    setExpandedKeys(prev => [...new Set([...prev, ...keysToExpand])]);
+                  }
                 } else {
                   navigateToFile(path);
                 }
@@ -302,6 +331,7 @@ function App() {
         </div>
       </div>
     </ConfigProvider>
+    </ErrorBoundary>
   );
 }
 

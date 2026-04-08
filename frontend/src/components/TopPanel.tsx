@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AutoComplete, Select, Button, Space, message } from 'antd';
 import { SunOutlined, MoonOutlined, FullscreenOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { getTupleTypes } from '../tuples/registry';
@@ -25,6 +25,7 @@ interface TopPanelProps {
 
 export function TopPanel({ rootDir, dirHistory, vizMode, theme, autoplay, fullscreen, gridScale, selectedFile, onRootSubmit, onVizChange, onThemeToggle, onAutoplayChange, onFullscreenToggle, onGridScaleChange }: TopPanelProps) {
   const [inputValue, setInputValue] = useState(rootDir);
+  useEffect(() => { setInputValue(rootDir); }, [rootDir]);
   const tupleTypes = getTupleTypes();
 
   const vizOptions = [

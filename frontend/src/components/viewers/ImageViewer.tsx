@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 
 interface ImageViewerProps {
   src: string;
@@ -8,6 +8,10 @@ interface ImageViewerProps {
 export function ImageViewer({ src, name }: ImageViewerProps) {
   const [scale, setScale] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => { setLoading(true); setError(false); }, [src]);
   const dragging = useRef(false);
   const lastPos = useRef({ x: 0, y: 0 });
 
@@ -57,16 +61,25 @@ export function ImageViewer({ src, name }: ImageViewerProps) {
         alignItems: 'center',
         justifyContent: 'center',
       }}>
+        {loading && !error && (
+          <div style={{ position: 'absolute', color: 'var(--text-secondary)', fontSize: 13 }}>Loading image...</div>
+        )}
+        {error && (
+          <div style={{ position: 'absolute', color: '#ff6b6b', fontSize: 13 }}>Failed to load image</div>
+        )}
         <img
           src={src}
           alt={name}
           draggable={false}
+          onLoad={() => setLoading(false)}
+          onError={() => { setLoading(false); setError(true); }}
           style={{
             transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
             maxWidth: '100%',
             maxHeight: '100%',
             objectFit: 'contain',
             userSelect: 'none',
+            opacity: loading || error ? 0 : 1,
           }}
         />
       </div>
