@@ -80,9 +80,32 @@ async def download_file(path: str = Query(..., description="Absolute file or dir
 
 
 import hashlib
+import asyncio
 
 _THUMB_CACHE_DIR = Path("/vePFS/shock/.CACHE/tianyan_thumbs")
 _THUMB_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+# Small images (< 200KB): serve original file instead of generating thumbnail
+_SMALL_IMAGE_THRESHOLD = 200 * 1024
+
+
+def _generate_thumbnail(resolved: Path, size: int, cache_path: Path) -> bytes:
+    """Generate thumbnail (runs in thread pool to avoid blocking event loop)."""
+    from PIL import Image
+    import io
+    img = Image.open(str(resolved))
+    img.thumbnail((size, size))
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    thumb_bytes = buf.getvalue()
+    # Write to cache (atomic via temp file)
+    try:
+        tmp = cache_path.with_suffix('.tmp')
+        tmp.write_bytes(thumb_bytes)
+        tmp.rename(cache_path)
+    except OSError:
+        pass
+    return thumb_bytes
 
 
 @router.get("/api/thumbnail")
@@ -101,6 +124,11 @@ async def get_thumbnail(path: str = Query(..., description="Absolute image file 
     if stat.st_size > 50 * 1024 * 1024:
         raise HTTPException(status_code=400, detail="Image too large for thumbnail generation")
 
+    # Small images: serve the original directly (faster than re-encoding)
+    if stat.st_size < _SMALL_IMAGE_THRESHOLD:
+        return FileResponse(str(resolved), media_type=mime_type,
+                            headers={"Cache-Control": "public, max-age=3600"})
+
     # Check disk cache (keyed by path + mtime + size)
     cache_key = hashlib.md5(f"{resolved}|{stat.st_mtime}|{size}".encode()).hexdigest()
     cache_path = _THUMB_CACHE_DIR / f"{cache_key}.png"
@@ -109,17 +137,8 @@ async def get_thumbnail(path: str = Query(..., description="Absolute image file 
                             headers={"Cache-Control": "public, max-age=3600"})
 
     try:
-        from PIL import Image
-        import io
-        img = Image.open(str(resolved))
-        img.thumbnail((size, size))
-        buf = io.BytesIO()
-        img.save(buf, format="PNG")
-        thumb_bytes = buf.getvalue()
-        # Write to cache (atomic via temp file)
-        tmp = cache_path.with_suffix('.tmp')
-        tmp.write_bytes(thumb_bytes)
-        tmp.rename(cache_path)
+        # Run PIL in thread pool so it doesn't block the event loop
+        thumb_bytes = await asyncio.to_thread(_generate_thumbnail, resolved, size, cache_path)
         return Response(content=thumb_bytes, media_type="image/png",
                         headers={"Cache-Control": "public, max-age=3600"})
     except Exception as e:

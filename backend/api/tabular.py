@@ -50,46 +50,99 @@ def _make_serializable(val):
 
 
 def _read_jsonl(path: Path, head_n: int, tail_n: int) -> dict:
-    """Read head and tail records from a JSONL file."""
-    # Count total lines and read head
-    head_records = []
-    total = 0
-    tail_buffer = []
+    """Read head and tail records from a JSONL file.
 
-    with open(path, "r", encoding="utf-8", errors="replace") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            total += 1
-            if total <= head_n:
+    For large files, reads head from the start and tail by seeking
+    backwards from the end, then estimates total from file size.
+    """
+    file_size = path.stat().st_size
+    # Threshold: for files > 10MB, use fast seek-based reading
+    USE_FAST = file_size > 10 * 1024 * 1024
+
+    head_records = []
+    tail_records = []
+    total = 0
+
+    if USE_FAST:
+        # Read head lines from start
+        with open(path, "r", encoding="utf-8", errors="replace") as f:
+            head_bytes = 0
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                head_bytes += len(line.encode("utf-8", errors="replace")) + 1
+                if len(head_records) >= head_n:
+                    break
                 try:
                     head_records.append(json.loads(line))
                 except json.JSONDecodeError:
                     head_records.append({"__raw__": _truncate(line)})
-            # Keep a rolling buffer for tail
-            if tail_n > 0:
-                tail_buffer.append(line)
-                if len(tail_buffer) > tail_n:
-                    tail_buffer.pop(0)
 
-    # Parse tail records
-    tail_records = []
-    if total > head_n:
-        for line in tail_buffer:
-            try:
-                tail_records.append(json.loads(line))
-            except json.JSONDecodeError:
-                tail_records.append({"__raw__": _truncate(line)})
-        # Remove overlap if file is small enough that head and tail overlap
-        tail_start = total - len(tail_records)
-        if tail_start < head_n:
-            overlap = head_n - tail_start
-            tail_records = tail_records[overlap:]
+        # Read tail lines by seeking backwards
+        if tail_n > 0:
+            chunk_size = max(4096, tail_n * 1024)  # Estimate ~1KB per line
+            with open(path, "rb") as f:
+                f.seek(0, 2)
+                fsize = f.tell()
+                seek_pos = max(0, fsize - chunk_size)
+                while True:
+                    f.seek(seek_pos)
+                    chunk = f.read(fsize - seek_pos)
+                    lines = chunk.decode("utf-8", errors="replace").split("\n")
+                    non_empty = [l.strip() for l in lines if l.strip()]
+                    if len(non_empty) >= tail_n or seek_pos == 0:
+                        tail_lines = non_empty[-tail_n:]
+                        break
+                    # Need more data, double chunk
+                    chunk_size *= 2
+                    seek_pos = max(0, fsize - chunk_size)
+
+            for line in tail_lines:
+                try:
+                    tail_records.append(json.loads(line))
+                except json.JSONDecodeError:
+                    tail_records.append({"__raw__": _truncate(line)})
+
+        # Estimate total lines from avg line size
+        if head_records:
+            avg_line_bytes = head_bytes / len(head_records)
+            total = max(len(head_records) + len(tail_records), int(file_size / avg_line_bytes))
+        else:
+            total = 0
+    else:
+        # Small file: read everything (fast enough)
+        tail_buffer: list[str] = []
+        with open(path, "r", encoding="utf-8", errors="replace") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                total += 1
+                if total <= head_n:
+                    try:
+                        head_records.append(json.loads(line))
+                    except json.JSONDecodeError:
+                        head_records.append({"__raw__": _truncate(line)})
+                if tail_n > 0:
+                    tail_buffer.append(line)
+                    if len(tail_buffer) > tail_n:
+                        tail_buffer.pop(0)
+
+        if total > head_n:
+            for line in tail_buffer:
+                try:
+                    tail_records.append(json.loads(line))
+                except json.JSONDecodeError:
+                    tail_records.append({"__raw__": _truncate(line)})
+            tail_start = total - len(tail_records)
+            if tail_start < head_n:
+                overlap = head_n - tail_start
+                tail_records = tail_records[overlap:]
 
     # Collect all column names from head + tail
     columns = []
-    seen = set()
+    seen: set[str] = set()
     for rec in head_records + tail_records:
         if isinstance(rec, dict):
             for k in rec:
@@ -109,6 +162,7 @@ def _read_jsonl(path: Path, head_n: int, tail_n: int) -> dict:
         "head_n": len(head_records),
         "tail_n": len(tail_records),
         "format": "jsonl",
+        "total_estimated": USE_FAST,
     }
 
 

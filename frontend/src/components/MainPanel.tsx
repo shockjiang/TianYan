@@ -103,6 +103,47 @@ function collectFiles(node: FileNode): FileNode[] {
   return (node.children || []).flatMap(collectFiles);
 }
 
+/** Prefetch sibling file URLs so the browser caches them for instant display */
+function usePrefetchSiblings(selectedNode: FileNode | undefined, treeData: FileNode | null, apiBase: string) {
+  useEffect(() => {
+    if (!selectedNode || selectedNode.type !== 'file' || !treeData) return;
+    const ext = selectedNode.extension || '';
+    if (!IMAGE_EXTS.has(ext)) return;
+
+    // Find parent directory
+    const parentPath = selectedNode.path.substring(0, selectedNode.path.lastIndexOf('/'));
+    const parent = findNode(treeData, parentPath);
+    if (!parent?.children) return;
+
+    const siblings = parent.children.filter(c => c.type === 'file' && c.extension && IMAGE_EXTS.has(c.extension));
+    const idx = siblings.findIndex(s => s.path === selectedNode.path);
+    if (idx < 0) return;
+
+    // Prefetch next 3 siblings
+    const toPrefetch = siblings.slice(idx + 1, idx + 4);
+    for (const s of toPrefetch) {
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = `${apiBase}/api/file?path=${encodeURIComponent(s.path)}`;
+      link.as = 'image';
+      document.head.appendChild(link);
+      // Clean up after 30s
+      setTimeout(() => link.remove(), 30000);
+    }
+  }, [selectedNode?.path]);
+}
+
+function findNode(node: FileNode, path: string): FileNode | undefined {
+  if (node.path === path) return node;
+  if (node.children) {
+    for (const c of node.children) {
+      const found = findNode(c, path);
+      if (found) return found;
+    }
+  }
+  return undefined;
+}
+
 /**
  * Hook to lazy-load directory children when a directory node has no children loaded.
  */
@@ -143,6 +184,9 @@ export function MainPanel({ selectedNode, vizMode, treeData, apiBase, rootDir, a
     selectedNode?.type === 'directory' ? selectedNode : undefined,
     apiBase
   );
+
+  // Prefetch next sibling images for instant navigation
+  usePrefetchSiblings(selectedNode, treeData, apiBase);
 
   const allFiles = useMemo(() => treeData ? collectFiles(treeData) : [], [treeData]);
 

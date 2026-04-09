@@ -102,6 +102,28 @@ function buildNodeMap(node: FileNode, map: Map<string, FileNode>) {
 
 export function FileTree({ treeData, selectedPath, recentFiles, expandedKeys, onExpandedKeysChange, onSelect, onLoadChildren, onNavigateToFile, apiBase, scanning, scanProgress }: FileTreeProps) {
   const [filter, setFilter] = useState('');
+  const [debouncedFilter, setDebouncedFilter] = useState('');
+  const treeContainerRef = useRef<HTMLDivElement>(null);
+  const [treeHeight, setTreeHeight] = useState(400);
+
+  // Debounce filter to avoid rebuilding tree on every keystroke
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedFilter(filter), 200);
+    return () => clearTimeout(t);
+  }, [filter]);
+
+  // Measure tree container height for virtual scrolling
+  useEffect(() => {
+    const el = treeContainerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        setTreeHeight(Math.floor(entry.contentRect.height));
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; path: string; isFile: boolean } | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -162,9 +184,9 @@ export function FileTree({ treeData, selectedPath, recentFiles, expandedKeys, on
 
   const antTreeData = useMemo(() => {
     if (!treeData) return [];
-    const root = buildTreeData(treeData, filter);
+    const root = buildTreeData(treeData, debouncedFilter);
     return root ? (root.children || [root]) : [];
-  }, [treeData, filter]);
+  }, [treeData, debouncedFilter]);
 
   const handleSelect = (_: any, info: { node: EventDataNode<DataNode> }) => {
     const key = info.node.key as string;
@@ -207,7 +229,7 @@ export function FileTree({ treeData, selectedPath, recentFiles, expandedKeys, on
           <LoadingOutlined spin /> Scanning... {scanProgress?.scanned ?? 0} entries
         </div>
       )}
-      <div style={{ flex: 1, overflow: 'auto', padding: '0 4px' }}>
+      <div ref={treeContainerRef} style={{ flex: 1, overflow: 'hidden', padding: '0 4px' }}>
         {antTreeData.length > 0 ? (
           <Tree
             treeData={antTreeData}
@@ -220,6 +242,7 @@ export function FileTree({ treeData, selectedPath, recentFiles, expandedKeys, on
             showIcon
             blockNode
             autoExpandParent={false}
+            height={treeHeight}
             style={{ background: 'transparent' }}
           />
         ) : (
