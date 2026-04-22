@@ -249,7 +249,6 @@ function App() {
   }, [leftWidth]);
 
   return (
-    <ErrorBoundary>
     <ConfigProvider
       theme={{
         algorithm: theme === 'dark' ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
@@ -297,6 +296,7 @@ function App() {
             </>
           )}
           <div className="main-panel">
+            <ErrorBoundary resetKey={selectedPath}>
             <MainPanel
               selectedNode={selectedNode}
               vizMode={vizMode}
@@ -327,11 +327,11 @@ function App() {
                 }
               }}
             />
+            </ErrorBoundary>
           </div>
         </div>
       </div>
     </ConfigProvider>
-    </ErrorBoundary>
   );
 }
 

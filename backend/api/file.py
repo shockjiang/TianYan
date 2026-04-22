@@ -1,9 +1,10 @@
 import mimetypes
 import subprocess
 import shutil
+import os
 from pathlib import Path
 from email.utils import formatdate
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, Query, Request, HTTPException
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from api.directory import _safe_resolve
 
@@ -148,48 +149,119 @@ async def get_thumbnail(path: str = Query(..., description="Absolute image file 
 # Video formats natively supported by browsers — no transcode needed
 _BROWSER_NATIVE_VIDEO = {".mp4", ".webm", ".ogg"}
 
+# Cache dir for transcoded videos
+_VIDEO_CACHE_DIR = Path("/vePFS/shock/.CACHE/tianyan_videos")
+_VIDEO_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def _serve_file_with_range(file_path: Path, request: Request, media_type: str) -> Response:
+    """Serve a file with HTTP Range request support for seeking."""
+    file_size = file_path.stat().st_size
+    range_header = request.headers.get("range")
+
+    if range_header:
+        # Parse "bytes=START-END"
+        range_spec = range_header.strip().replace("bytes=", "")
+        parts = range_spec.split("-")
+        start = int(parts[0]) if parts[0] else 0
+        end = int(parts[1]) if parts[1] else file_size - 1
+        end = min(end, file_size - 1)
+        length = end - start + 1
+
+        def _range_stream():
+            with open(file_path, "rb") as f:
+                f.seek(start)
+                remaining = length
+                while remaining > 0:
+                    chunk_size = min(65536, remaining)
+                    chunk = f.read(chunk_size)
+                    if not chunk:
+                        break
+                    remaining -= len(chunk)
+                    yield chunk
+
+        return StreamingResponse(
+            _range_stream(),
+            status_code=206,
+            media_type=media_type,
+            headers={
+                "Content-Range": f"bytes {start}-{end}/{file_size}",
+                "Content-Length": str(length),
+                "Accept-Ranges": "bytes",
+                "Cache-Control": "public, max-age=300",
+            },
+        )
+
+    # No Range header — serve full file with Accept-Ranges hint
+    def _full_stream():
+        with open(file_path, "rb") as f:
+            while True:
+                chunk = f.read(65536)
+                if not chunk:
+                    break
+                yield chunk
+
+    return StreamingResponse(
+        _full_stream(),
+        media_type=media_type,
+        headers={
+            "Content-Length": str(file_size),
+            "Accept-Ranges": "bytes",
+            "Cache-Control": "public, max-age=300",
+        },
+    )
+
 
 @router.get("/api/video")
-async def get_video(path: str = Query(..., description="Absolute video file path")):
-    """Stream video, transcoding non-browser-native formats (mkv, avi, mov, etc.) to mp4 on the fly."""
+async def get_video(request: Request, path: str = Query(..., description="Absolute video file path")):
+    """Serve video with Range request support. Transcodes non-native formats to cached mp4."""
     resolved = _safe_resolve(path)
     if not resolved.is_file():
         raise HTTPException(status_code=400, detail="Path is not a file")
 
     ext = resolved.suffix.lower()
 
-    # For browser-native formats, serve directly
+    # Browser-native formats: serve directly with Range support
     if ext in _BROWSER_NATIVE_VIDEO:
         mime_type = mimetypes.guess_type(str(resolved))[0] or "video/mp4"
-        return FileResponse(str(resolved), media_type=mime_type)
+        return _serve_file_with_range(resolved, request, mime_type)
 
-    # Check ffmpeg is available
+    # Non-native: transcode to cached mp4, then serve with Range support
     if not shutil.which("ffmpeg"):
-        raise HTTPException(status_code=500, detail="ffmpeg not found — cannot transcode video")
+        raise HTTPException(status_code=500, detail="ffmpeg not found")
 
-    def _stream():
-        cmd = [
-            "ffmpeg",
-            "-i", str(resolved),
-            "-c:v", "libx264",
-            "-preset", "ultrafast",
-            "-crf", "23",
-            "-c:a", "aac",
-            "-movflags", "frag_keyframe+empty_moov+faststart",
-            "-f", "mp4",
-            "-loglevel", "error",
-            "pipe:1",
-        ]
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        try:
-            while True:
-                chunk = proc.stdout.read(65536)
-                if not chunk:
-                    break
-                yield chunk
-        finally:
-            proc.stdout.close()
-            proc.stderr.close()
-            proc.wait()
+    # Cache key based on path + mtime
+    stat = resolved.stat()
+    cache_key = hashlib.md5(f"{resolved}|{stat.st_mtime}".encode()).hexdigest()
+    cache_path = _VIDEO_CACHE_DIR / f"{cache_key}.mp4"
 
-    return StreamingResponse(_stream(), media_type="video/mp4")
+    if not cache_path.exists():
+        # Transcode to cache file (blocking but in thread pool)
+        async def _transcode():
+            tmp = cache_path.with_suffix(".tmp.mp4")
+            cmd = [
+                "ffmpeg", "-y",
+                "-i", str(resolved),
+                "-c:v", "libx264",
+                "-preset", "ultrafast",
+                "-crf", "23",
+                "-c:a", "aac",
+                "-movflags", "+faststart",
+                "-loglevel", "error",
+                str(tmp),
+            ]
+            proc = await asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.DEVNULL,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            _, stderr = await proc.communicate()
+            if proc.returncode != 0:
+                tmp.unlink(missing_ok=True)
+                raise HTTPException(status_code=500,
+                                    detail=f"Transcode failed: {stderr.decode(errors='replace')[:500]}")
+            tmp.rename(cache_path)
+
+        await _transcode()
+
+    return _serve_file_with_range(cache_path, request, "video/mp4")

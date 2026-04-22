@@ -10,6 +10,7 @@ from api.alias import router as alias_router
 from api.pickle_api import router as pickle_router
 from api.tabular import router as tabular_router
 from api.npy import router as npy_router
+from api.text_preview import router as text_preview_router
 
 app = FastAPI(title="TianYan API")
 
@@ -28,6 +29,7 @@ app.include_router(alias_router)
 app.include_router(pickle_router)
 app.include_router(tabular_router)
 app.include_router(npy_router)
+app.include_router(text_preview_router)
 
 
 @app.get("/api/health")

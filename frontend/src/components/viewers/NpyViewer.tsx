@@ -153,7 +153,7 @@ export function NpyViewer({ path, name, apiBase }: NpyViewerProps) {
           <div style={{ color: 'var(--text-secondary)', padding: 24, textAlign: 'center' }}>
             <div>Cannot visualize this array as an image</div>
             <div style={{ marginTop: 8, fontSize: 12 }}>
-              Shape: {info.shape.join(' x ')} | Dtype: {info.dtype}
+              {info.shape ? `Shape: ${info.shape.join(' x ')} | ` : ''}Dtype: {info.dtype || 'unknown'}
             </div>
           </div>
         )}
@@ -166,7 +166,7 @@ function InfoBar({ info }: { info: NpyInfo }) {
   return (
     <>
       <span style={{ color: 'var(--accent)', fontWeight: 600 }}>
-        {info.shape.join(' x ')}
+        {info.shape ? info.shape.join(' x ') : `${info.num_keys ?? 0} arrays`}
       </span>
       <span>{info.dtype}</span>
       {info.min != null && <span>range: [{info.min.toFixed(2)}, {info.max?.toFixed(2)}]</span>}
