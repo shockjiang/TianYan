@@ -44,24 +44,36 @@ export function BrowsingColumn({
   apiBase,
 }: BrowsingColumnProps) {
   const ctrl = useSideController(state, setState, onAddRecentFile, onAddDirHistory);
+  const ctrlRef = useRef(ctrl);
+  ctrlRef.current = ctrl;
 
-  // Auto-load root on mount / when rootDir changes externally (alias resolve, compare-mode mirror)
-  const lastLoadedRoot = useRef<string>('');
+  // Single source of truth for triggering loadDirectory: this effect.
+  // - Initial mount with a URL-supplied root → load.
+  // - Alias / share-code resolution mutates state.rootDir → load.
+  // - Compare mirror creates sideB with treeData=null → load.
+  // - User submits via TopPanel → setRoot nulls treeData → load.
+  // - Same-path Load click also nulls treeData → load (refresh).
+  // Deduped by an in-flight ref so re-renders mid-fetch don't refire.
+  const loadingRootRef = useRef<string>('');
   useEffect(() => {
-    if (state.rootDir && state.rootDir !== lastLoadedRoot.current && !state.treeData) {
-      lastLoadedRoot.current = state.rootDir;
-      ctrl.loadDirectory(state.rootDir);
+    if (!state.rootDir) return;
+    if (state.treeData && state.treeData.path === state.rootDir) {
+      loadingRootRef.current = '';
+      return;
     }
-  }, [state.rootDir, state.treeData, ctrl]);
+    if (loadingRootRef.current === state.rootDir) return;
+    loadingRootRef.current = state.rootDir;
+    ctrlRef.current.loadDirectory(state.rootDir);
+  }, [state.rootDir, state.treeData]);
 
   // Restore file from URL after tree loads (per-side pendingFileNav)
   useEffect(() => {
-    if (state.treeData && ctrl.pendingFileNav.current) {
-      const filePath = ctrl.pendingFileNav.current;
-      ctrl.pendingFileNav.current = undefined;
-      ctrl.navigateToFile(filePath);
+    if (state.treeData && ctrlRef.current.pendingFileNav.current) {
+      const filePath = ctrlRef.current.pendingFileNav.current;
+      ctrlRef.current.pendingFileNav.current = undefined;
+      ctrlRef.current.navigateToFile(filePath);
     }
-  }, [state.treeData, ctrl]);
+  }, [state.treeData]);
 
   const handleNavigate = useCallback((path: string) => {
     const node = findNodeByPath(state.treeData, path);

@@ -169,8 +169,10 @@ export function useSideController(
       expandedKeys: [],
       treeData: null,
     }));
-    loadDirectory(path);
-  }, [setState, loadDirectory]);
+    // The BrowsingColumn auto-load effect (deduped by treeData.path) handles
+    // the actual fetch. Do NOT call loadDirectory here — that produced two
+    // concurrent fetches (one from here, one from the effect).
+  }, [setState]);
 
   const setViz = useCallback((mode: VizMode) => {
     setState(prev => ({ ...prev, vizMode: mode }));
