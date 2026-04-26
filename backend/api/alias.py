@@ -104,58 +104,95 @@ async def resolve_alias(alias_id: str):
 
 # --- Full state share links ---
 
-class ShareRequest(BaseModel):
+class SharedSide(BaseModel):
     root: str
     file: str | None = None
     viz: str | None = None
 
 
-@router.post("/api/share")
-async def create_share(req: ShareRequest):
-    """Create a short share code for the full state (root + file + viz)."""
-    root = req.root.rstrip("/")
-    # Build a canonical state string for deduplication
+class ShareRequest(BaseModel):
+    # Backward-compatible: clients can still POST {root, file, viz} for single side.
+    root: str | None = None
+    file: str | None = None
+    viz: str | None = None
+    # New shape: {a: SharedSide, b?: SharedSide}
+    a: SharedSide | None = None
+    b: SharedSide | None = None
+
+
+def _normalize_request(req: ShareRequest) -> tuple[SharedSide, SharedSide | None]:
+    if req.a is not None:
+        return req.a, req.b
+    if req.root is not None:
+        return SharedSide(root=req.root, file=req.file, viz=req.viz), None
+    raise HTTPException(status_code=400, detail="Share request requires either {a,b?} or {root,file?,viz?}")
+
+
+def _side_to_state_str(side: SharedSide) -> str:
+    root = side.root.rstrip("/")
     state = root
-    if req.file:
-        # Store file as relative to root
-        rel = req.file
+    if side.file:
+        rel = side.file
         if rel.startswith(root + "/"):
             rel = rel[len(root) + 1:]
         state += "|" + rel
-    if req.viz and req.viz != "single":
-        state += "|" + req.viz
+    if side.viz and side.viz != "single":
+        state += "|" + side.viz
+    return state
+
+
+def _state_str_to_side(state: str) -> dict:
+    parts = state.split("|")
+    root = parts[0]
+    rel_file = parts[1] if len(parts) > 1 else None
+    viz = parts[2] if len(parts) > 2 else None
+    file_path = (root + "/" + rel_file) if rel_file else None
+    return {"root": root, "file": file_path, "viz": viz}
+
+
+@router.post("/api/share")
+async def create_share(req: ShareRequest):
+    """Create a short share code for full state (one or two sides)."""
+    a, b = _normalize_request(req)
+    a_str = _side_to_state_str(a)
+    canonical = a_str if b is None else f"{a_str}||{_side_to_state_str(b)}"
 
     with _locked_json(SHARE_FILE) as (shares, save):
-        # Check if this exact state already has a code
-        for code, stored_state in shares.items():
-            if stored_state == state:
+        for code, stored in shares.items():
+            stored_canonical = stored if isinstance(stored, str) else stored.get("__canonical__")
+            if stored_canonical == canonical:
                 return {"code": code}
 
-        code = _make_short_id(state, length=5)
-        while code in shares and shares[code] != state:
+        code = _make_short_id(canonical, length=5)
+        while code in shares and (
+            (isinstance(shares[code], str) and shares[code] != canonical) or
+            (isinstance(shares[code], dict) and shares[code].get("__canonical__") != canonical)
+        ):
             code = code + "x"
 
-        shares[code] = state
+        shares[code] = {"__canonical__": canonical, "a": a_str, "b": _side_to_state_str(b) if b else None}
         save(shares)
         return {"code": code}
 
 
 @router.get("/api/share/{code}")
 async def resolve_share(code: str):
-    """Resolve a share code to full state."""
+    """Resolve a share code to full state. Backward-compat for old string entries."""
     shares = _load_json(SHARE_FILE)
-    state = shares.get(code)
-    if not state:
+    stored = shares.get(code)
+    if stored is None:
         raise HTTPException(status_code=404, detail="Share link not found")
 
-    parts = state.split("|")
-    root = parts[0]
-    rel_file = parts[1] if len(parts) > 1 else None
-    viz = parts[2] if len(parts) > 2 else None
+    if isinstance(stored, str):
+        # Legacy single-side entry
+        a = _state_str_to_side(stored)
+        _allowed_roots.add(a["root"])
+        return {"a": a, "b": None, **a}
 
-    file_path = None
-    if rel_file:
-        file_path = root + "/" + rel_file
-
-    _allowed_roots.add(root)
-    return {"root": root, "file": file_path, "viz": viz}
+    a = _state_str_to_side(stored["a"])
+    _allowed_roots.add(a["root"])
+    b = None
+    if stored.get("b"):
+        b = _state_str_to_side(stored["b"])
+        _allowed_roots.add(b["root"])
+    return {"a": a, "b": b, **a}

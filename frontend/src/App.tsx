@@ -48,15 +48,26 @@ function App() {
     localStorage.setItem('tianyan-left-width', String(w));
   };
 
-  useUrlStateSync({ root: sideA.rootDir, viz: sideA.vizMode, file: sideA.selectedPath });
+  useUrlStateSync({
+    a: { root: sideA.rootDir, viz: sideA.vizMode, file: sideA.selectedPath },
+    b: sideB ? { root: sideB.rootDir, viz: sideB.vizMode, file: sideB.selectedPath } : null,
+  });
 
   useResolveAlias((resolved) => {
-    if (resolved.root) {
+    if (resolved.a?.root) {
       setSideA(prev => ({
         ...prev,
-        rootDir: resolved.root!,
-        vizMode: (resolved.viz as VizMode) || prev.vizMode,
-        selectedPath: resolved.file ?? prev.selectedPath,
+        rootDir: resolved.a.root!,
+        vizMode: (resolved.a.viz as VizMode) || prev.vizMode,
+        selectedPath: resolved.a.file ?? prev.selectedPath,
+      }));
+    }
+    if (resolved.b?.root) {
+      _setSideB(initialSideState({
+        rootDir: resolved.b.root,
+        vizMode: (resolved.b.viz as VizMode) || 'single',
+        selectedPath: resolved.b.file,
+        treeCollapsed: true,
       }));
     }
   });

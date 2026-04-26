@@ -1,26 +1,35 @@
 import { useEffect, useRef } from 'react';
 
-interface UrlState {
+export interface UrlSide {
   root?: string;
   viz?: string;
   file?: string;
 }
 
+export interface UrlState extends UrlSide {
+  b?: UrlSide;
+  _share?: string;
+  _alias?: string;
+  _aliasB?: string;
+}
+
 // --- Share links: full state → short code ---
 
-export async function buildShareUrl(state: UrlState): Promise<string> {
+export async function buildShareUrl(state: { a: UrlSide; b?: UrlSide | null }): Promise<string> {
   const origin = window.location.origin;
-  if (!state.root) return origin;
+  if (!state.a.root) return origin;
 
   try {
+    const payload = state.b && state.b.root
+      ? {
+          a: { root: state.a.root, file: state.a.file || null, viz: state.a.viz || null },
+          b: { root: state.b.root, file: state.b.file || null, viz: state.b.viz || null },
+        }
+      : { a: { root: state.a.root, file: state.a.file || null, viz: state.a.viz || null } };
     const res = await fetch('/api/share', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        root: state.root,
-        file: state.file || null,
-        viz: state.viz || null,
-      }),
+      body: JSON.stringify(payload),
     });
     if (res.ok) {
       const { code } = await res.json();
@@ -28,20 +37,30 @@ export async function buildShareUrl(state: UrlState): Promise<string> {
     }
   } catch { /* fall through */ }
 
-  // Fallback: plain params
+  // Fallback: plain params (sideA only)
   const params = new URLSearchParams();
-  params.set('root', state.root);
-  if (state.file) params.set('file', state.file);
-  if (state.viz && state.viz !== 'single') params.set('viz', state.viz);
+  params.set('root', state.a.root);
+  if (state.a.file) params.set('file', state.a.file);
+  if (state.a.viz && state.a.viz !== 'single') params.set('viz', state.a.viz);
   return `${origin}?${params}`;
 }
 
-async function resolveShare(code: string): Promise<UrlState | null> {
+async function resolveShare(code: string): Promise<{ a: UrlSide; b?: UrlSide } | null> {
   try {
     const res = await fetch(`/api/share/${encodeURIComponent(code)}`);
     if (res.ok) {
       const data = await res.json();
-      return { root: data.root, file: data.file || undefined, viz: data.viz || undefined };
+      if (data.a && data.a.root) {
+        return {
+          a: { root: data.a.root, file: data.a.file || undefined, viz: data.a.viz || undefined },
+          b: data.b && data.b.root
+            ? { root: data.b.root, file: data.b.file || undefined, viz: data.b.viz || undefined }
+            : undefined,
+        };
+      }
+      if (data.root) {
+        return { a: { root: data.root, file: data.file || undefined, viz: data.viz || undefined } };
+      }
     }
   } catch { /* ignore */ }
   return null;
@@ -49,11 +68,12 @@ async function resolveShare(code: string): Promise<UrlState | null> {
 
 // --- Alias (kept for backward compat of address bar URLs) ---
 
-let aliasCache: { root: string; id: string } | null = null;
+const aliasCache: Map<string, string> = new Map(); // path → id
 
 async function getOrCreateAlias(root: string): Promise<string> {
   const normRoot = root.replace(/\/+$/, '');
-  if (aliasCache && aliasCache.root === normRoot) return aliasCache.id;
+  const cached = aliasCache.get(normRoot);
+  if (cached) return cached;
   try {
     const res = await fetch('/api/alias', {
       method: 'POST',
@@ -62,7 +82,7 @@ async function getOrCreateAlias(root: string): Promise<string> {
     });
     if (res.ok) {
       const data = await res.json();
-      aliasCache = { root: normRoot, id: data.id };
+      aliasCache.set(normRoot, data.id);
       return data.id;
     }
   } catch { /* fall through */ }
@@ -74,7 +94,7 @@ async function resolveAlias(id: string): Promise<string | null> {
     const res = await fetch(`/api/alias/${encodeURIComponent(id)}`);
     if (res.ok) {
       const data = await res.json();
-      aliasCache = { root: data.path, id };
+      aliasCache.set(data.path, id);
       return data.path;
     }
   } catch { /* ignore */ }
@@ -86,11 +106,13 @@ async function resolveAlias(id: string): Promise<string | null> {
 export function getUrlState(): UrlState {
   const params = new URLSearchParams(window.location.search);
 
-  // Share code: ?s=<code> — resolved async
-  if (params.get('s')) return { _share: params.get('s') } as any;
-
-  // Alias format: ?a=<id>... — resolved async
-  if (params.get('a')) return { _alias: params.get('a') } as any;
+  if (params.get('s')) return { _share: params.get('s')! };
+  if (params.get('a')) {
+    return {
+      _alias: params.get('a')!,
+      _aliasB: params.get('b') || undefined,
+    };
+  }
 
   // Pipe format: ?p=<root>|<relFile>|<viz>
   const p = params.get('p');
@@ -113,85 +135,88 @@ export function getUrlState(): UrlState {
 
 // --- Async resolution on mount (share codes and aliases) ---
 
-export function useResolveAlias(onResolved: (state: UrlState) => void) {
+function parseAliasSegment(seg: string): { aliasId: string; relFile?: string; viz?: string } {
+  const firstSlash = seg.indexOf('/');
+  const firstPipe = seg.indexOf('|');
+  if (firstSlash > 0 && (firstPipe < 0 || firstSlash < firstPipe)) {
+    const aliasId = seg.slice(0, firstSlash);
+    const rest = seg.slice(firstSlash + 1);
+    const pipeParts = rest.split('|');
+    return { aliasId, relFile: pipeParts[0] || undefined, viz: pipeParts[1] || undefined };
+  }
+  const parts = seg.split('|');
+  return { aliasId: parts[0], relFile: parts[1] || undefined, viz: parts[2] || undefined };
+}
+
+async function resolveSideFromAlias(seg: string): Promise<UrlSide | null> {
+  const { aliasId, relFile, viz } = parseAliasSegment(seg);
+  const root = await resolveAlias(aliasId);
+  if (!root) return null;
+  let file: string | undefined;
+  if (relFile) file = root + '/' + relFile;
+  return { root, viz, file };
+}
+
+export function useResolveAlias(onResolved: (state: { a: UrlSide; b?: UrlSide }) => void) {
   const resolved = useRef(false);
   useEffect(() => {
     if (resolved.current) return;
     const params = new URLSearchParams(window.location.search);
 
-    // Handle ?s=<code>
     const shareCode = params.get('s');
     if (shareCode) {
       resolved.current = true;
-      resolveShare(shareCode).then(state => {
-        if (state) onResolved(state);
-      });
+      resolveShare(shareCode).then(state => { if (state) onResolved(state); });
       return;
     }
 
-    // Handle ?a=<alias>...
     const a = params.get('a');
     if (!a) return;
-
     resolved.current = true;
-    const firstSlash = a.indexOf('/');
-    const firstPipe = a.indexOf('|');
-    let aliasId: string, relFile: string | undefined, viz: string | undefined;
+    const b = params.get('b');
 
-    if (firstSlash > 0 && (firstPipe < 0 || firstSlash < firstPipe)) {
-      aliasId = a.slice(0, firstSlash);
-      const rest = a.slice(firstSlash + 1);
-      const pipeParts = rest.split('|');
-      relFile = pipeParts[0] || undefined;
-      viz = pipeParts[1] || undefined;
-    } else {
-      const parts = a.split('|');
-      aliasId = parts[0];
-      relFile = parts[1] || undefined;
-      viz = parts[2] || undefined;
-    }
-
-    resolveAlias(aliasId).then(root => {
-      if (root) {
-        let file: string | undefined;
-        if (relFile) file = root + '/' + relFile;
-        onResolved({ root, viz, file });
-      }
+    Promise.all([
+      resolveSideFromAlias(a),
+      b ? resolveSideFromAlias(b) : Promise.resolve(undefined as UrlSide | undefined),
+    ]).then(([sideA, sideB]) => {
+      if (sideA) onResolved({ a: sideA, b: sideB || undefined });
     });
   }, []);
 }
 
 // --- Sync address bar (uses alias for moderate-length URLs) ---
 
-export function useUrlStateSync(state: UrlState) {
+export function useUrlStateSync(state: { a: UrlSide; b?: UrlSide | null }) {
   const updating = useRef(false);
 
   useEffect(() => {
-    if (!state.root || updating.current) return;
+    if (!state.a.root || updating.current) return;
     updating.current = true;
 
-    const normRoot = state.root.replace(/\/+$/, '');
-    let relFile = '';
-    if (state.file && state.file.startsWith(normRoot + '/')) {
-      relFile = state.file.slice(normRoot.length + 1);
-    }
-    const viz = (state.viz && state.viz !== 'single') ? state.viz : '';
+    const buildSeg = (s: UrlSide, aliasId: string): string => {
+      const normRoot = s.root!.replace(/\/+$/, '');
+      let relFile = '';
+      if (s.file && s.file.startsWith(normRoot + '/')) relFile = s.file.slice(normRoot.length + 1);
+      const viz = (s.viz && s.viz !== 'single') ? s.viz : '';
+      let val = aliasId || normRoot;
+      if (relFile || viz) val += '|' + relFile;
+      if (viz) val += '|' + viz;
+      return val;
+    };
 
-    getOrCreateAlias(normRoot).then(aliasId => {
-      let param: string;
-      if (aliasId) {
-        let val = aliasId;
-        if (relFile || viz) val += '|' + relFile;
-        if (viz) val += '|' + viz;
-        param = `a=${encodeURIComponent(val)}`;
-      } else {
-        let val = normRoot;
-        if (relFile || viz) val += '|' + relFile;
-        if (viz) val += '|' + viz;
-        param = `p=${encodeURIComponent(val)}`;
+    Promise.all([
+      getOrCreateAlias(state.a.root),
+      state.b && state.b.root ? getOrCreateAlias(state.b.root) : Promise.resolve(''),
+    ]).then(([idA, idB]) => {
+      const params = new URLSearchParams();
+      const segA = buildSeg(state.a, idA);
+      params.set(idA ? 'a' : 'p', segA);
+      if (state.b && state.b.root) {
+        const segB = buildSeg(state.b, idB);
+        params.set(idB ? 'b' : 'pb', segB);
       }
-      window.history.replaceState(null, '', `${window.location.pathname}?${param}`);
+      window.history.replaceState(null, '', `${window.location.pathname}?${params}`);
       updating.current = false;
     });
-  }, [state.root, state.viz, state.file]);
+  }, [state.a.root, state.a.viz, state.a.file, state.b?.root, state.b?.viz, state.b?.file]);
 }
