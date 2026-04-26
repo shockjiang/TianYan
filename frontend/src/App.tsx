@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { ConfigProvider, theme as antdTheme } from 'antd';
-import { TopPanel } from './components/TopPanel';
 import { GlobalHeader } from './components/GlobalHeader';
 import { BrowsingColumn } from './components/BrowsingColumn';
+import { ColumnDivider } from './components/ColumnDivider';
 import { useTheme } from './hooks/useTheme';
 import { getUrlState, useUrlStateSync, useResolveAlias } from './hooks/useUrlState';
 import { useDirectoryHistory } from './hooks/useDirectoryHistory';
@@ -22,7 +22,7 @@ function App() {
     vizMode: (urlState.viz as VizMode) || 'single',
     selectedPath: urlState.file,
   }));
-  const [sideB, _setSideB] = useState<SideState | null>(null); // wired in Phase 5
+  const [sideB, setSideB] = useState<SideState | null>(null);
 
   const [leftWidth, setLeftWidth] = useState(() => {
     return parseInt(localStorage.getItem('tianyan-left-width') || '280');
@@ -33,6 +33,10 @@ function App() {
   const [fullscreen, setFullscreen] = useState(false);
   const [gridScale, setGridScale] = useState(() => {
     return parseFloat(localStorage.getItem('tianyan-grid-scale') || '0.3');
+  });
+  const [columnSplit, setColumnSplit] = useState<number>(() => {
+    const v = parseFloat(localStorage.getItem('tianyan-column-split') || '0.5');
+    return isFinite(v) && v > 0.1 && v < 0.9 ? v : 0.5;
   });
 
   const handleGridScaleChange = (val: number) => {
@@ -46,6 +50,10 @@ function App() {
   const handleLeftWidthChange = (w: number) => {
     setLeftWidth(w);
     localStorage.setItem('tianyan-left-width', String(w));
+  };
+  const handleColumnSplitChange = (next: number) => {
+    setColumnSplit(next);
+    localStorage.setItem('tianyan-column-split', String(next));
   };
 
   useUrlStateSync({
@@ -63,7 +71,7 @@ function App() {
       }));
     }
     if (resolved.b?.root) {
-      _setSideB(initialSideState({
+      setSideB(initialSideState({
         rootDir: resolved.b.root,
         vizMode: (resolved.b.viz as VizMode) || 'single',
         selectedPath: resolved.b.file,
@@ -72,7 +80,6 @@ function App() {
     }
   });
 
-  // 'f' key toggles fullscreen
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName;
@@ -85,6 +92,40 @@ function App() {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []);
+
+  const handleCompareToggle = () => {
+    if (!sideA.rootDir) return;
+    setSideB({
+      ...sideA,
+      treeCollapsed: true,
+      treeData: null, // force re-fetch so each side has its own tree object
+      expandedKeys: [],
+    });
+  };
+  const handleExitKeepLeft = () => setSideB(null);
+  const handleExitKeepRight = () => {
+    if (!sideB) return;
+    setSideA({ ...sideB, treeCollapsed: false });
+    setSideB(null);
+  };
+
+  const onColumnDividerDragStart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startSplit = columnSplit;
+    const containerWidth = (e.currentTarget as HTMLElement).parentElement!.clientWidth;
+    const onMove = (ev: MouseEvent) => {
+      const delta = (ev.clientX - startX) / containerWidth;
+      const next = Math.max(0.15, Math.min(0.85, startSplit + delta));
+      handleColumnSplitChange(next);
+    };
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  };
 
   return (
     <ConfigProvider
@@ -105,29 +146,64 @@ function App() {
             onAutoplayChange={handleAutoplayChange}
             onGridScaleChange={handleGridScaleChange}
             onFullscreenToggle={() => setFullscreen(f => !f)}
-            onCompareToggle={() => { /* Phase 5 */ }}
-            onExitKeepLeft={() => { /* Phase 5 */ }}
-            onExitKeepRight={() => { /* Phase 5 */ }}
+            onCompareToggle={handleCompareToggle}
+            onExitKeepLeft={handleExitKeepLeft}
+            onExitKeepRight={handleExitKeepRight}
           />
         )}
         <div className="app-body">
-          <BrowsingColumn
-            side="A"
-            state={sideA}
-            setState={setSideA}
-            treePosition="left"
-            collapsibleTree={false}
-            dirHistory={dirHistory}
-            onAddDirHistory={addToHistory}
-            onAddRecentFile={addRecentFile}
-            recentFiles={recentFiles}
-            autoplay={autoplay}
-            gridScale={gridScale}
-            fullscreen={fullscreen}
-            treeWidth={leftWidth}
-            onTreeWidthChange={handleLeftWidthChange}
-            apiBase=""
-          />
+          <div style={{
+            flex: sideB ? columnSplit : 1,
+            display: 'flex',
+            minWidth: 0,
+            overflow: 'hidden',
+          }}>
+            <BrowsingColumn
+              side="A"
+              state={sideA}
+              setState={setSideA}
+              treePosition="left"
+              collapsibleTree={sideB !== null}
+              dirHistory={dirHistory}
+              onAddDirHistory={addToHistory}
+              onAddRecentFile={addRecentFile}
+              recentFiles={recentFiles}
+              autoplay={autoplay}
+              gridScale={gridScale}
+              fullscreen={fullscreen}
+              treeWidth={leftWidth}
+              onTreeWidthChange={sideB ? undefined : handleLeftWidthChange}
+              apiBase=""
+            />
+          </div>
+          {sideB && (
+            <>
+              <ColumnDivider onDragStart={onColumnDividerDragStart} />
+              <div style={{
+                flex: 1 - columnSplit,
+                display: 'flex',
+                minWidth: 0,
+                overflow: 'hidden',
+              }}>
+                <BrowsingColumn
+                  side="B"
+                  state={sideB}
+                  setState={setSideB as React.Dispatch<React.SetStateAction<SideState>>}
+                  treePosition="right"
+                  collapsibleTree={true}
+                  dirHistory={dirHistory}
+                  onAddDirHistory={addToHistory}
+                  onAddRecentFile={addRecentFile}
+                  recentFiles={recentFiles}
+                  autoplay={autoplay}
+                  gridScale={gridScale}
+                  fullscreen={fullscreen}
+                  treeWidth={leftWidth}
+                  apiBase=""
+                />
+              </div>
+            </>
+          )}
         </div>
       </div>
     </ConfigProvider>

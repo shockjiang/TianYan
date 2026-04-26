@@ -37,3 +37,17 @@
   display: flex;
   flex-direction: column;
 }
+
+.column-divider {
+  width: 6px;
+  cursor: col-resize;
+  background: var(--border-color);
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.column-divider:hover {
+  background: var(--accent);
+}
+.browsing-column {
+  min-width: 200px;
+}
