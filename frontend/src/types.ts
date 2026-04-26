@@ -44,3 +44,24 @@ export interface TupleViewerProps {
 }
 
 export type VizMode = "single" | string; // "single" or a tuple key like "rgb_depth"
+
+export interface SideState {
+  rootDir: string;
+  vizMode: VizMode;
+  selectedPath?: string;
+  selectedNode?: FileNode;
+  treeData: FileNode | null;
+  expandedKeys: string[];
+  treeCollapsed: boolean;
+}
+
+export const initialSideState = (overrides: Partial<SideState> = {}): SideState => ({
+  rootDir: '',
+  vizMode: 'single',
+  selectedPath: undefined,
+  selectedNode: undefined,
+  treeData: null,
+  expandedKeys: [],
+  treeCollapsed: false,
+  ...overrides,
+});
