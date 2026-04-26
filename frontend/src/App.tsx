@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ConfigProvider, theme as antdTheme, message } from 'antd';
 import { TopPanel } from './components/TopPanel';
+import { GlobalHeader } from './components/GlobalHeader';
 import { FileTree } from './components/FileTree';
 import { MainPanel } from './components/MainPanel';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -267,21 +268,28 @@ function App() {
     >
       <div className="app">
         {!fullscreen && (
+          <GlobalHeader
+            theme={theme}
+            autoplay={autoplay}
+            gridScale={gridScale}
+            sideA={sideA}
+            sideB={null /* Phase 5 */}
+            onThemeToggle={toggleTheme}
+            onAutoplayChange={handleAutoplayChange}
+            onGridScaleChange={handleGridScaleChange}
+            onFullscreenToggle={() => setFullscreen(f => !f)}
+            onCompareToggle={() => { /* Phase 5 */ }}
+            onExitKeepLeft={() => { /* Phase 5 */ }}
+            onExitKeepRight={() => { /* Phase 5 */ }}
+          />
+        )}
+        {!fullscreen && (
           <TopPanel
             rootDir={sideA.rootDir}
             dirHistory={dirHistory}
             vizMode={sideA.vizMode}
-            theme={theme}
-            autoplay={autoplay}
-            fullscreen={fullscreen}
-            gridScale={gridScale}
-            selectedFile={sideA.selectedPath}
             onRootSubmit={handleRootSubmit}
             onVizChange={(m) => setSideA(prev => ({ ...prev, vizMode: m }))}
-            onThemeToggle={toggleTheme}
-            onAutoplayChange={handleAutoplayChange}
-            onFullscreenToggle={() => setFullscreen(f => !f)}
-            onGridScaleChange={handleGridScaleChange}
           />
         )}
         <div className="app-body">
