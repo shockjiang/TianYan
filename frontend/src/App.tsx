@@ -9,7 +9,8 @@ import { getUrlState, useUrlStateSync, useResolveAlias } from './hooks/useUrlSta
 import { useDirectoryHistory } from './hooks/useDirectoryHistory';
 import { useRecentFiles } from './hooks/useRecentFiles';
 import { useTreeStream } from './hooks/useTreeStream';
-import type { FileNode, VizMode } from './types';
+import type { FileNode, VizMode, SideState } from './types';
+import { initialSideState } from './types';
 import './App.css';
 
 const API_BASE = '';
@@ -45,12 +46,12 @@ function App() {
   const { recentFiles, addRecentFile } = useRecentFiles();
 
   const urlState = getUrlState();
-  const [rootDir, setRootDir] = useState(urlState.root || '');
-  const [vizMode, setVizMode] = useState<VizMode>(urlState.viz || 'single');
-  const [selectedPath, setSelectedPath] = useState<string | undefined>(urlState.file);
-  const [selectedNode, setSelectedNode] = useState<FileNode | undefined>();
-  const [treeData, setTreeData] = useState<FileNode | null>(null);
-  const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
+  const [sideA, setSideA] = useState<SideState>(initialSideState({
+    rootDir: urlState.root || '',
+    vizMode: (urlState.viz as VizMode) || 'single',
+    selectedPath: urlState.file,
+  }));
+
   const [leftWidth, setLeftWidth] = useState(() => {
     return parseInt(localStorage.getItem('tianyan-left-width') || '280');
   });
@@ -67,27 +68,35 @@ function App() {
     localStorage.setItem('tianyan-grid-scale', String(val));
   };
 
-  const treeDataRef = useRef(treeData);
-  useEffect(() => { treeDataRef.current = treeData; }, [treeData]);
+  const treeDataRef = useRef<FileNode | null>(sideA.treeData);
+  useEffect(() => { treeDataRef.current = sideA.treeData; }, [sideA.treeData]);
 
-  const { scanning, scanProgress } = useTreeStream(rootDir, treeData, setTreeData);
+  const setTreeDataAdapter = useCallback((updater: React.SetStateAction<FileNode | null>) => {
+    setSideA(prev => ({
+      ...prev,
+      treeData: typeof updater === 'function' ? (updater as (p: FileNode | null) => FileNode | null)(prev.treeData) : updater,
+    }));
+  }, []);
+
+  const { scanning, scanProgress } = useTreeStream(sideA.rootDir, sideA.treeData, setTreeDataAdapter);
 
   const handleAutoplayChange = (val: boolean) => {
     setAutoplay(val);
     localStorage.setItem('tianyan-video-autoplay', String(val));
   };
 
-  useUrlStateSync({ root: rootDir, viz: vizMode, file: selectedPath });
+  useUrlStateSync({ root: sideA.rootDir, viz: sideA.vizMode, file: sideA.selectedPath });
 
   // Resolve alias from URL on first load (e.g., ?a=ph7k|data/out)
   useResolveAlias((resolved) => {
     if (resolved.root) {
-      setRootDir(resolved.root);
-      if (resolved.viz) setVizMode(resolved.viz);
-      if (resolved.file) {
-        setSelectedPath(resolved.file);
-        pendingFileNav.current = resolved.file;
-      }
+      setSideA(prev => ({
+        ...prev,
+        rootDir: resolved.root!,
+        vizMode: (resolved.viz as VizMode) || prev.vizMode,
+        selectedPath: resolved.file ?? prev.selectedPath,
+      }));
+      if (resolved.file) pendingFileNav.current = resolved.file;
       loadDirectory(resolved.root);
     }
   });
@@ -112,32 +121,31 @@ function App() {
       const res = await fetch(`${API_BASE}/api/directory?path=${encodeURIComponent(path)}&depth=2`);
       if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
-      setTreeData(data);
+      setSideA(prev => ({ ...prev, treeData: data }));
       addToHistory(path);
     } catch (err: any) {
       console.error('Failed to load directory:', err);
       message.error(`Failed to load directory: ${err.message || 'Unknown error'}`);
-      setTreeData(null);
+      setSideA(prev => ({ ...prev, treeData: null }));
     }
   }, [addToHistory]);
 
   // Load children for a directory node and merge into tree
   const loadChildren = useCallback(async (dirPath: string) => {
     // If children already loaded by background stream, just force a re-render
-    // so Ant Design Tree picks up the existing children in the DataNode
     const existing = findNodeByPath(treeDataRef.current, dirPath);
     if (existing?.children && existing.children.length > 0) {
-      setTreeData(prev => prev ? { ...prev } : prev);
+      setSideA(prev => ({ ...prev, treeData: prev.treeData ? { ...prev.treeData } : prev.treeData }));
       return;
     }
     try {
       const res = await fetch(`${API_BASE}/api/directory?path=${encodeURIComponent(dirPath)}&depth=1`);
       if (!res.ok) return;
       const data: FileNode = await res.json();
-      setTreeData(prev => {
-        if (!prev) return prev;
-        return mergeChildren(prev, dirPath, data.children || []);
-      });
+      setSideA(prev => ({
+        ...prev,
+        treeData: prev.treeData ? mergeChildren(prev.treeData, dirPath, data.children || []) : prev.treeData,
+      }));
     } catch (err) {
       console.error('Failed to load children:', err);
     }
@@ -145,8 +153,8 @@ function App() {
 
   // Navigate to a file path: load ancestor dirs, expand tree, select file
   const navigateToFile = useCallback(async (filePath: string) => {
-    if (!rootDir || !treeData) return;
-    const normRoot = rootDir.replace(/\/+$/, '');
+    if (!sideA.rootDir || !sideA.treeData) return;
+    const normRoot = sideA.rootDir.replace(/\/+$/, '');
     if (!filePath.startsWith(normRoot)) return;
 
     const relative = filePath.slice(normRoot.length).replace(/^\//, '');
@@ -155,11 +163,10 @@ function App() {
     const keysToExpand: string[] = [normRoot];
 
     // Load each segment (ancestors + target itself if it's a directory)
-    let currentTree = treeData;
     for (let i = 0; i < parts.length; i++) {
       const dirPath = normRoot + '/' + parts.slice(0, i + 1).join('/');
       keysToExpand.push(dirPath);
-      const node = findNodeByPath(currentTree, dirPath);
+      const node = findNodeByPath(treeDataRef.current, dirPath);
       if (!node || (node.type === 'directory' && (!node.children || node.children.length === 0))) {
         try {
           const parentPath = i === 0 ? normRoot : normRoot + '/' + parts.slice(0, i).join('/');
@@ -167,11 +174,9 @@ function App() {
           const res = await fetch(`${API_BASE}/api/directory?path=${encodeURIComponent(parentPath)}&depth=1`);
           if (res.ok) {
             const data: FileNode = await res.json();
-            setTreeData(prev => {
-              if (!prev) return prev;
-              const updated = mergeChildren(prev, parentPath, data.children || []);
-              currentTree = updated;
-              return updated;
+            setSideA(prev => {
+              if (!prev.treeData) return prev;
+              return { ...prev, treeData: mergeChildren(prev.treeData, parentPath, data.children || []) };
             });
             await new Promise(r => setTimeout(r, 50));
           }
@@ -179,7 +184,10 @@ function App() {
       }
     }
 
-    setExpandedKeys(prev => [...new Set([...prev, ...keysToExpand])]);
+    setSideA(prev => ({
+      ...prev,
+      expandedKeys: [...new Set([...prev.expandedKeys, ...keysToExpand])],
+    }));
 
     // Select the target — look it up from the now-updated tree
     const found = findNodeByPath(treeDataRef.current, filePath);
@@ -196,35 +204,37 @@ function App() {
         extension: hasExt ? ext : undefined,
       });
     }
-  }, [rootDir, treeData]);
+  }, [sideA.rootDir, sideA.treeData]);
 
   const pendingFileNav = useRef<string | undefined>(urlState.file);
 
   useEffect(() => {
-    if (rootDir) loadDirectory(rootDir);
+    if (sideA.rootDir) loadDirectory(sideA.rootDir);
   }, []);
 
   // After treeData loads, restore file from URL if pending
   useEffect(() => {
-    if (treeData && pendingFileNav.current) {
+    if (sideA.treeData && pendingFileNav.current) {
       const filePath = pendingFileNav.current;
       pendingFileNav.current = undefined;
       navigateToFile(filePath);
     }
-  }, [treeData]);
+  }, [sideA.treeData]);
 
   const handleRootSubmit = (path: string) => {
     pendingFileNav.current = undefined;
-    setRootDir(path);
-    setSelectedPath(undefined);
-    setSelectedNode(undefined);
-    setExpandedKeys([]);
+    setSideA(prev => ({
+      ...prev,
+      rootDir: path,
+      selectedPath: undefined,
+      selectedNode: undefined,
+      expandedKeys: [],
+    }));
     loadDirectory(path);
   };
 
   const handleSelect = (node: FileNode) => {
-    setSelectedPath(node.path);
-    setSelectedNode(node);
+    setSideA(prev => ({ ...prev, selectedPath: node.path, selectedNode: node }));
     if (node.type === 'file') {
       addRecentFile(node.path);
     }
@@ -258,16 +268,16 @@ function App() {
       <div className="app">
         {!fullscreen && (
           <TopPanel
-            rootDir={rootDir}
+            rootDir={sideA.rootDir}
             dirHistory={dirHistory}
-            vizMode={vizMode}
+            vizMode={sideA.vizMode}
             theme={theme}
             autoplay={autoplay}
             fullscreen={fullscreen}
             gridScale={gridScale}
-            selectedFile={selectedPath}
+            selectedFile={sideA.selectedPath}
             onRootSubmit={handleRootSubmit}
-            onVizChange={setVizMode}
+            onVizChange={(m) => setSideA(prev => ({ ...prev, vizMode: m }))}
             onThemeToggle={toggleTheme}
             onAutoplayChange={handleAutoplayChange}
             onFullscreenToggle={() => setFullscreen(f => !f)}
@@ -279,11 +289,11 @@ function App() {
             <>
               <div className="left-panel" style={{ width: leftWidth }}>
                 <FileTree
-                  treeData={treeData}
-                  selectedPath={selectedPath}
+                  treeData={sideA.treeData}
+                  selectedPath={sideA.selectedPath}
                   recentFiles={recentFiles}
-                  expandedKeys={expandedKeys}
-                  onExpandedKeysChange={setExpandedKeys}
+                  expandedKeys={sideA.expandedKeys}
+                  onExpandedKeysChange={(keys) => setSideA(prev => ({ ...prev, expandedKeys: keys }))}
                   onSelect={handleSelect}
                   onLoadChildren={loadChildren}
                   onNavigateToFile={navigateToFile}
@@ -296,22 +306,22 @@ function App() {
             </>
           )}
           <div className="main-panel">
-            <ErrorBoundary resetKey={selectedPath}>
+            <ErrorBoundary resetKey={sideA.selectedPath}>
             <MainPanel
-              selectedNode={selectedNode}
-              vizMode={vizMode}
-              treeData={treeData}
+              selectedNode={sideA.selectedNode}
+              vizMode={sideA.vizMode}
+              treeData={sideA.treeData}
               apiBase={API_BASE}
-              rootDir={rootDir}
+              rootDir={sideA.rootDir}
               autoplay={autoplay}
               gridScale={gridScale}
               onNavigate={(path: string) => {
-                const node = findNodeByPath(treeData, path);
+                const node = findNodeByPath(sideA.treeData, path);
                 if (node) {
                   handleSelect(node);
                   // Expand the tree to this node's path
-                  if (rootDir) {
-                    const normRoot = rootDir.replace(/\/+$/, '');
+                  if (sideA.rootDir) {
+                    const normRoot = sideA.rootDir.replace(/\/+$/, '');
                     const keysToExpand: string[] = [normRoot];
                     const relative = path.slice(normRoot.length).replace(/^\//, '');
                     if (relative) {
@@ -320,7 +330,7 @@ function App() {
                         keysToExpand.push(normRoot + '/' + parts.slice(0, i + 1).join('/'));
                       }
                     }
-                    setExpandedKeys(prev => [...new Set([...prev, ...keysToExpand])]);
+                    setSideA(prev => ({ ...prev, expandedKeys: [...new Set([...prev.expandedKeys, ...keysToExpand])] }));
                   }
                 } else {
                   navigateToFile(path);
