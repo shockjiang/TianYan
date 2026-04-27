@@ -32,6 +32,11 @@ mimetypes.add_type("video/quicktime", ".mov")
 mimetypes.add_type("video/webm", ".webm")
 mimetypes.add_type("video/x-flv", ".flv")
 mimetypes.add_type("video/x-ms-wmv", ".wmv")
+mimetypes.add_type("application/octet-stream", ".ply")
+mimetypes.add_type("model/vnd.usd", ".usd")
+mimetypes.add_type("model/vnd.usd", ".usda")
+mimetypes.add_type("model/vnd.usd", ".usdc")
+mimetypes.add_type("model/vnd.usdz+zip", ".usdz")
 
 
 @router.get("/api/file")

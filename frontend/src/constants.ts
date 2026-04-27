@@ -10,6 +10,8 @@ export const TEXT_EXTS = new Set([
   '.makefile', '.cmake',
 ]);
 export const TABULAR_EXTS = new Set(['.jsonl', '.jsonlines', '.parquet', '.pq']);
+export const PLY_EXTS = new Set(['.ply']);
+export const USD_EXTS = new Set(['.usd', '.usda', '.usdc', '.usdz']);
 export const TEXT_NAMES = new Set([
   'makefile', 'dockerfile', 'readme', 'license', 'changelog',
   'authors', 'contributors', 'todo', 'notes',

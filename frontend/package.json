@@ -12,11 +12,13 @@
   "dependencies": {
     "@ant-design/icons": "^6.1.1",
     "@types/prismjs": "^1.26.6",
+    "@types/three": "^0.184.0",
     "antd": "^6.3.5",
     "prismjs": "^1.30.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-json-view-lite": "^2.5.0"
+    "react-json-view-lite": "^2.5.0",
+    "three": "^0.184.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
