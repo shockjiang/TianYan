@@ -4,3 +4,4 @@ Pillow==10.4.0
 python-multipart==0.0.9
 usd-core>=0.26.0
 numpy
+h5py>=3.10

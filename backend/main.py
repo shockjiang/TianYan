@@ -12,6 +12,7 @@ from api.tabular import router as tabular_router
 from api.npy import router as npy_router
 from api.text_preview import router as text_preview_router
 from api.usd import router as usd_router
+from api.h5 import router as h5_router
 
 app = FastAPI(title="TianYan API")
 
@@ -32,6 +33,7 @@ app.include_router(tabular_router)
 app.include_router(npy_router)
 app.include_router(text_preview_router)
 app.include_router(usd_router)
+app.include_router(h5_router)
 
 
 @app.get("/api/health")
@@ -49,5 +51,9 @@ async def serve_frontend(request: Request, full_path: str):
     file_path = DIST_DIR / full_path
     if full_path and file_path.resolve().is_relative_to(DIST_DIR.resolve()) and file_path.is_file():
         return FileResponse(str(file_path))
-    # Fallback to index.html for SPA routing
-    return FileResponse(str(DIST_DIR / "index.html"))
+    # Fallback to index.html for SPA routing — never cache, so users always get
+    # the current asset hashes.
+    return FileResponse(
+        str(DIST_DIR / "index.html"),
+        headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
+    )

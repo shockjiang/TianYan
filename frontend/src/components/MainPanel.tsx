@@ -14,9 +14,10 @@ import { TabularViewer } from './viewers/TabularViewer';
 import { NpyViewer } from './viewers/NpyViewer';
 import { PlyViewer } from './viewers/PlyViewer';
 import { UsdViewer } from './viewers/UsdViewer';
+import { H5Viewer } from './viewers/H5Viewer';
 import { getTupleByKey } from '../tuples/registry';
 import type { FileNode, VizMode, FileInfo } from '../types';
-import { IMAGE_EXTS, VIDEO_EXTS, TEXT_EXTS, TEXT_NAMES, TABULAR_EXTS, PLY_EXTS, USD_EXTS } from '../constants';
+import { IMAGE_EXTS, VIDEO_EXTS, TEXT_EXTS, TEXT_NAMES, TABULAR_EXTS, PLY_EXTS, USD_EXTS, H5_EXTS } from '../constants';
 
 interface MainPanelProps {
   selectedNode?: FileNode;
@@ -32,7 +33,7 @@ interface MainPanelProps {
 const PICKLE_EXTS = new Set(['.pkl', '.pickle', '.pth']);
 const NPY_EXTS = new Set(['.npy', '.npz']);
 
-type FileType = 'image' | 'depth' | 'mask' | 'json' | 'text' | 'video' | 'pickle' | 'tabular' | 'npy' | 'ply' | 'usd' | 'unknown';
+type FileType = 'image' | 'depth' | 'mask' | 'json' | 'text' | 'video' | 'pickle' | 'tabular' | 'npy' | 'ply' | 'usd' | 'h5' | 'unknown';
 
 function detectFileType(node: FileNode): FileType {
   const ext = node.extension || '';
@@ -42,6 +43,9 @@ function detectFileType(node: FileNode): FileType {
   // 3D point cloud / mesh
   if (PLY_EXTS.has(ext)) return 'ply';
   if (USD_EXTS.has(ext)) return 'usd';
+
+  // HDF5
+  if (H5_EXTS.has(ext)) return 'h5';
 
   // Video
   if (VIDEO_EXTS.has(ext)) return 'video';
@@ -319,6 +323,7 @@ export function MainPanel({ selectedNode, vizMode, treeData, apiBase, rootDir, a
       {fileType === 'npy' && <NpyViewer path={selectedNode.path} name={selectedNode.name} apiBase={apiBase} />}
       {fileType === 'ply' && <PlyViewer src={fileSrc} name={selectedNode.name} />}
       {fileType === 'usd' && <UsdViewer src={fileSrc} name={selectedNode.name} apiBase={apiBase} path={selectedNode.path} />}
+      {fileType === 'h5' && <H5Viewer path={selectedNode.path} name={selectedNode.name} apiBase={apiBase} />}
       {fileType === 'tabular' && <TabularViewer path={selectedNode.path} name={selectedNode.name} apiBase={apiBase} />}
       {fileType === 'video' && <VideoViewer src={`${apiBase}/api/video?path=${encodeURIComponent(selectedNode.path)}`} name={selectedNode.name} autoplay={autoplay} />}
       {fileType === 'unknown' && (
