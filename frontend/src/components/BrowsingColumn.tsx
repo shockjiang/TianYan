@@ -54,10 +54,14 @@ export function BrowsingColumn({
   // - User submits via TopPanel → setRoot nulls treeData → load.
   // - Same-path Load click also nulls treeData → load (refresh).
   // Deduped by an in-flight ref so re-renders mid-fetch don't refire.
+  // Important: any treeData (even with a server-resolved path that differs
+  // from the user-typed rootDir, e.g. across a symlink) means the fetch
+  // for this rootDir is no longer in flight — clear the gate so the next
+  // setRoot(treeData=null) can re-fetch.
   const loadingRootRef = useRef<string>('');
   useEffect(() => {
     if (!state.rootDir) return;
-    if (state.treeData && state.treeData.path === state.rootDir) {
+    if (state.treeData) {
       loadingRootRef.current = '';
       return;
     }
