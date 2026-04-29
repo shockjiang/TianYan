@@ -4,14 +4,17 @@ set -e
 
 echo "Starting TianYan..."
 
-# Start backend
-cd /vePFS/shock/TianYan/backend
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload &
+# Resolve script directory so paths work regardless of where this lives
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Start backend (uses project-local .venv)
+cd "$SCRIPT_DIR/backend"
+"$SCRIPT_DIR/.venv/bin/uvicorn" main:app --host 0.0.0.0 --port 8000 --reload &
 BACKEND_PID=$!
 echo "Backend started (PID: $BACKEND_PID) on http://0.0.0.0:8000"
 
 # Start frontend
-cd /vePFS/shock/TianYan/frontend
+cd "$SCRIPT_DIR/frontend"
 npx vite --host 0.0.0.0 --port 15090 &
 FRONTEND_PID=$!
 echo "Frontend started (PID: $FRONTEND_PID) on http://0.0.0.0:15090"
