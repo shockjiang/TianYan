@@ -131,7 +131,7 @@ function FrameViewer({
 
   useEffect(() => {
     if (!playing || !isSequence) return;
-    const id = setInterval(() => setFrame(f => (f + 1) % numFrames), 100);
+    const id = setInterval(() => setFrame(f => (f + 1) % numFrames), 500);
     return () => clearInterval(id);
   }, [playing, isSequence, numFrames]);
 
