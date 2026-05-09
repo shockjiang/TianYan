@@ -97,7 +97,7 @@ function App() {
     if (!sideA.rootDir) return;
     setSideB({
       ...sideA,
-      treeCollapsed: true,
+      treeCollapsed: false,
       treeData: null, // force re-fetch so each side has its own tree object
       expandedKeys: [],
     });
