@@ -14,6 +14,21 @@ router = APIRouter()
 _allowed_roots: set[str] = set()
 
 
+def _is_utf8_safe(name: str) -> bool:
+    """True if *name* can be encoded as UTF-8.
+
+    Filesystems can hold names that aren't valid UTF-8 (Python represents
+    those bytes via surrogateescape, e.g. b'\\xef' becomes '\\udcef').
+    Such names break JSON responses, and the browser can't usefully select
+    them anyway, so the scanners just skip them.
+    """
+    try:
+        name.encode("utf-8")
+        return True
+    except UnicodeEncodeError:
+        return False
+
+
 def _safe_resolve(path: str, allowed_root: str | None = None) -> Path:
     """Resolve path and validate it is under an allowed root."""
     resolved = Path(path).resolve()
@@ -58,7 +73,9 @@ def _scan_directory(
         result["children"] = []
         try:
             with os.scandir(dir_path) as it:
-                result["hasChildren"] = any(not e.name.startswith('.') for e in it)
+                result["hasChildren"] = any(
+                    not e.name.startswith('.') and _is_utf8_safe(e.name) for e in it
+                )
         except PermissionError:
             result["hasChildren"] = False
         return result
@@ -74,6 +91,8 @@ def _scan_directory(
             if _counter[0] >= max_entries:
                 break
             if entry.name.startswith("."):
+                continue
+            if not _is_utf8_safe(entry.name):
                 continue
             if entry.is_dir(follow_symlinks=False):
                 _counter[0] += 1
@@ -143,6 +162,8 @@ async def stream_directory(path: str = Query(..., description="Root directory pa
                         break
                     if entry.name.startswith('.'):
                         continue
+                    if not _is_utf8_safe(entry.name):
+                        continue
                     if entry.is_dir(follow_symlinks=False):
                         total += 1
                         skip = entry.name in _skip_dirs or entry.name.endswith('.egg-info')
@@ -151,7 +172,9 @@ async def stream_directory(path: str = Query(..., description="Root directory pa
                         if not skip:
                             try:
                                 with os.scandir(child_path) as sub:
-                                    has_children = any(not e.name.startswith('.') for e in sub)
+                                    has_children = any(
+                                        not e.name.startswith('.') and _is_utf8_safe(e.name) for e in sub
+                                    )
                             except OSError:
                                 pass
                         children.append({
