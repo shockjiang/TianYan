@@ -42,20 +42,32 @@ app.include_router(upload_router)
 async def health():
     return {"status": "ok"}
 
-# Serve frontend static files
+# Serve frontend static files when a production build exists. In dev,
+# vite serves the frontend on its own port (:15090) and proxies /api/* to
+# us, so the dist folder is absent — the server must still start cleanly.
 DIST_DIR = Path(__file__).resolve().parent.parent / "frontend" / "dist"
+_HAS_DIST = (DIST_DIR / "index.html").is_file() and (DIST_DIR / "assets").is_dir()
 
-app.mount("/assets", StaticFiles(directory=str(DIST_DIR / "assets")), name="assets")
+if _HAS_DIST:
+    app.mount("/assets", StaticFiles(directory=str(DIST_DIR / "assets")), name="assets")
 
-@app.get("/{full_path:path}")
-async def serve_frontend(request: Request, full_path: str):
-    # Try to serve the exact file first (e.g., favicon.svg)
-    file_path = DIST_DIR / full_path
-    if full_path and file_path.resolve().is_relative_to(DIST_DIR.resolve()) and file_path.is_file():
-        return FileResponse(str(file_path))
-    # Fallback to index.html for SPA routing — never cache, so users always get
-    # the current asset hashes.
-    return FileResponse(
-        str(DIST_DIR / "index.html"),
-        headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
-    )
+    @app.get("/{full_path:path}")
+    async def serve_frontend(request: Request, full_path: str):
+        # Try to serve the exact file first (e.g., favicon.svg).
+        file_path = DIST_DIR / full_path
+        if full_path and file_path.resolve().is_relative_to(DIST_DIR.resolve()) and file_path.is_file():
+            return FileResponse(str(file_path))
+        # SPA fallback — never cache so asset hashes are always fresh.
+        return FileResponse(
+            str(DIST_DIR / "index.html"),
+            headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
+        )
+else:
+    @app.get("/")
+    async def dev_root():
+        return {
+            "status": "ok",
+            "note": "Frontend not built. Use the vite dev server on :15090, "
+                    "or run `npx vite build` in frontend/ to enable serving "
+                    "the SPA from this backend.",
+        }
