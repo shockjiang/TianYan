@@ -1,4 +1,3 @@
-frontend/src/components/viewers/PickleViewer.tsx
 __pycache__/
 *.pyc
 aliases.json
