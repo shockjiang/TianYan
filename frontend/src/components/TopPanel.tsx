@@ -29,20 +29,26 @@ export function TopPanel({ rootDir, selectedPath, dirHistory, vizMode, onRootSub
   };
 
   const handleOpenClipboard = async () => {
-    let text = '';
+    // Try the async Clipboard API first. It only works in secure contexts
+    // (HTTPS or localhost). For plain-HTTP origins we fall back to a
+    // native prompt() so the button still does something useful.
+    let text: string | null = null;
     try {
-      text = await navigator.clipboard.readText();
-    } catch {
-      message.error('Could not read clipboard — paste the path into the input instead');
+      if (navigator.clipboard?.readText) {
+        const v = await navigator.clipboard.readText();
+        if (v && v.trim()) text = v;
+      }
+    } catch { /* fall through to prompt */ }
+
+    if (text == null) {
+      text = window.prompt('Paste path here:') ?? '';
+    }
+
+    const oneLine = text.split(/\r?\n/, 1)[0].trim();
+    if (!oneLine) {
+      message.warning('No path provided');
       return;
     }
-    const trimmed = text.trim();
-    if (!trimmed) {
-      message.warning('Clipboard is empty');
-      return;
-    }
-    // Keep only the first line — guards against multi-line copies.
-    const oneLine = trimmed.split(/\r?\n/, 1)[0].trim();
     setInputValue(oneLine);
     onRootSubmit(oneLine);
   };
