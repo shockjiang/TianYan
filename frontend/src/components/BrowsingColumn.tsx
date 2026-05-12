@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useRef } from 'react';
+import { message } from 'antd';
 import { TopPanel } from './TopPanel';
 import { FileTree } from './FileTree';
 import { MainPanel } from './MainPanel';
 import { ErrorBoundary } from './ErrorBoundary';
 import { useSideController } from '../hooks/useSideController';
+import { useFileDrop, type DroppedFile } from '../hooks/useFileDrop';
 import type { SideState, FileNode } from '../types';
 
 interface BrowsingColumnProps {
@@ -23,6 +25,23 @@ interface BrowsingColumnProps {
   onTreeWidthChange?: (w: number) => void;
   apiBase: string;
 }
+
+const dropOverlayStyle: React.CSSProperties = {
+  position: 'absolute',
+  inset: 0,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  textAlign: 'center',
+  padding: 24,
+  background: 'rgba(79, 195, 247, 0.18)',
+  color: 'var(--text-primary)',
+  fontSize: 14,
+  fontWeight: 600,
+  pointerEvents: 'none',
+  zIndex: 10,
+  wordBreak: 'break-all',
+};
 
 function findNodeByPath(tree: FileNode | null, path: string): FileNode | undefined {
   if (!tree) return undefined;
@@ -121,6 +140,58 @@ export function BrowsingColumn({
     document.addEventListener('mouseup', onUp);
   }, [treeWidth, treePosition, onTreeWidthChange]);
 
+  // --- Upload (drag-and-drop into tree or main panel) ---
+  // Accepts a flat list of {file, relpath} entries, so dropping a folder
+  // preserves its directory structure under destDir.
+  const uploadEntries = useCallback(async (destDir: string, entries: DroppedFile[]) => {
+    if (!destDir) {
+      message.error('Load a directory first');
+      return;
+    }
+    if (entries.length === 0) return;
+    const fd = new FormData();
+    fd.append('dir', destDir);
+    for (const { file, relpath } of entries) {
+      fd.append('files', file, file.name);
+      fd.append('paths', relpath);
+    }
+    const hide = message.loading(`Uploading ${entries.length} file(s) to ${destDir}…`, 0);
+    try {
+      const res = await fetch(`${apiBase}/api/upload`, { method: 'POST', body: fd });
+      const data = await res.json();
+      hide();
+      if (!res.ok) throw new Error(data.detail || `HTTP ${res.status}`);
+      const ok = data.uploaded?.length ?? 0;
+      const skipped = data.skipped ?? [];
+      if (ok > 0) message.success(`Uploaded ${ok} file(s) to ${destDir}`);
+      if (skipped.length) {
+        const names = skipped.map((s: { name: string; reason: string }) => `${s.name} (${s.reason})`).join(', ');
+        message.warning(`Skipped ${skipped.length}: ${names}`);
+      }
+      // Refresh the destination directory so the new files appear in the tree.
+      await ctrl.loadChildren(destDir);
+    } catch (e: any) {
+      hide();
+      message.error(`Upload failed: ${e?.message || 'Unknown error'}`);
+    }
+  }, [apiBase, ctrl]);
+
+  // Both drop zones write to the same destination: the directory chosen
+  // in the tree (selected dir, or the parent of a selected file). If
+  // nothing is selected, fall back to the input-field root.
+  const uploadDest = (() => {
+    const n = state.selectedNode;
+    if (n?.type === 'directory') return n.path;
+    if (n?.type === 'file') {
+      const idx = n.path.lastIndexOf('/');
+      return idx > 0 ? n.path.slice(0, idx) : state.rootDir;
+    }
+    return state.rootDir;
+  })();
+
+  const treeDrop = useFileDrop(entries => uploadEntries(uploadDest, entries));
+  const mainDrop = useFileDrop(entries => uploadEntries(uploadDest, entries));
+
   const showTree = !fullscreen && (!collapsibleTree || !state.treeCollapsed);
   const showCollapseStrip = !fullscreen && collapsibleTree && state.treeCollapsed;
 
@@ -133,6 +204,7 @@ export function BrowsingColumn({
       {!fullscreen && (
         <TopPanel
           rootDir={state.rootDir}
+          selectedPath={state.selectedPath}
           dirHistory={dirHistory}
           vizMode={state.vizMode}
           onRootSubmit={ctrl.setRoot}
@@ -144,13 +216,22 @@ export function BrowsingColumn({
           <>
             <div
               className="left-panel"
+              {...treeDrop.handlers}
               style={{
                 width: treeWidth,
                 borderRight: treePosition === 'left' ? '1px solid var(--border-color)' : 'none',
                 borderLeft: treePosition === 'right' ? '1px solid var(--border-color)' : 'none',
                 order: treeOrder,
+                position: 'relative',
+                outline: treeDrop.isOver ? '2px dashed var(--accent)' : 'none',
+                outlineOffset: -2,
               }}
             >
+              {treeDrop.isOver && (
+                <div style={dropOverlayStyle} title={uploadDest}>
+                  Drop to upload into {uploadDest || '(no root)'}
+                </div>
+              )}
               {collapsibleTree && (
                 <div style={{
                   display: 'flex',
@@ -223,7 +304,21 @@ export function BrowsingColumn({
             >≡</button>
           </div>
         )}
-        <div className="main-panel" style={{ order: mainOrder, flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+        <div
+          className="main-panel"
+          {...mainDrop.handlers}
+          style={{
+            order: mainOrder, flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column',
+            position: 'relative',
+            outline: mainDrop.isOver ? '2px dashed var(--accent)' : 'none',
+            outlineOffset: -2,
+          }}
+        >
+          {mainDrop.isOver && (
+            <div style={dropOverlayStyle} title={uploadDest}>
+              Drop to upload into {uploadDest || '(no root)'}
+            </div>
+          )}
           <ErrorBoundary resetKey={state.selectedPath}>
             <MainPanel
               selectedNode={state.selectedNode}

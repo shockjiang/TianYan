@@ -13,6 +13,7 @@ from api.npy import router as npy_router
 from api.text_preview import router as text_preview_router
 from api.usd import router as usd_router
 from api.h5 import router as h5_router
+from api.upload import router as upload_router
 
 app = FastAPI(title="TianYan API")
 
@@ -34,6 +35,7 @@ app.include_router(npy_router)
 app.include_router(text_preview_router)
 app.include_router(usd_router)
 app.include_router(h5_router)
+app.include_router(upload_router)
 
 
 @app.get("/api/health")
