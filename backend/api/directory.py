@@ -112,6 +112,26 @@ def _scan_directory(
     return result
 
 
+@router.get("/api/path-info")
+async def path_info(path: str = Query(..., description="Absolute path")):
+    """Lightweight stat: tells the caller whether *path* is a file or a directory.
+
+    Used by the frontend's root-input flow so that pasting a file path
+    redirects to the parent directory and selects the file in the tree.
+    Intentionally bypasses the _allowed_roots check — same precedent as
+    /api/directory (which is how new roots get registered).
+    """
+    resolved = Path(path).resolve()
+    if not resolved.exists():
+        raise HTTPException(status_code=404, detail=f"Path not found: {resolved}")
+    return {
+        "path": str(resolved),
+        "name": resolved.name,
+        "type": "directory" if resolved.is_dir() else "file",
+        "parent": str(resolved.parent),
+    }
+
+
 @router.get("/api/directory")
 async def get_directory(path: str = Query(..., description="Root directory path"),
                         depth: int = Query(1, ge=1, le=10)):

@@ -150,10 +150,26 @@ function parseAliasSegment(seg: string): { aliasId: string; relFile?: string; vi
 
 async function resolveSideFromAlias(seg: string): Promise<UrlSide | null> {
   const { aliasId, relFile, viz } = parseAliasSegment(seg);
-  const root = await resolveAlias(aliasId);
-  if (!root) return null;
+  const aliasPath = await resolveAlias(aliasId);
+  if (!aliasPath) return null;
+
+  let root = aliasPath;
   let file: string | undefined;
-  if (relFile) file = root + '/' + relFile;
+  if (relFile) file = aliasPath + '/' + relFile;
+
+  // If the alias itself points at a file (legacy or hand-crafted URL),
+  // redirect to its parent directory and select the file.
+  try {
+    const r = await fetch(`/api/path-info?path=${encodeURIComponent(aliasPath)}`);
+    if (r.ok) {
+      const info = await r.json() as { type: 'file' | 'directory'; parent: string; path: string };
+      if (info.type === 'file') {
+        root = info.parent;
+        file = info.path;
+      }
+    }
+  } catch { /* ignore — fall back to current behaviour */ }
+
   return { root, viz, file };
 }
 

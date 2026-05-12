@@ -36,12 +36,11 @@ export interface SideController {
   loadChildren: (dirPath: string) => Promise<void>;
   navigateToFile: (filePath: string) => Promise<void>;
   selectNode: (node: FileNode) => void;
-  setRoot: (path: string) => void;
+  setRoot: (path: string) => Promise<void>;
   setViz: (mode: VizMode) => void;
   setExpandedKeys: (keys: string[]) => void;
   setTreeCollapsed: (collapsed: boolean) => void;
   treeDataRef: React.MutableRefObject<FileNode | null>;
-  pendingFileNav: React.MutableRefObject<string | undefined>;
 }
 
 /**
@@ -56,8 +55,6 @@ export function useSideController(
 ): SideController {
   const treeDataRef = useRef<FileNode | null>(state.treeData);
   useEffect(() => { treeDataRef.current = state.treeData; }, [state.treeData]);
-
-  const pendingFileNav = useRef<string | undefined>(state.selectedPath);
 
   const setTreeData = useCallback((updater: React.SetStateAction<FileNode | null>) => {
     setState(prev => ({
@@ -159,12 +156,29 @@ export function useSideController(
     }
   }, [state.rootDir, setState, selectNode]);
 
-  const setRoot = useCallback((path: string) => {
-    pendingFileNav.current = undefined;
+  const setRoot = useCallback(async (path: string) => {
+    // If the user pasted a file path, redirect to its parent and stash the
+    // file in selectedPath; BrowsingColumn's post-tree-load effect picks
+    // it up and calls navigateToFile (expand ancestors + select node).
+    let actualRoot = path;
+    let fileToSelect: string | undefined;
+    try {
+      const res = await fetch(`${API_BASE}/api/path-info?path=${encodeURIComponent(path)}`);
+      if (res.ok) {
+        const info = await res.json() as { type: 'file' | 'directory'; parent: string; path: string };
+        if (info.type === 'file') {
+          actualRoot = info.parent;
+          fileToSelect = info.path;
+        } else {
+          actualRoot = info.path;
+        }
+      }
+    } catch { /* network error: fall through; loadDirectory will surface it */ }
+
     setState(prev => ({
       ...prev,
-      rootDir: path,
-      selectedPath: undefined,
+      rootDir: actualRoot,
+      selectedPath: fileToSelect,
       selectedNode: undefined,
       expandedKeys: [],
       treeData: null,
@@ -191,6 +205,6 @@ export function useSideController(
     scanning, scanProgress,
     loadDirectory, loadChildren, navigateToFile, selectNode,
     setRoot, setViz, setExpandedKeys, setTreeCollapsed,
-    treeDataRef, pendingFileNav,
+    treeDataRef,
   };
 }

@@ -70,14 +70,17 @@ export function BrowsingColumn({
     ctrlRef.current.loadDirectory(state.rootDir);
   }, [state.rootDir, state.treeData]);
 
-  // Restore file from URL after tree loads (per-side pendingFileNav)
+  // After the tree loads, expand to and select the URL-supplied file
+  // (or the file queued by setRoot when the user pasted a file path).
+  // Driven by state instead of a ref so async alias resolution that sets
+  // selectedPath after mount also gets picked up. Selecting a node sets
+  // selectedNode, which gates this effect against re-firing.
   useEffect(() => {
-    if (state.treeData && ctrlRef.current.pendingFileNav.current) {
-      const filePath = ctrlRef.current.pendingFileNav.current;
-      ctrlRef.current.pendingFileNav.current = undefined;
-      ctrlRef.current.navigateToFile(filePath);
-    }
-  }, [state.treeData]);
+    if (!state.treeData) return;
+    if (!state.selectedPath) return;
+    if (state.selectedNode) return;
+    ctrlRef.current.navigateToFile(state.selectedPath);
+  }, [state.treeData, state.selectedPath, state.selectedNode]);
 
   const handleNavigate = useCallback((path: string) => {
     const node = findNodeByPath(state.treeData, path);
