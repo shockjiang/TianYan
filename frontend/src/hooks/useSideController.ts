@@ -175,14 +175,27 @@ export function useSideController(
       }
     } catch { /* network error: fall through; loadDirectory will surface it */ }
 
-    setState(prev => ({
-      ...prev,
-      rootDir: actualRoot,
-      selectedPath: fileToSelect,
-      selectedNode: undefined,
-      expandedKeys: [],
-      treeData: null,
-    }));
+    setState(prev => {
+      // Reload while keeping the selection: if the user clicked Load with
+      // the same (or an ancestor) root and their previous selection still
+      // lives under the new root, keep selectedPath + expandedKeys so the
+      // post-tree-load nav effect re-selects/re-expands. Selecting a
+      // brand-new file via setRoot takes priority and wipes the prior pick.
+      const norm = actualRoot.replace(/\/+$/, '');
+      const prevPath = prev.selectedPath;
+      const preserve =
+        !fileToSelect &&
+        !!prevPath &&
+        (prevPath === norm || prevPath.startsWith(norm + '/'));
+      return {
+        ...prev,
+        rootDir: actualRoot,
+        selectedPath: fileToSelect ?? (preserve ? prevPath : undefined),
+        selectedNode: undefined,
+        expandedKeys: preserve ? prev.expandedKeys : [],
+        treeData: null,
+      };
+    });
     // The BrowsingColumn auto-load effect (deduped by treeData.path) handles
     // the actual fetch. Do NOT call loadDirectory here — that produced two
     // concurrent fetches (one from here, one from the effect).
