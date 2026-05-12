@@ -2,6 +2,7 @@ import mimetypes
 import subprocess
 import shutil
 import os
+import tempfile
 from pathlib import Path
 from email.utils import formatdate
 from fastapi import APIRouter, Query, Request, HTTPException
@@ -9,6 +10,35 @@ from fastapi.responses import FileResponse, Response, StreamingResponse
 from api.directory import _safe_resolve
 
 router = APIRouter()
+
+
+def _pick_cache_base() -> Path:
+    """Pick a writable directory for transient caches (thumbnails, video
+    transcodes). Order: $TIANYAN_CACHE_DIR, $XDG_CACHE_HOME/tianyan,
+    $HOME/.cache/tianyan, $TMPDIR/tianyan. The first one we can create
+    wins, so the server always starts even on read-only homes."""
+    candidates = []
+    if os.environ.get("TIANYAN_CACHE_DIR"):
+        candidates.append(Path(os.environ["TIANYAN_CACHE_DIR"]))
+    if os.environ.get("XDG_CACHE_HOME"):
+        candidates.append(Path(os.environ["XDG_CACHE_HOME"]) / "tianyan")
+    if os.environ.get("HOME"):
+        candidates.append(Path(os.environ["HOME"]) / ".cache" / "tianyan")
+    candidates.append(Path(tempfile.gettempdir()) / "tianyan")
+    for base in candidates:
+        try:
+            base.mkdir(parents=True, exist_ok=True)
+            # Quick writability probe
+            probe = base / ".write_test"
+            probe.write_bytes(b"")
+            probe.unlink(missing_ok=True)
+            return base
+        except OSError:
+            continue
+    raise RuntimeError("No writable cache directory found")
+
+
+_CACHE_BASE = _pick_cache_base()
 
 # Ensure common types are registered
 mimetypes.add_type("image/png", ".png")
@@ -88,7 +118,7 @@ async def download_file(path: str = Query(..., description="Absolute file or dir
 import hashlib
 import asyncio
 
-_THUMB_CACHE_DIR = Path("/vePFS/shock/.CACHE/tianyan_thumbs")
+_THUMB_CACHE_DIR = _CACHE_BASE / "thumbs"
 _THUMB_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 # Small images (< 200KB): serve original file instead of generating thumbnail
@@ -155,7 +185,7 @@ async def get_thumbnail(path: str = Query(..., description="Absolute image file 
 _BROWSER_NATIVE_VIDEO = {".mp4", ".webm", ".ogg"}
 
 # Cache dir for transcoded videos
-_VIDEO_CACHE_DIR = Path("/vePFS/shock/.CACHE/tianyan_videos")
+_VIDEO_CACHE_DIR = _CACHE_BASE / "videos"
 _VIDEO_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 
