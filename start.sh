@@ -7,6 +7,10 @@ echo "Starting TianYan..."
 # Resolve script directory so paths work regardless of where this lives
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# Ensure tools installed by reproduce_env.sh (ffmpeg/ffprobe, uv) are on
+# PATH for the child uvicorn/vite processes regardless of shell config.
+export PATH="$HOME/.local/bin:$PATH"
+
 # Start backend (uses project-local .venv)
 cd "$SCRIPT_DIR/backend"
 "$SCRIPT_DIR/.venv/bin/uvicorn" main:app --host 0.0.0.0 --port 8000 --reload &

@@ -53,6 +53,45 @@ ensure_uv() {
     echo "uv installed: $(uv --version)"
 }
 
+ensure_ffmpeg() {
+    if command -v ffmpeg >/dev/null 2>&1 && command -v ffprobe >/dev/null 2>&1; then
+        echo "ffmpeg: $(command -v ffmpeg) ($(ffmpeg -version 2>&1 | head -1))"
+        return
+    fi
+    local bin_dir="$HOME/.local/bin"
+    mkdir -p "$bin_dir"
+    export PATH="$bin_dir:$PATH"
+
+    local arch
+    arch="$(uname -m)"
+    local slug
+    case "$arch" in
+        x86_64|amd64)        slug="amd64" ;;
+        aarch64|arm64)       slug="arm64" ;;
+        *) echo "warning: no static ffmpeg build for arch '$arch'; skipping" >&2; return 0 ;;
+    esac
+    local url="https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-${slug}-static.tar.xz"
+
+    echo "ffmpeg not found — downloading static build (${slug}) into ${bin_dir} (no sudo)..."
+    local tmp
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    if ! fetch "$url" > "$tmp/ffmpeg.tar.xz"; then
+        echo "error: failed to download ${url}" >&2
+        return 1
+    fi
+    (cd "$tmp" && tar -xJf ffmpeg.tar.xz)
+    local extracted
+    extracted="$(find "$tmp" -maxdepth 1 -type d -name "ffmpeg-*-${slug}-static" | head -1)"
+    if [[ -z "$extracted" ]]; then
+        echo "error: unexpected tarball layout in ${url}" >&2
+        return 1
+    fi
+    install -m 0755 "$extracted/ffmpeg"  "$bin_dir/ffmpeg"
+    install -m 0755 "$extracted/ffprobe" "$bin_dir/ffprobe"
+    echo "ffmpeg installed: $(ffmpeg -version 2>&1 | head -1)"
+}
+
 ensure_npm() {
     if command -v npm >/dev/null 2>&1; then
         echo "npm: $(command -v npm) ($(npm --version))  node: $(node --version)"
@@ -91,6 +130,7 @@ ensure_npm() {
 
 ensure_uv
 ensure_npm
+ensure_ffmpeg
 
 echo "[1/3] Creating .venv with Python ${PYTHON_VERSION}..."
 uv venv .venv --python "${PYTHON_VERSION}"

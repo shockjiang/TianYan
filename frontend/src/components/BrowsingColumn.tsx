@@ -140,6 +140,16 @@ export function BrowsingColumn({
     document.addEventListener('mouseup', onUp);
   }, [treeWidth, treePosition, onTreeWidthChange]);
 
+  // Track the dataset key the active viewer (H5Viewer / NpyViewer) has
+  // selected so the file-tree right-click can target it during export.
+  const setCurrentDatasetKey = useCallback((key: string | null) => {
+    setState(prev => {
+      const next = key ?? undefined;
+      if (prev.currentDatasetKey === next) return prev;
+      return { ...prev, currentDatasetKey: next };
+    });
+  }, [setState]);
+
   // --- Upload (drag-and-drop into tree or main panel) ---
   // Accepts a flat list of {file, relpath} entries, so dropping a folder
   // preserves its directory structure under destDir.
@@ -255,12 +265,30 @@ export function BrowsingColumn({
               <FileTree
                 treeData={state.treeData}
                 selectedPath={state.selectedPath}
+                currentDatasetKey={state.currentDatasetKey}
                 recentFiles={recentFiles}
                 expandedKeys={state.expandedKeys}
                 onExpandedKeysChange={ctrl.setExpandedKeys}
                 onSelect={ctrl.selectNode}
                 onLoadChildren={ctrl.loadChildren}
                 onNavigateToFile={ctrl.navigateToFile}
+                onRenamed={async (oldPath, newPath, parent) => {
+                  // Reload the affected parent dir so the renamed entry appears.
+                  await ctrl.loadChildren(parent);
+                  // If the renamed entry (or one of its descendants) was the
+                  // current selection, redirect it to the new path so the
+                  // preview pane doesn't go stale.
+                  setState(prev => {
+                    if (!prev.selectedPath) return prev;
+                    let nextSelected: string | undefined = prev.selectedPath;
+                    if (prev.selectedPath === oldPath) nextSelected = newPath;
+                    else if (prev.selectedPath.startsWith(oldPath + '/')) {
+                      nextSelected = newPath + prev.selectedPath.slice(oldPath.length);
+                    }
+                    if (nextSelected === prev.selectedPath) return prev;
+                    return { ...prev, selectedPath: nextSelected, selectedNode: undefined };
+                  });
+                }}
                 apiBase={apiBase}
                 scanning={ctrl.scanning}
                 scanProgress={ctrl.scanProgress}
@@ -329,6 +357,7 @@ export function BrowsingColumn({
               autoplay={autoplay}
               gridScale={gridScale}
               onNavigate={handleNavigate}
+              onCurrentDatasetKeyChange={setCurrentDatasetKey}
             />
           </ErrorBoundary>
         </div>

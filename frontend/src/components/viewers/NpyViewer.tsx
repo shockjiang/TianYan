@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { exportSequenceToMp4 } from '../../lib/exportMp4';
 
 interface NpyViewerProps {
   path: string;
   name: string;
   apiBase: string;
+  onCurrentKeyChange?: (key: string | null) => void;
 }
 
 interface NpyInfo {
@@ -21,7 +23,7 @@ interface NpyInfo {
   num_keys?: number;
 }
 
-export function NpyViewer({ path, name, apiBase }: NpyViewerProps) {
+export function NpyViewer({ path, name, apiBase, onCurrentKeyChange }: NpyViewerProps) {
   const [info, setInfo] = useState<NpyInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,6 +57,12 @@ export function NpyViewer({ path, name, apiBase }: NpyViewerProps) {
     }, 100);
     return () => clearInterval(interval);
   }, [playing, info?.num_frames]);
+
+  // Bubble selected key (for npz; npy has no key) to the parent.
+  useEffect(() => {
+    onCurrentKeyChange?.(npzKey);
+  }, [npzKey, onCurrentKeyChange]);
+  useEffect(() => () => onCurrentKeyChange?.(null), [onCurrentKeyChange]);
 
   if (loading) {
     return <div style={{ padding: 24, color: 'var(--text-secondary)' }}>Loading array info...</div>;
@@ -136,6 +144,17 @@ export function NpyViewer({ path, name, apiBase }: NpyViewerProps) {
               onChange={e => { setFrame(Number(e.target.value)); setPlaying(false); }}
               style={{ flex: 1, minWidth: 100, maxWidth: 400 }}
             />
+            <button
+              onClick={() => exportSequenceToMp4({ apiBase, path, key: npzKey ?? undefined, fps: 10 })}
+              style={{
+                padding: '2px 10px', cursor: 'pointer',
+                background: 'var(--bg-secondary)', color: 'var(--text-primary)',
+                border: '1px solid var(--border-color)', borderRadius: 4, fontSize: 12,
+              }}
+              title="Encode this sequence as an H.264 mp4 and download"
+            >
+              Export MP4
+            </button>
           </>
         )}
       </div>

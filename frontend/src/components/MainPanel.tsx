@@ -15,9 +15,10 @@ import { NpyViewer } from './viewers/NpyViewer';
 import { PlyViewer } from './viewers/PlyViewer';
 import { UsdViewer } from './viewers/UsdViewer';
 import { H5Viewer } from './viewers/H5Viewer';
+import { HtmlViewer } from './viewers/HtmlViewer';
 import { getTupleByKey } from '../tuples/registry';
 import type { FileNode, VizMode, FileInfo } from '../types';
-import { IMAGE_EXTS, VIDEO_EXTS, TEXT_EXTS, TEXT_NAMES, TABULAR_EXTS, PLY_EXTS, USD_EXTS, H5_EXTS } from '../constants';
+import { IMAGE_EXTS, VIDEO_EXTS, TEXT_EXTS, TEXT_NAMES, TABULAR_EXTS, PLY_EXTS, USD_EXTS, H5_EXTS, HTML_EXTS } from '../constants';
 
 interface MainPanelProps {
   selectedNode?: FileNode;
@@ -28,12 +29,13 @@ interface MainPanelProps {
   autoplay?: boolean;
   gridScale?: number;
   onNavigate?: (path: string) => void;
+  onCurrentDatasetKeyChange?: (key: string | null) => void;
 }
 
 const PICKLE_EXTS = new Set(['.pkl', '.pickle', '.pth']);
 const NPY_EXTS = new Set(['.npy', '.npz']);
 
-type FileType = 'image' | 'depth' | 'mask' | 'json' | 'text' | 'video' | 'pickle' | 'tabular' | 'npy' | 'ply' | 'usd' | 'h5' | 'unknown';
+type FileType = 'image' | 'depth' | 'mask' | 'json' | 'text' | 'video' | 'pickle' | 'tabular' | 'npy' | 'ply' | 'usd' | 'h5' | 'html' | 'unknown';
 
 function detectFileType(node: FileNode): FileType {
   const ext = node.extension || '';
@@ -46,6 +48,9 @@ function detectFileType(node: FileNode): FileType {
 
   // HDF5
   if (H5_EXTS.has(ext)) return 'h5';
+
+  // HTML (rendered) — checked before TEXT_EXTS so .html doesn't fall to text
+  if (HTML_EXTS.has(ext)) return 'html';
 
   // Video
   if (VIDEO_EXTS.has(ext)) return 'video';
@@ -189,7 +194,7 @@ function useLazyDirectoryChildren(node: FileNode | undefined, apiBase: string): 
   return [enrichedNode, loading];
 }
 
-export function MainPanel({ selectedNode, vizMode, treeData, apiBase, rootDir, autoplay, gridScale = 0.3, onNavigate }: MainPanelProps) {
+export function MainPanel({ selectedNode, vizMode, treeData, apiBase, rootDir, autoplay, gridScale = 0.3, onNavigate, onCurrentDatasetKeyChange }: MainPanelProps) {
   const [dirNode, dirLoading] = useLazyDirectoryChildren(
     selectedNode?.type === 'directory' ? selectedNode : undefined,
     apiBase
@@ -320,10 +325,11 @@ export function MainPanel({ selectedNode, vizMode, treeData, apiBase, rootDir, a
       {fileType === 'json' && <JsonViewer src={fileSrc} name={selectedNode.name} />}
       {fileType === 'text' && <TextViewer src={fileSrc} name={selectedNode.name} />}
       {fileType === 'pickle' && <PickleViewer path={selectedNode.path} name={selectedNode.name} apiBase={apiBase} />}
-      {fileType === 'npy' && <NpyViewer path={selectedNode.path} name={selectedNode.name} apiBase={apiBase} />}
+      {fileType === 'npy' && <NpyViewer path={selectedNode.path} name={selectedNode.name} apiBase={apiBase} onCurrentKeyChange={onCurrentDatasetKeyChange} />}
       {fileType === 'ply' && <PlyViewer src={fileSrc} name={selectedNode.name} />}
       {fileType === 'usd' && <UsdViewer src={fileSrc} name={selectedNode.name} apiBase={apiBase} path={selectedNode.path} />}
-      {fileType === 'h5' && <H5Viewer path={selectedNode.path} name={selectedNode.name} apiBase={apiBase} />}
+      {fileType === 'h5' && <H5Viewer path={selectedNode.path} name={selectedNode.name} apiBase={apiBase} onCurrentKeyChange={onCurrentDatasetKeyChange} />}
+      {fileType === 'html' && <HtmlViewer path={selectedNode.path} name={selectedNode.name} apiBase={apiBase} />}
       {fileType === 'tabular' && <TabularViewer path={selectedNode.path} name={selectedNode.name} apiBase={apiBase} />}
       {fileType === 'video' && <VideoViewer src={`${apiBase}/api/video?path=${encodeURIComponent(selectedNode.path)}`} name={selectedNode.name} autoplay={autoplay} />}
       {fileType === 'unknown' && (

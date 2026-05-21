@@ -1,9 +1,14 @@
 import { useState, useEffect, useMemo } from 'react';
+import { exportSequenceToMp4 } from '../../lib/exportMp4';
 
 interface H5ViewerProps {
   path: string;
   name: string;
   apiBase: string;
+  /** Notify the parent whenever the user picks a different dataset, or null
+   *  on unmount, so cross-cutting actions (e.g. file-tree right-click
+   *  Export MP4) can target the chosen sequence. */
+  onCurrentKeyChange?: (key: string | null) => void;
 }
 
 interface H5Dataset {
@@ -232,7 +237,7 @@ function DataPreview({ path, apiBase, ds }: { path: string; apiBase: string; ds:
   );
 }
 
-export function H5Viewer({ path, name, apiBase }: H5ViewerProps) {
+export function H5Viewer({ path, name, apiBase, onCurrentKeyChange }: H5ViewerProps) {
   const [info, setInfo] = useState<H5Info | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -255,6 +260,15 @@ export function H5Viewer({ path, name, apiBase }: H5ViewerProps) {
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [path, apiBase]);
+
+  // Bubble the current dataset key to the parent (file-tree menu, etc.).
+  useEffect(() => {
+    onCurrentKeyChange?.(selectedKey);
+  }, [selectedKey, onCurrentKeyChange]);
+
+  // Clear on unmount so the parent doesn't keep a stale key when the user
+  // navigates to a non-H5 file.
+  useEffect(() => () => onCurrentKeyChange?.(null), [onCurrentKeyChange]);
 
   const selected = useMemo(
     () => info?.datasets.find(d => d.key === selectedKey) ?? null,
@@ -310,10 +324,32 @@ export function H5Viewer({ path, name, apiBase }: H5ViewerProps) {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
           {selected ? (
             <>
-              <div style={{ padding: '6px 12px', fontSize: 12, color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-color)', fontFamily: 'monospace', flexShrink: 0 }}>
+              <div style={{
+                padding: '6px 12px', fontSize: 12, color: 'var(--text-secondary)',
+                borderBottom: '1px solid var(--border-color)', fontFamily: 'monospace',
+                flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8,
+              }}>
                 <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{selected.key}</span>
-                {'  '}<span style={{ color: 'var(--accent)' }}>{selected.shape.join(' × ') || 'scalar'}</span>
-                {'  '}{selected.dtype}
+                <span style={{ color: 'var(--accent)' }}>{selected.shape.join(' × ') || 'scalar'}</span>
+                <span>{selected.dtype}</span>
+                {selected.is_frames && (
+                  <button
+                    onClick={() => exportSequenceToMp4({ apiBase, path, key: selected.key, fps: 10 })}
+                    style={{
+                      marginLeft: 'auto',
+                      padding: '2px 10px',
+                      cursor: 'pointer',
+                      background: 'var(--bg-secondary)',
+                      color: 'var(--text-primary)',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: 4,
+                      fontSize: 12,
+                    }}
+                    title="Encode this dataset as an H.264 mp4 and download"
+                  >
+                    Export MP4
+                  </button>
+                )}
               </div>
               {Object.keys(selected.attrs || {}).length > 0 && (
                 <div style={{ padding: 8, flexShrink: 0 }}>

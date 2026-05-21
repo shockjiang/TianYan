@@ -50,6 +50,11 @@ export interface SideState {
   vizMode: VizMode;
   selectedPath?: string;
   selectedNode?: FileNode;
+  /** Currently-chosen dataset/key inside the active viewer (H5Viewer's
+   *  selectedKey, NpyViewer's npzKey). Surfaced here so cross-cutting
+   *  actions like "Export as MP4" from the file-tree right-click can
+   *  target the user's choice instead of an auto-pick. */
+  currentDatasetKey?: string;
   treeData: FileNode | null;
   expandedKeys: string[];
   treeCollapsed: boolean;
@@ -60,6 +65,7 @@ export const initialSideState = (overrides: Partial<SideState> = {}): SideState 
   vizMode: 'single',
   selectedPath: undefined,
   selectedNode: undefined,
+  currentDatasetKey: undefined,
   treeData: null,
   expandedKeys: [],
   treeCollapsed: false,

@@ -1,19 +1,25 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import { Tree, Input, message } from 'antd';
-import { FolderOutlined, FileOutlined, FileImageOutlined, FileTextOutlined, VideoCameraOutlined, TableOutlined, CopyOutlined, DownloadOutlined, LoadingOutlined, EllipsisOutlined } from '@ant-design/icons';
+import { Tree, Input, message, Modal } from 'antd';
+import { FolderOutlined, FileOutlined, FileImageOutlined, FileTextOutlined, VideoCameraOutlined, TableOutlined, CopyOutlined, DownloadOutlined, LoadingOutlined, EllipsisOutlined, EditOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import type { FileNode } from '../types';
 import type { DataNode, EventDataNode } from 'antd/es/tree';
 import { IMAGE_EXTS, VIDEO_EXTS, TEXT_EXTS, TABULAR_EXTS } from '../constants';
+import { exportSequenceToMp4 } from '../lib/exportMp4';
 
 interface FileTreeProps {
   treeData: FileNode | null;
   selectedPath?: string;
+  /** The dataset key currently chosen inside the viewer (H5 / NPZ).
+   *  Passed through so right-click "Export as MP4" honors that pick
+   *  instead of letting the backend auto-select the first sequence. */
+  currentDatasetKey?: string;
   recentFiles: string[];
   expandedKeys: string[];
   onExpandedKeysChange: (keys: string[]) => void;
   onSelect: (node: FileNode) => void;
   onLoadChildren: (path: string) => Promise<void>;
   onNavigateToFile: (path: string) => void;
+  onRenamed?: (oldPath: string, newPath: string, parent: string) => void;
   apiBase: string;
   scanning?: boolean;
   scanProgress?: { scanned: number };
@@ -100,7 +106,7 @@ function buildNodeMap(node: FileNode, map: Map<string, FileNode>) {
   }
 }
 
-export function FileTree({ treeData, selectedPath, recentFiles, expandedKeys, onExpandedKeysChange, onSelect, onLoadChildren, onNavigateToFile, apiBase, scanning, scanProgress }: FileTreeProps) {
+export function FileTree({ treeData, selectedPath, currentDatasetKey, recentFiles, expandedKeys, onExpandedKeysChange, onSelect, onLoadChildren, onNavigateToFile, onRenamed, apiBase, scanning, scanProgress }: FileTreeProps) {
   const [filter, setFilter] = useState('');
   const [debouncedFilter, setDebouncedFilter] = useState('');
   const treeContainerRef = useRef<HTMLDivElement>(null);
@@ -126,6 +132,46 @@ export function FileTree({ treeData, selectedPath, recentFiles, expandedKeys, on
   }, []);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; path: string; isFile: boolean } | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const [renameTarget, setRenameTarget] = useState<{ path: string; currentName: string } | null>(null);
+  const [renameValue, setRenameValue] = useState('');
+  const [renaming, setRenaming] = useState(false);
+
+  // Forward the dataset key the viewer has selected so multi-dataset files
+  // (.h5 / .npz) export the user's chosen sequence rather than the
+  // backend's auto-pick. Only applied when right-clicking the same file
+  // that's currently selected in the tree.
+  const exportMp4 = useCallback((path: string) => {
+    const key = (selectedPath && path === selectedPath) ? currentDatasetKey : undefined;
+    return exportSequenceToMp4({ apiBase, path, key, fps: 10 });
+  }, [apiBase, selectedPath, currentDatasetKey]);
+
+  const doRename = useCallback(async () => {
+    if (!renameTarget) return;
+    const next = renameValue.trim();
+    if (!next || next === renameTarget.currentName) { setRenameTarget(null); return; }
+    if (next.includes('/') || next.includes('\\') || next === '.' || next === '..') {
+      message.error('Name must be a plain basename (no slashes)');
+      return;
+    }
+    setRenaming(true);
+    try {
+      const res = await fetch(`${apiBase}/api/rename`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: renameTarget.path, new_name: next }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || `HTTP ${res.status}`);
+      message.success(`Renamed to ${data.name}`);
+      onRenamed?.(data.old_path, data.new_path, data.parent);
+      setRenameTarget(null);
+    } catch (e: any) {
+      message.error(`Rename failed: ${e?.message || 'Unknown error'}`);
+    } finally {
+      setRenaming(false);
+    }
+  }, [apiBase, renameTarget, renameValue, onRenamed]);
 
   // Close context menu on click anywhere
   useEffect(() => {
@@ -337,8 +383,75 @@ export function FileTree({ treeData, selectedPath, recentFiles, expandedKeys, on
           >
             <DownloadOutlined /> {contextMenu.isFile ? 'Download' : 'Download as ZIP'}
           </div>
+          <div
+            onClick={() => {
+              const name = contextMenu.path.split('/').pop() || '';
+              setRenameTarget({ path: contextMenu.path, currentName: name });
+              setRenameValue(name);
+              setContextMenu(null);
+            }}
+            style={{
+              padding: '6px 12px',
+              fontSize: 13,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              color: 'var(--text-primary)',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--hover-bg)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          >
+            <EditOutlined /> Rename
+          </div>
+          {contextMenu.isFile && (() => {
+            const lower = contextMenu.path.toLowerCase();
+            const exportable = lower.endsWith('.h5') || lower.endsWith('.hdf5')
+                            || lower.endsWith('.npy') || lower.endsWith('.npz');
+            if (!exportable) return null;
+            const target = contextMenu.path;
+            return (
+              <div
+                onClick={() => { setContextMenu(null); exportMp4(target); }}
+                style={{
+                  padding: '6px 12px',
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  color: 'var(--text-primary)',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--hover-bg)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                <PlayCircleOutlined /> Export as MP4
+              </div>
+            );
+          })()}
         </div>
       )}
+      <Modal
+        title="Rename"
+        open={renameTarget !== null}
+        onOk={doRename}
+        onCancel={() => setRenameTarget(null)}
+        okButtonProps={{ disabled: !renameValue.trim() || renameValue.trim() === renameTarget?.currentName }}
+        confirmLoading={renaming}
+        okText="Rename"
+        destroyOnClose
+      >
+        <div style={{ marginBottom: 8, fontSize: 12, color: 'var(--text-secondary)', wordBreak: 'break-all' }}>
+          {renameTarget?.path}
+        </div>
+        <Input
+          autoFocus
+          value={renameValue}
+          onChange={e => setRenameValue(e.target.value)}
+          onPressEnter={doRename}
+          placeholder="New name"
+        />
+      </Modal>
     </div>
   );
 }

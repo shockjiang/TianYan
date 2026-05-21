@@ -81,11 +81,49 @@ async def get_file(path: str = Query(..., description="Absolute file path")):
     return FileResponse(str(resolved), media_type=mime_type, headers={"Last-Modified": last_mod, "Cache-Control": "public, max-age=300"})
 
 
+@router.get("/api/raw/{full_path:path}")
+async def get_raw_file(full_path: str):
+    """Serve a file by absolute path embedded in the URL.
+
+    Used by viewers that need relative-URL resolution inside the served
+    document — chiefly the HTML iframe viewer, where ./styles.css must
+    resolve to a sibling file. The URL shape is /api/raw/<absolute path>,
+    e.g. /api/raw//root/shock/share/blog/index.html (note the double slash
+    after /raw — the absolute path keeps its leading /). Sandboxed by
+    _safe_resolve so only files under loaded roots are accessible.
+    """
+    abs_path = full_path if full_path.startswith("/") else "/" + full_path
+    resolved = _safe_resolve(abs_path)
+    if not resolved.is_file():
+        raise HTTPException(status_code=400, detail="Path is not a file")
+    mime_type = mimetypes.guess_type(str(resolved))[0] or "application/octet-stream"
+    stat = resolved.stat()
+    last_mod = formatdate(stat.st_mtime, usegmt=True)
+    return FileResponse(
+        str(resolved),
+        media_type=mime_type,
+        headers={"Last-Modified": last_mod, "Cache-Control": "public, max-age=300"},
+    )
+
+
 @router.get("/api/download")
-async def download_file(path: str = Query(..., description="Absolute file or directory path")):
+async def download_file(
+    path: str = Query(..., description="Absolute file or directory path"),
+    raw: int = Query(0, description="If 1, force raw bytes even for non-native-codec videos"),
+):
     resolved = _safe_resolve(path)
 
     if resolved.is_file():
+        # For video files whose codec the browser can't play, the raw
+        # bytes also won't play in most desktop video players. Default to
+        # serving the transcoded H.264 cache (same one /api/video uses)
+        # and append .h264.mp4 to the filename so it's obvious the file
+        # has been re-encoded. Callers can pass ?raw=1 to opt out.
+        if not raw and resolved.suffix.lower() in _PROBE_VIDEO_EXTS and not _is_browser_native_video(resolved):
+            cache_path = await _ensure_h264_cache(resolved)
+            new_name = resolved.stem + ".h264.mp4"
+            return FileResponse(str(cache_path), media_type="video/mp4", filename=new_name)
+
         mime_type = mimetypes.guess_type(str(resolved))[0] or "application/octet-stream"
         return FileResponse(str(resolved), media_type=mime_type, filename=resolved.name)
 
@@ -117,6 +155,7 @@ async def download_file(path: str = Query(..., description="Absolute file or dir
 
 import hashlib
 import asyncio
+import functools
 
 _THUMB_CACHE_DIR = _CACHE_BASE / "thumbs"
 _THUMB_CACHE_DIR.mkdir(parents=True, exist_ok=True)
@@ -181,8 +220,50 @@ async def get_thumbnail(path: str = Query(..., description="Absolute image file 
         raise HTTPException(status_code=500, detail=f"Thumbnail generation failed: {e}")
 
 
-# Video formats natively supported by browsers — no transcode needed
-_BROWSER_NATIVE_VIDEO = {".mp4", ".webm", ".ogg"}
+# Video container extensions whose codec is worth probing before deciding
+# whether transcoding is needed. Other extensions always transcode.
+_PROBE_VIDEO_EXTS = {".mp4", ".webm", ".ogg", ".mkv", ".mov"}
+
+# Codec names (per ffprobe stream=codec_name) that modern browsers can
+# render in <video>. Everything else (mpeg4 a.k.a. mp4v, hevc, prores …)
+# must be transcoded to H.264.
+_NATIVE_VIDEO_CODECS = {"h264", "vp8", "vp9", "av1"}
+
+
+@functools.lru_cache(maxsize=4096)
+def _video_codec_cached(path: str, mtime: float) -> str:
+    """ffprobe the first video stream's codec_name. Cached per (path, mtime).
+
+    Returns an empty string if ffprobe is unavailable or fails — callers
+    treat that as "unknown" and fall back to extension-based heuristics.
+    """
+    if not shutil.which("ffprobe"):
+        return ""
+    try:
+        out = subprocess.run(
+            ["ffprobe", "-v", "error",
+             "-select_streams", "v:0",
+             "-show_entries", "stream=codec_name",
+             "-of", "csv=p=0",
+             path],
+            capture_output=True, text=True, timeout=8,
+        )
+        return (out.stdout.strip().splitlines() or [""])[0].strip().lower()
+    except Exception:
+        return ""
+
+
+def _is_browser_native_video(resolved: Path) -> bool:
+    """True if the browser can play this file directly (no transcode)."""
+    ext = resolved.suffix.lower()
+    if ext not in _PROBE_VIDEO_EXTS:
+        return False
+    codec = _video_codec_cached(str(resolved), resolved.stat().st_mtime)
+    if not codec:
+        # ffprobe unavailable: keep old behavior — trust the extension for
+        # the small set of containers that *usually* hold a native codec.
+        return ext in {".mp4", ".webm", ".ogg"}
+    return codec in _NATIVE_VIDEO_CODECS
 
 # Cache dir for transcoded videos
 _VIDEO_CACHE_DIR = _CACHE_BASE / "videos"
@@ -247,6 +328,51 @@ def _serve_file_with_range(file_path: Path, request: Request, media_type: str) -
     )
 
 
+async def _ensure_h264_cache(resolved: Path) -> Path:
+    """Return a cached H.264/AAC .mp4 transcode of *resolved*, creating it
+    on demand. Same cache that /api/video has always used (keyed on
+    path + mtime), so preview and download share work."""
+    if not shutil.which("ffmpeg"):
+        raise HTTPException(
+            status_code=500,
+            detail="Video needs transcoding but ffmpeg is not installed. "
+                   "Run reproduce_env.sh to install a static build.",
+        )
+
+    stat = resolved.stat()
+    cache_key = hashlib.md5(f"{resolved}|{stat.st_mtime}".encode()).hexdigest()
+    cache_path = _VIDEO_CACHE_DIR / f"{cache_key}.mp4"
+    if cache_path.exists():
+        return cache_path
+
+    tmp = cache_path.with_suffix(".tmp.mp4")
+    cmd = [
+        "ffmpeg", "-y",
+        "-i", str(resolved),
+        "-c:v", "libx264",
+        "-preset", "ultrafast",
+        "-crf", "23",
+        "-c:a", "aac",
+        "-movflags", "+faststart",
+        "-loglevel", "error",
+        str(tmp),
+    ]
+    proc = await asyncio.create_subprocess_exec(
+        *cmd,
+        stdout=asyncio.subprocess.DEVNULL,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    _, stderr = await proc.communicate()
+    if proc.returncode != 0:
+        tmp.unlink(missing_ok=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Transcode failed: {stderr.decode(errors='replace')[:500]}",
+        )
+    tmp.rename(cache_path)
+    return cache_path
+
+
 @router.get("/api/video")
 async def get_video(request: Request, path: str = Query(..., description="Absolute video file path")):
     """Serve video with Range request support. Transcodes non-native formats to cached mp4."""
@@ -254,49 +380,13 @@ async def get_video(request: Request, path: str = Query(..., description="Absolu
     if not resolved.is_file():
         raise HTTPException(status_code=400, detail="Path is not a file")
 
-    ext = resolved.suffix.lower()
-
-    # Browser-native formats: serve directly with Range support
-    if ext in _BROWSER_NATIVE_VIDEO:
+    # Decide native-vs-transcode by inspecting the codec, not just the
+    # extension — many .mp4 files carry codecs (mpeg4/hevc/prores/…) that
+    # the browser <video> element can't decode even though the container
+    # looks fine.
+    if _is_browser_native_video(resolved):
         mime_type = mimetypes.guess_type(str(resolved))[0] or "video/mp4"
         return _serve_file_with_range(resolved, request, mime_type)
 
-    # Non-native: transcode to cached mp4, then serve with Range support
-    if not shutil.which("ffmpeg"):
-        raise HTTPException(status_code=500, detail="ffmpeg not found")
-
-    # Cache key based on path + mtime
-    stat = resolved.stat()
-    cache_key = hashlib.md5(f"{resolved}|{stat.st_mtime}".encode()).hexdigest()
-    cache_path = _VIDEO_CACHE_DIR / f"{cache_key}.mp4"
-
-    if not cache_path.exists():
-        # Transcode to cache file (blocking but in thread pool)
-        async def _transcode():
-            tmp = cache_path.with_suffix(".tmp.mp4")
-            cmd = [
-                "ffmpeg", "-y",
-                "-i", str(resolved),
-                "-c:v", "libx264",
-                "-preset", "ultrafast",
-                "-crf", "23",
-                "-c:a", "aac",
-                "-movflags", "+faststart",
-                "-loglevel", "error",
-                str(tmp),
-            ]
-            proc = await asyncio.create_subprocess_exec(
-                *cmd,
-                stdout=asyncio.subprocess.DEVNULL,
-                stderr=asyncio.subprocess.PIPE,
-            )
-            _, stderr = await proc.communicate()
-            if proc.returncode != 0:
-                tmp.unlink(missing_ok=True)
-                raise HTTPException(status_code=500,
-                                    detail=f"Transcode failed: {stderr.decode(errors='replace')[:500]}")
-            tmp.rename(cache_path)
-
-        await _transcode()
-
+    cache_path = await _ensure_h264_cache(resolved)
     return _serve_file_with_range(cache_path, request, "video/mp4")
