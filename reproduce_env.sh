@@ -19,6 +19,10 @@ PYTHON_VERSION=3.11
 NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
 NVM_VERSION="${NVM_VERSION:-v0.40.1}"
 NODE_VERSION="${NODE_VERSION:---lts}"
+# vite v8 (frontend) needs Node ^20.19 || >=22.12. The system /usr/bin/node on
+# some hosts is v12, which crashes vite with "SyntaxError: Unexpected token '.'".
+# Treat any node older than this major as unusable and install a newer one.
+REQUIRED_NODE_MAJOR="${REQUIRED_NODE_MAJOR:-20}"
 
 # --- helpers --------------------------------------------------------------
 
@@ -92,17 +96,33 @@ ensure_ffmpeg() {
     echo "ffmpeg installed: $(ffmpeg -version 2>&1 | head -1)"
 }
 
+node_ok() {
+    # True only if a node on PATH is new enough for vite (>= REQUIRED_NODE_MAJOR).
+    command -v node >/dev/null 2>&1 || return 1
+    local major
+    major="$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null)" || return 1
+    [ "${major:-0}" -ge "$REQUIRED_NODE_MAJOR" ] 2>/dev/null
+}
+
 ensure_npm() {
-    if command -v npm >/dev/null 2>&1; then
+    # An nvm node may already be installed but not on PATH (e.g. the shell
+    # didn't source nvm). Prefer it over a stale system node before deciding.
+    if ! node_ok && [[ -s "$NVM_DIR/nvm.sh" ]]; then
+        # shellcheck disable=SC1091
+        \. "$NVM_DIR/nvm.sh"
+        nvm use --lts >/dev/null 2>&1 || nvm use node >/dev/null 2>&1 || true
+    fi
+
+    if node_ok && command -v npm >/dev/null 2>&1; then
         echo "npm: $(command -v npm) ($(npm --version))  node: $(node --version)"
         return
     fi
 
-    # Source an existing nvm install if we have one.
-    if [[ -s "$NVM_DIR/nvm.sh" ]]; then
-        # shellcheck disable=SC1091
-        \. "$NVM_DIR/nvm.sh"
+    if command -v node >/dev/null 2>&1; then
+        echo "node $(node --version) is too old for vite (need Node >= ${REQUIRED_NODE_MAJOR}) — installing a newer one via nvm..."
     fi
+
+    # Install nvm if we don't have it, then install Node.
     if ! command -v nvm >/dev/null 2>&1; then
         echo "nvm not found — installing into ${NVM_DIR}..."
         export NVM_DIR
@@ -119,8 +139,8 @@ ensure_npm() {
     echo "Installing Node ${NODE_VERSION} via nvm..."
     nvm install "$NODE_VERSION"
     nvm use "$NODE_VERSION"
-    if ! command -v npm >/dev/null 2>&1; then
-        echo "error: npm still missing after nvm install." >&2
+    if ! node_ok; then
+        echo "error: node is still older than v${REQUIRED_NODE_MAJOR} after nvm install." >&2
         exit 1
     fi
     echo "node: $(node --version)  npm: $(npm --version)"

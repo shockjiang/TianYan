@@ -11,6 +11,20 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # PATH for the child uvicorn/vite processes regardless of shell config.
 export PATH="$HOME/.local/bin:$PATH"
 
+# vite v8 needs Node ^20.19 || >=22.12 (same floor as REQUIRED_NODE_MAJOR in
+# reproduce_env.sh). The system /usr/bin/node here is v12 and crashes vite with
+# "SyntaxError: Unexpected token '.'". Prefer the newest nvm-managed node that
+# clears that floor, so `npx vite` works even from a shell that never sourced
+# nvm. (reproduce_env.sh is what actually installs such a node.)
+REQUIRED_NODE_MAJOR=20
+for node_bin in $(ls -d "$HOME"/.nvm/versions/node/v*/bin 2>/dev/null | sort -Vr); do
+    node_major="${node_bin#*/node/v}"; node_major="${node_major%%.*}"
+    if [ "${node_major:-0}" -ge "$REQUIRED_NODE_MAJOR" ] 2>/dev/null; then
+        export PATH="$node_bin:$PATH"
+        break
+    fi
+done
+
 # Start backend (uses project-local .venv)
 cd "$SCRIPT_DIR/backend"
 "$SCRIPT_DIR/.venv/bin/uvicorn" main:app --host 0.0.0.0 --port 8000 --reload &
