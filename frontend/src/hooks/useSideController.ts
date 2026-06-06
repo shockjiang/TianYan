@@ -56,6 +56,10 @@ export function useSideController(
   const treeDataRef = useRef<FileNode | null>(state.treeData);
   useEffect(() => { treeDataRef.current = state.treeData; }, [state.treeData]);
 
+  // Forward ref to setRoot (defined below) so navigateToFile can delegate to
+  // it when a target lives outside the current root.
+  const setRootRef = useRef<(path: string) => Promise<void>>();
+
   const setTreeData = useCallback((updater: React.SetStateAction<FileNode | null>) => {
     setState(prev => ({
       ...prev,
@@ -108,9 +112,14 @@ export function useSideController(
 
   const navigateToFile = useCallback(async (filePath: string) => {
     const root = state.rootDir;
-    if (!root || !treeDataRef.current) return;
-    const normRoot = root.replace(/\/+$/, '');
-    if (!filePath.startsWith(normRoot)) return;
+    const normRoot = root ? root.replace(/\/+$/, '') : '';
+    // Target outside the current root (or no root loaded yet, e.g. a recent
+    // file from another directory): switch root to its parent and let the
+    // post-tree-load effect re-select it.
+    if (!root || !treeDataRef.current || !filePath.startsWith(normRoot)) {
+      await setRootRef.current?.(filePath);
+      return;
+    }
     const relative = filePath.slice(normRoot.length).replace(/^\//, '');
     if (!relative) return;
     const parts = relative.split('/');
@@ -200,6 +209,7 @@ export function useSideController(
     // the actual fetch. Do NOT call loadDirectory here — that produced two
     // concurrent fetches (one from here, one from the effect).
   }, [setState]);
+  useEffect(() => { setRootRef.current = setRoot; }, [setRoot]);
 
   const setViz = useCallback((mode: VizMode) => {
     setState(prev => ({ ...prev, vizMode: mode }));

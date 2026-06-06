@@ -14,6 +14,9 @@ interface TopPanelProps {
 
 export function TopPanel({ rootDir, selectedPath, dirHistory, vizMode, onRootSubmit, onVizChange }: TopPanelProps) {
   const [inputValue, setInputValue] = useState(rootDir);
+  // Tracks whether the user has typed since focusing. While untouched we show
+  // the full history (access-time ordered); once they type we filter by it.
+  const [typing, setTyping] = useState(false);
   useEffect(() => { setInputValue(rootDir); }, [rootDir]);
   const tupleTypes = getTupleTypes();
 
@@ -21,7 +24,20 @@ export function TopPanel({ rootDir, selectedPath, dirHistory, vizMode, onRootSub
     { value: 'single', label: 'Single File' },
     ...tupleTypes.map(t => ({ value: t.key, label: t.name })),
   ];
-  const historyOptions = dirHistory.map(h => ({ value: h, label: h }));
+  // Selecting loads the full path (`value`), but the dropdown shows just the
+  // basename so the list stays readable; the full path sits dimmed beneath.
+  const historyOptions = dirHistory.map(h => {
+    const name = h.replace(/\/+$/, '').split('/').pop() || h;
+    return {
+      value: h,
+      label: (
+        <div title={h} style={{ lineHeight: 1.2 }}>
+          <div style={{ fontWeight: 500 }}>{name}</div>
+          <div style={{ fontSize: 11, color: 'var(--text-secondary, #888)', overflow: 'hidden', textOverflow: 'ellipsis' }}>{h}</div>
+        </div>
+      ),
+    };
+  });
 
   const handleSubmit = () => {
     const trimmed = inputValue.trim();
@@ -80,12 +96,15 @@ export function TopPanel({ rootDir, selectedPath, dirHistory, vizMode, onRootSub
         style={{ flex: 1, minWidth: 200 }}
         value={inputValue}
         options={historyOptions}
-        onChange={setInputValue}
-        onSelect={(val: string) => { setInputValue(val); onRootSubmit(val); }}
+        onFocus={() => setTyping(false)}
+        onChange={val => { setInputValue(val); setTyping(true); }}
+        onSelect={(val: string) => { setInputValue(val); setTyping(false); onRootSubmit(val); }}
         placeholder="Enter root directory path..."
         onKeyDown={e => { if (e.key === 'Enter') handleSubmit(); }}
         filterOption={(input, option) =>
-          (option?.value as string)?.toLowerCase().includes(input.toLowerCase())
+          // Untouched (just focused): show the entire access-time-ordered
+          // history. Only narrow the list once the user actually types.
+          !typing || (option?.value as string)?.toLowerCase().includes(input.toLowerCase())
         }
       />
       <Button type="primary" size="small" onClick={handleSubmit}>Load</Button>

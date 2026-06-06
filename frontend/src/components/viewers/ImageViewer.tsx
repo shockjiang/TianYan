@@ -14,11 +14,30 @@ export function ImageViewer({ src, name }: ImageViewerProps) {
   useEffect(() => { setLoading(true); setError(false); }, [src]);
   const dragging = useRef(false);
   const lastPos = useRef({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+  // Live mirrors of scale/offset so the wheel handler can read current values
+  // without stale-closure deps. The image is flex-centred, so its transform
+  // origin sits at the container centre regardless of letterboxing.
+  const scaleRef = useRef(1);
+  const offsetRef = useRef({ x: 0, y: 0 });
+  const apply = (s: number, o: { x: number; y: number }) => {
+    scaleRef.current = s; offsetRef.current = o;
+    setScale(s); setOffset(o);
+  };
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
-    const delta = e.deltaY > 0 ? 0.9 : 1.1;
-    setScale(s => Math.max(0.1, Math.min(20, s * delta)));
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const s = scaleRef.current;
+    const o = offsetRef.current;
+    const ns = Math.max(0.1, Math.min(20, s * (e.deltaY > 0 ? 0.9 : 1.1)));
+    const ratio = ns / s;
+    // Cursor position relative to the container centre (= transform origin).
+    const vx = e.clientX - rect.left - rect.width / 2;
+    const vy = e.clientY - rect.top - rect.height / 2;
+    // Keep the content point under the cursor fixed across the scale change.
+    apply(ns, { x: vx - ratio * (vx - o.x), y: vy - ratio * (vy - o.y) });
   }, []);
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -27,18 +46,20 @@ export function ImageViewer({ src, name }: ImageViewerProps) {
   };
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!dragging.current) return;
-    setOffset(o => ({
+    const o = offsetRef.current;
+    apply(scaleRef.current, {
       x: o.x + e.clientX - lastPos.current.x,
       y: o.y + e.clientY - lastPos.current.y,
-    }));
+    });
     lastPos.current = { x: e.clientX, y: e.clientY };
   };
   const handleMouseUp = () => { dragging.current = false; };
 
-  const resetView = () => { setScale(1); setOffset({ x: 0, y: 0 }); };
+  const resetView = () => { apply(1, { x: 0, y: 0 }); };
 
   return (
     <div
+      ref={containerRef}
       style={{ flex: 1, overflow: 'hidden', position: 'relative', cursor: dragging.current ? 'grabbing' : 'grab' }}
       onWheel={handleWheel}
       onMouseDown={handleMouseDown}
