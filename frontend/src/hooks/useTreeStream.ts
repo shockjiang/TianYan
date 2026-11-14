@@ -1,3 +1,4 @@
+import { BASE } from '../base';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { FileNode } from '../types';
 
@@ -67,7 +68,7 @@ export function useTreeStream(
       setScanning(true);
       setScanProgress({ scanned: 0, elapsed: 0 });
 
-      const es = new EventSource(`/api/directory/stream?path=${encodeURIComponent(rootDir)}`);
+      const es = new EventSource(`${BASE}/api/directory/stream?path=${encodeURIComponent(rootDir)}`);
       esRef.current = es;
 
       es.onmessage = (e) => {

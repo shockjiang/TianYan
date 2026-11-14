@@ -1,3 +1,4 @@
+import { BASE } from '../base';
 import { Button, message } from 'antd';
 import { SunOutlined, MoonOutlined, FullscreenOutlined, ShareAltOutlined } from '@ant-design/icons';
 import type { Theme } from '../hooks/useTheme';
@@ -37,7 +38,7 @@ export function GlobalHeader({
       message.warning('No state to share yet');
       return;
     }
-    const blobPromise = fetch('/api/share', {
+    const blobPromise = fetch(`${BASE}/api/share`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(buildSharePayload()),
@@ -70,7 +71,7 @@ export function GlobalHeader({
       fontSize: 12,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <img src="/favicon.svg" alt="鹰眼" style={{ width: 20, height: 20 }} />
+        <img src={`${BASE}/favicon.svg`} alt="鹰眼" style={{ width: 20, height: 20 }} />
         <span style={{ color: 'var(--accent)', fontWeight: 700, fontSize: 14 }}>鹰眼</span>
       </div>
 

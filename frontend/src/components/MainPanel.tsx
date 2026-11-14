@@ -15,6 +15,7 @@ import { NpyViewer } from './viewers/NpyViewer';
 import { PlyViewer } from './viewers/PlyViewer';
 import { UsdViewer } from './viewers/UsdViewer';
 import { H5Viewer } from './viewers/H5Viewer';
+import { LmViewer, isLmDumpName } from '../tuples/Lm';
 import { HtmlViewer } from './viewers/HtmlViewer';
 import { getTupleByKey } from '../tuples/registry';
 import type { FileNode, VizMode, FileInfo } from '../types';
@@ -35,7 +36,7 @@ interface MainPanelProps {
 const PICKLE_EXTS = new Set(['.pkl', '.pickle', '.pth']);
 const NPY_EXTS = new Set(['.npy', '.npz']);
 
-type FileType = 'image' | 'depth' | 'mask' | 'json' | 'text' | 'video' | 'pickle' | 'tabular' | 'npy' | 'ply' | 'usd' | 'h5' | 'html' | 'unknown';
+type FileType = 'image' | 'depth' | 'mask' | 'json' | 'text' | 'video' | 'pickle' | 'tabular' | 'npy' | 'ply' | 'usd' | 'h5' | 'lm' | 'html' | 'unknown';
 
 function detectFileType(node: FileNode): FileType {
   const ext = node.extension || '';
@@ -46,8 +47,9 @@ function detectFileType(node: FileNode): FileType {
   if (PLY_EXTS.has(ext)) return 'ply';
   if (USD_EXTS.has(ext)) return 'usd';
 
-  // HDF5
-  if (H5_EXTS.has(ext)) return 'h5';
+  // HDF5 — loco-manip training dumps (lm_step_*.h5 / step_*.h5) get the
+  // purpose-built LM viewer; every other .h5 falls through to the generic one.
+  if (H5_EXTS.has(ext)) return isLmDumpName(nameLower) ? 'lm' : 'h5';
 
   // HTML (rendered) — checked before TEXT_EXTS so .html doesn't fall to text
   if (HTML_EXTS.has(ext)) return 'html';
@@ -329,6 +331,7 @@ export function MainPanel({ selectedNode, vizMode, treeData, apiBase, rootDir, a
       {fileType === 'ply' && <PlyViewer src={fileSrc} name={selectedNode.name} />}
       {fileType === 'usd' && <UsdViewer src={fileSrc} name={selectedNode.name} apiBase={apiBase} path={selectedNode.path} />}
       {fileType === 'h5' && <H5Viewer path={selectedNode.path} name={selectedNode.name} apiBase={apiBase} onCurrentKeyChange={onCurrentDatasetKeyChange} />}
+      {fileType === 'lm' && <LmViewer match={{ label: selectedNode.name, files: { h5: selectedNode.path }, confidence: 1.0 }} apiBase={apiBase} />}
       {fileType === 'html' && <HtmlViewer path={selectedNode.path} name={selectedNode.name} apiBase={apiBase} />}
       {fileType === 'tabular' && <TabularViewer path={selectedNode.path} name={selectedNode.name} apiBase={apiBase} />}
       {fileType === 'video' && <VideoViewer src={`${apiBase}/api/video?path=${encodeURIComponent(selectedNode.path)}`} name={selectedNode.name} autoplay={autoplay} />}

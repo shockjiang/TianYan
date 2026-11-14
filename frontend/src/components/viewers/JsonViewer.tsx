@@ -1,3 +1,4 @@
+import { BASE } from '../../base';
 import { useState, useEffect, useMemo } from 'react';
 import { JsonView, darkStyles } from 'react-json-view-lite';
 import 'react-json-view-lite/dist/index.css';
@@ -49,7 +50,7 @@ export function JsonViewer({ src, name }: JsonViewerProps) {
 
     // First, get preview to check file size
     if (!filePath) return;
-    fetch(`/api/text-preview?path=${encodeURIComponent(filePath)}&head_n=10&tail_n=10`)
+    fetch(`${BASE}/api/text-preview?path=${encodeURIComponent(filePath)}&head_n=10&tail_n=10`)
       .then(r => r.ok ? r.json() : r.json().then(d => { throw new Error(d.detail); }))
       .then((p: PreviewData) => {
         setPreview(p);

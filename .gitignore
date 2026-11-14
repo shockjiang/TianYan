@@ -4,3 +4,4 @@ aliases.json
 shares.json
 node_modules/
 dist/
+backend/.exps_chat/

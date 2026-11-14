@@ -1,3 +1,4 @@
+import { BASE } from '../base';
 import { useEffect, useRef } from 'react';
 
 export interface UrlSide {
@@ -26,7 +27,7 @@ export async function buildShareUrl(state: { a: UrlSide; b?: UrlSide | null }): 
           b: { root: state.b.root, file: state.b.file || null, viz: state.b.viz || null },
         }
       : { a: { root: state.a.root, file: state.a.file || null, viz: state.a.viz || null } };
-    const res = await fetch('/api/share', {
+    const res = await fetch(`${BASE}/api/share`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -47,7 +48,7 @@ export async function buildShareUrl(state: { a: UrlSide; b?: UrlSide | null }): 
 
 async function resolveShare(code: string): Promise<{ a: UrlSide; b?: UrlSide } | null> {
   try {
-    const res = await fetch(`/api/share/${encodeURIComponent(code)}`);
+    const res = await fetch(`${BASE}/api/share/${encodeURIComponent(code)}`);
     if (res.ok) {
       const data = await res.json();
       if (data.a && data.a.root) {
@@ -75,7 +76,7 @@ async function getOrCreateAlias(root: string): Promise<string> {
   const cached = aliasCache.get(normRoot);
   if (cached) return cached;
   try {
-    const res = await fetch('/api/alias', {
+    const res = await fetch(`${BASE}/api/alias`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ path: normRoot }),
@@ -91,7 +92,7 @@ async function getOrCreateAlias(root: string): Promise<string> {
 
 async function resolveAlias(id: string): Promise<string | null> {
   try {
-    const res = await fetch(`/api/alias/${encodeURIComponent(id)}`);
+    const res = await fetch(`${BASE}/api/alias/${encodeURIComponent(id)}`);
     if (res.ok) {
       const data = await res.json();
       aliasCache.set(data.path, id);
@@ -160,7 +161,7 @@ async function resolveSideFromAlias(seg: string): Promise<UrlSide | null> {
   // If the alias itself points at a file (legacy or hand-crafted URL),
   // redirect to its parent directory and select the file.
   try {
-    const r = await fetch(`/api/path-info?path=${encodeURIComponent(aliasPath)}`);
+    const r = await fetch(`${BASE}/api/path-info?path=${encodeURIComponent(aliasPath)}`);
     if (r.ok) {
       const info = await r.json() as { type: 'file' | 'directory'; parent: string; path: string };
       if (info.type === 'file') {

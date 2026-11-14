@@ -12,12 +12,18 @@ interface TopPanelProps {
   onVizChange: (mode: VizMode) => void;
 }
 
+/** The root is displayed with a trailing "/" so a relative path can be pasted
+ *  straight onto the end. It is stripped again on submit: addToHistory dedupes
+ *  by exact string, so "/a/b" and "/a/b/" would otherwise become two rows. */
+const withSlash = (p: string) => (p ? p.replace(/\/+$/, '') + '/' : '');
+const stripSlash = (p: string) => p.replace(/\/+$/, '') || '/';
+
 export function TopPanel({ rootDir, selectedPath, dirHistory, vizMode, onRootSubmit, onVizChange }: TopPanelProps) {
-  const [inputValue, setInputValue] = useState(rootDir);
+  const [inputValue, setInputValue] = useState(withSlash(rootDir));
   // Tracks whether the user has typed since focusing. While untouched we show
   // the full history (access-time ordered); once they type we filter by it.
   const [typing, setTyping] = useState(false);
-  useEffect(() => { setInputValue(rootDir); }, [rootDir]);
+  useEffect(() => { setInputValue(withSlash(rootDir)); }, [rootDir]);
   const tupleTypes = getTupleTypes();
 
   const vizOptions = [
@@ -41,7 +47,7 @@ export function TopPanel({ rootDir, selectedPath, dirHistory, vizMode, onRootSub
 
   const handleSubmit = () => {
     const trimmed = inputValue.trim();
-    if (trimmed) onRootSubmit(trimmed);
+    if (trimmed) onRootSubmit(stripSlash(trimmed));
   };
 
   const handleOpenClipboard = async () => {
@@ -65,8 +71,8 @@ export function TopPanel({ rootDir, selectedPath, dirHistory, vizMode, onRootSub
       message.warning('No path provided');
       return;
     }
-    setInputValue(oneLine);
-    onRootSubmit(oneLine);
+    setInputValue(withSlash(oneLine));
+    onRootSubmit(stripSlash(oneLine));
   };
 
   const handleNewTab = () => {
@@ -98,14 +104,20 @@ export function TopPanel({ rootDir, selectedPath, dirHistory, vizMode, onRootSub
         options={historyOptions}
         onFocus={() => setTyping(false)}
         onChange={val => { setInputValue(val); setTyping(true); }}
-        onSelect={(val: string) => { setInputValue(val); setTyping(false); onRootSubmit(val); }}
+        onSelect={(val: string) => { setInputValue(withSlash(val)); setTyping(false); onRootSubmit(stripSlash(val)); }}
         placeholder="Enter root directory path..."
         onKeyDown={e => { if (e.key === 'Enter') handleSubmit(); }}
-        filterOption={(input, option) =>
+        filterOption={(input, option) => {
           // Untouched (just focused): show the entire access-time-ordered
           // history. Only narrow the list once the user actually types.
-          !typing || (option?.value as string)?.toLowerCase().includes(input.toLowerCase())
-        }
+          if (!typing) return true;
+          const v = (option?.value as string)?.toLowerCase() ?? '';
+          const q = input.toLowerCase();
+          // History rows carry no trailing slash, so a sibling suffix typed onto
+          // "/a/b/" reads as "/a/b/2" and would match nothing. Drop the last "/"
+          // as an alternate so "/a/b2" stays reachable.
+          return v.includes(q) || v.includes(q.replace(/\/(?=[^/]*$)/, ''));
+        }}
       />
       <Button type="primary" size="small" onClick={handleSubmit}>Load</Button>
       <Button

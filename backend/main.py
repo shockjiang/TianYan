@@ -13,9 +13,14 @@ from api.npy import router as npy_router
 from api.text_preview import router as text_preview_router
 from api.usd import router as usd_router
 from api.h5 import router as h5_router
+from api.lm import router as lm_router
 from api.upload import router as upload_router
 from api.rename import router as rename_router
 from api.export_mp4 import router as export_mp4_router
+from api.exps import router as exps_router
+from api.exps_chat import router as exps_chat_router
+from api.exp_tags import router as exp_tags_router
+from api.running import router as running_router
 
 app = FastAPI(title="TianYan API")
 
@@ -37,9 +42,14 @@ app.include_router(npy_router)
 app.include_router(text_preview_router)
 app.include_router(usd_router)
 app.include_router(h5_router)
+app.include_router(lm_router)
 app.include_router(upload_router)
 app.include_router(rename_router)
 app.include_router(export_mp4_router)
+app.include_router(exps_router)
+app.include_router(exps_chat_router)
+app.include_router(exp_tags_router)
+app.include_router(running_router)
 
 
 @app.get("/api/health")

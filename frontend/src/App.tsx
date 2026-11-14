@@ -1,3 +1,4 @@
+import { BASE } from './base';
 import { useState, useEffect } from 'react';
 import { ConfigProvider, theme as antdTheme } from 'antd';
 import { GlobalHeader } from './components/GlobalHeader';
@@ -173,7 +174,7 @@ function App() {
               fullscreen={fullscreen}
               treeWidth={leftWidth}
               onTreeWidthChange={sideB ? undefined : handleLeftWidthChange}
-              apiBase=""
+              apiBase={BASE}
             />
           </div>
           {sideB && (
@@ -199,7 +200,7 @@ function App() {
                   gridScale={gridScale}
                   fullscreen={fullscreen}
                   treeWidth={leftWidth}
-                  apiBase=""
+                  apiBase={BASE}
                 />
               </div>
             </>

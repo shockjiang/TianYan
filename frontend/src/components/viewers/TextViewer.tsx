@@ -1,3 +1,4 @@
+import { BASE } from '../../base';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism-tomorrow.css';
@@ -124,7 +125,7 @@ export function TextViewer({ src, name }: TextViewerProps) {
     setFullText(null);
     setError(null);
     if (!filePath) return;
-    fetch(`/api/text-preview?path=${encodeURIComponent(filePath)}&head_n=${headN}&tail_n=${tailN}`)
+    fetch(`${BASE}/api/text-preview?path=${encodeURIComponent(filePath)}&head_n=${headN}&tail_n=${tailN}`)
       .then(r => {
         if (!r.ok) return r.json().then(d => { throw new Error(d.detail || 'Failed'); });
         return r.json();

@@ -1,9 +1,10 @@
+import { BASE } from '../base';
 import { useCallback, useEffect, useRef } from 'react';
 import { message } from 'antd';
 import type { FileNode, SideState, VizMode } from '../types';
 import { useTreeStream } from './useTreeStream';
 
-const API_BASE = '';
+const API_BASE = BASE;
 
 function mergeChildren(tree: FileNode, targetPath: string, children: FileNode[]): FileNode {
   if (tree.path === targetPath) {

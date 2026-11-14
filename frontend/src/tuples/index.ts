@@ -4,6 +4,7 @@ import { RgbMaskViewer } from './RgbMask';
 import { RgbDepthViewer } from './RgbDepth';
 import { RgbMaskDepthViewer } from './RgbMaskDepth';
 import { RgbJsonViewer } from './RgbJson';
+import { LmViewer, lmMatcher } from './Lm';
 
 const IMAGE_EXTS = ['.png', '.jpg', '.jpeg', '.bmp', '.webp'];
 
@@ -79,4 +80,13 @@ registerTuple({
     })
   ),
   component: RgbJsonViewer,
+});
+
+// LM training dump (debug_dumps/step_*.h5)
+registerTuple({
+  name: 'LM',
+  key: 'lm',
+  roles: ['h5'],
+  matcher: lmMatcher,
+  component: LmViewer,
 });
