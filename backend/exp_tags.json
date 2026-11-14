@@ -1,0 +1,3099 @@
+{
+  "v15-enc-g24-TS10181504-898e796": [
+    {
+      "tag": "best",
+      "by": "user",
+      "t": 1792401454.1640527
+    },
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.165931,
+      "note": "\u4ece v13-heads-box@2000 \u70ed\u542f\u52a8\uff0c\u5b9e\u673a\u8f83\u597d\uff0c\u7528\u6237\u6807 best"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.165932,
+      "note": "\u4ece v13-heads-box@2000 \u70ed\u542f\u52a8\uff0c\u5b9e\u673a\u8f83\u597d\uff0c\u7528\u6237\u6807 best"
+    },
+    {
+      "tag": "enc",
+      "by": "claude",
+      "t": 1792401731.1659322,
+      "note": "\u4ece v13-heads-box@2000 \u70ed\u542f\u52a8\uff0c\u5b9e\u673a\u8f83\u597d\uff0c\u7528\u6237\u6807 best"
+    },
+    {
+      "tag": "real-good",
+      "by": "claude",
+      "t": 1792401731.165933,
+      "note": "\u4ece v13-heads-box@2000 \u70ed\u542f\u52a8\uff0c\u5b9e\u673a\u8f83\u597d\uff0c\u7528\u6237\u6807 best"
+    },
+    {
+      "tag": "deployed",
+      "by": "claude",
+      "t": 1792401731.1659336,
+      "note": "\u4ece v13-heads-box@2000 \u70ed\u542f\u52a8\uff0c\u5b9e\u673a\u8f83\u597d\uff0c\u7528\u6237\u6807 best"
+    },
+    {
+      "tag": "ep-v15-enc",
+      "by": "claude",
+      "t": 1792401770.071184,
+      "note": "served at /v15-enc/ (ckpt 4000) on huzhou4090"
+    },
+    {
+      "tag": "top3-box",
+      "by": "claude",
+      "t": 1792552434.4574804
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.457483
+    }
+  ],
+  "v12-pi-sparse-box-TS10171621-1f314ce": [
+    {
+      "tag": "best",
+      "by": "user",
+      "t": 1792401454.1640542
+    },
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.1947625,
+      "note": "\u5e26\u6846\u53e0\u52a0\u7684\u7a00\u758f\u6570\u636e\u57fa\u7ebf\uff0c\u5b9e\u673a\u8f83\u597d\uff0c\u662f v13 \u7684\u7236\u6a21\u578b"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.1947632,
+      "note": "\u5e26\u6846\u53e0\u52a0\u7684\u7a00\u758f\u6570\u636e\u57fa\u7ebf\uff0c\u5b9e\u673a\u8f83\u597d\uff0c\u662f v13 \u7684\u7236\u6a21\u578b"
+    },
+    {
+      "tag": "sparse",
+      "by": "claude",
+      "t": 1792401731.1947637,
+      "note": "\u5e26\u6846\u53e0\u52a0\u7684\u7a00\u758f\u6570\u636e\u57fa\u7ebf\uff0c\u5b9e\u673a\u8f83\u597d\uff0c\u662f v13 \u7684\u7236\u6a21\u578b"
+    },
+    {
+      "tag": "bbox",
+      "by": "claude",
+      "t": 1792401731.1947641,
+      "note": "\u5e26\u6846\u53e0\u52a0\u7684\u7a00\u758f\u6570\u636e\u57fa\u7ebf\uff0c\u5b9e\u673a\u8f83\u597d\uff0c\u662f v13 \u7684\u7236\u6a21\u578b"
+    },
+    {
+      "tag": "real-good",
+      "by": "claude",
+      "t": 1792401731.1947646,
+      "note": "\u5e26\u6846\u53e0\u52a0\u7684\u7a00\u758f\u6570\u636e\u57fa\u7ebf\uff0c\u5b9e\u673a\u8f83\u597d\uff0c\u662f v13 \u7684\u7236\u6a21\u578b"
+    },
+    {
+      "tag": "deployed",
+      "by": "claude",
+      "t": 1792401770.0692048,
+      "note": "served at /v12-pi-sparse-box/ (ckpt 7000) on huzhou4090"
+    },
+    {
+      "tag": "ep-v12-pi-sparse-box",
+      "by": "claude",
+      "t": 1792401770.0692058,
+      "note": "served at /v12-pi-sparse-box/ (ckpt 7000) on huzhou4090"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.5584688
+    },
+    {
+      "tag": "locating-good",
+      "by": "user",
+      "t": 1792555397.0009985,
+      "note": "\u771f\u673a\u53cd\u9988\uff1a\u5b9a\u4f4d\u51c6\uff08\u90e8\u7f72 /v12-pi-sparse-box/ @8000\uff09"
+    },
+    {
+      "tag": "loose-catch",
+      "by": "user",
+      "t": 1792555397.0104454,
+      "note": "\u771f\u673a\u53cd\u9988\uff1a\u5939\u722a\u6ca1\u5939\u7d27\u3002\u65e5\u5fd7\uff1a\u6301\u63e1\u65f6\u5939\u722a\u6307\u4ee4=0.0\uff08\u5168\u95ed\uff0c\u4e0e v13/v15 \u76f8\u540c\uff09\uff0c\u5b9e\u6d4b\u5bbd\u5ea6 p50 0.030 / p75 0.031\uff0c\u6bd4 v13 \u5bbd\u7ea6 1 mm\uff1b\u8155\u90e8\u56fe\u50cf\u663e\u793a\u6307\u5c16\u5e38\u5939\u5728\u76d2\u5b50\u8fd1\u7aef\u3001\u76d2\u5b50\u76f8\u5bf9\u624b\u6307\u7565\u8f6c"
+    }
+  ],
+  "pi05-ubt-boxpickrot-ifprop16g-TS10150257-fadbf81": [
+    {
+      "tag": "best",
+      "by": "user",
+      "t": 1792401454.1640491
+    },
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.3742168,
+      "note": "IF-B \u672c\u4f53\u52a8\u4f5c\uff0c\u4ee5 V2 \u90e8\u7f72\uff0c\u5b9e\u673a\u8f83\u597d\uff0c\u7528\u6237\u6807 best"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.3742175,
+      "note": "IF-B \u672c\u4f53\u52a8\u4f5c\uff0c\u4ee5 V2 \u90e8\u7f72\uff0c\u5b9e\u673a\u8f83\u597d\uff0c\u7528\u6237\u6807 best"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.3742177,
+      "note": "IF-B \u672c\u4f53\u52a8\u4f5c\uff0c\u4ee5 V2 \u90e8\u7f72\uff0c\u5b9e\u673a\u8f83\u597d\uff0c\u7528\u6237\u6807 best"
+    },
+    {
+      "tag": "ifb",
+      "by": "claude",
+      "t": 1792401731.374218,
+      "note": "IF-B \u672c\u4f53\u52a8\u4f5c\uff0c\u4ee5 V2 \u90e8\u7f72\uff0c\u5b9e\u673a\u8f83\u597d\uff0c\u7528\u6237\u6807 best"
+    },
+    {
+      "tag": "real-good",
+      "by": "claude",
+      "t": 1792401731.3742185,
+      "note": "IF-B \u672c\u4f53\u52a8\u4f5c\uff0c\u4ee5 V2 \u90e8\u7f72\uff0c\u5b9e\u673a\u8f83\u597d\uff0c\u7528\u6237\u6807 best"
+    },
+    {
+      "tag": "deployed",
+      "by": "claude",
+      "t": 1792401770.058201,
+      "note": "served at /v2-IF/ (ckpt 15000) on huzhou4090"
+    },
+    {
+      "tag": "ep-v2-IF",
+      "by": "claude",
+      "t": 1792401770.0582037,
+      "note": "served at /v2-IF/ (ckpt 15000) on huzhou4090"
+    }
+  ],
+  "v17-pi-frz-noval-g48-TS10190851-d1f6b24": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.1410017,
+      "note": "exps.md\uff1av17-pi-frz \u7559\u51fa\u9a8c\u8bc1\u96c6\u540e\u91cd\u542f\uff0c\u51bb\u7ed3\u89c6\u89c9\u3001\u4ece base \u8bad\u7ec3"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.141004,
+      "note": "exps.md\uff1av17-pi-frz \u7559\u51fa\u9a8c\u8bc1\u96c6\u540e\u91cd\u542f\uff0c\u51bb\u7ed3\u89c6\u89c9\u3001\u4ece base \u8bad\u7ec3"
+    },
+    {
+      "tag": "baseline",
+      "by": "claude",
+      "t": 1792401731.1410048,
+      "note": "exps.md\uff1av17-pi-frz \u7559\u51fa\u9a8c\u8bc1\u96c6\u540e\u91cd\u542f\uff0c\u51bb\u7ed3\u89c6\u89c9\u3001\u4ece base \u8bad\u7ec3"
+    },
+    {
+      "tag": "frz-vis",
+      "by": "claude",
+      "t": 1792401731.141005,
+      "note": "exps.md\uff1av17-pi-frz \u7559\u51fa\u9a8c\u8bc1\u96c6\u540e\u91cd\u542f\uff0c\u51bb\u7ed3\u89c6\u89c9\u3001\u4ece base \u8bad\u7ec3"
+    },
+    {
+      "tag": "noval",
+      "by": "claude",
+      "t": 1792401731.1410055,
+      "note": "exps.md\uff1av17-pi-frz \u7559\u51fa\u9a8c\u8bc1\u96c6\u540e\u91cd\u542f\uff0c\u51bb\u7ed3\u89c6\u89c9\u3001\u4ece base \u8bad\u7ec3"
+    },
+    {
+      "tag": "all-box",
+      "by": "claude",
+      "t": 1792552434.3870783
+    }
+  ],
+  "v17-pi-frz-g48-TS10190831-ec9b91a": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.1438446,
+      "note": "step 0 \u5373\u53d6\u6d88\uff0c\u88ab noval \u7248\u672c\u53d6\u4ee3"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.143846,
+      "note": "step 0 \u5373\u53d6\u6d88\uff0c\u88ab noval \u7248\u672c\u53d6\u4ee3"
+    },
+    {
+      "tag": "frz-vis",
+      "by": "claude",
+      "t": 1792401731.143847,
+      "note": "step 0 \u5373\u53d6\u6d88\uff0c\u88ab noval \u7248\u672c\u53d6\u4ee3"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.1438472,
+      "note": "step 0 \u5373\u53d6\u6d88\uff0c\u88ab noval \u7248\u672c\u53d6\u4ee3"
+    },
+    {
+      "tag": "all-box",
+      "by": "claude",
+      "t": 1792552434.389961
+    }
+  ],
+  "v17-pi-frz-g48-TS10190829-59e5568": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.1465693,
+      "note": "\u65e0\u8bad\u7ec3\u8bb0\u5f55\uff0c\u542f\u52a8\u5931\u8d25\u540e\u88ab\u91cd\u63d0"
+    },
+    {
+      "tag": "frz-vis",
+      "by": "claude",
+      "t": 1792401731.14657,
+      "note": "\u65e0\u8bad\u7ec3\u8bb0\u5f55\uff0c\u542f\u52a8\u5931\u8d25\u540e\u88ab\u91cd\u63d0"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.1465704,
+      "note": "\u65e0\u8bad\u7ec3\u8bb0\u5f55\uff0c\u542f\u52a8\u5931\u8d25\u540e\u88ab\u91cd\u63d0"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.1465707,
+      "note": "\u65e0\u8bad\u7ec3\u8bb0\u5f55\uff0c\u542f\u52a8\u5931\u8d25\u540e\u88ab\u91cd\u63d0"
+    }
+  ],
+  "v16-box-same-shake-g48-TS10190546-7026415-r2000": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.1493475,
+      "note": "r2000 \u7eed\u8bad\u52a0\u6297\u6296\u589e\u5f3a\uff0c\u5b9e\u673a\u6548\u679c\u8f83\u5dee"
+    },
+    {
+      "tag": "resume",
+      "by": "claude",
+      "t": 1792401731.1493485,
+      "note": "r2000 \u7eed\u8bad\u52a0\u6297\u6296\u589e\u5f3a\uff0c\u5b9e\u673a\u6548\u679c\u8f83\u5dee"
+    },
+    {
+      "tag": "ablation-shake-aug",
+      "by": "claude",
+      "t": 1792401731.1493492,
+      "note": "r2000 \u7eed\u8bad\u52a0\u6297\u6296\u589e\u5f3a\uff0c\u5b9e\u673a\u6548\u679c\u8f83\u5dee"
+    },
+    {
+      "tag": "bbox",
+      "by": "claude",
+      "t": 1792401731.1493495,
+      "note": "r2000 \u7eed\u8bad\u52a0\u6297\u6296\u589e\u5f3a\uff0c\u5b9e\u673a\u6548\u679c\u8f83\u5dee"
+    },
+    {
+      "tag": "real-bad",
+      "by": "claude",
+      "t": 1792401731.1493497,
+      "note": "r2000 \u7eed\u8bad\u52a0\u6297\u6296\u589e\u5f3a\uff0c\u5b9e\u673a\u6548\u679c\u8f83\u5dee"
+    },
+    {
+      "tag": "deployed",
+      "by": "claude",
+      "t": 1792401770.0770783,
+      "note": "served at /v16-box-same/ (ckpt 3000) on huzhou4090"
+    },
+    {
+      "tag": "ep-v16-box-same",
+      "by": "claude",
+      "t": 1792401770.0770793,
+      "note": "served at /v16-box-same/ (ckpt 3000) on huzhou4090"
+    },
+    {
+      "tag": "all-box",
+      "by": "claude",
+      "t": 1792552434.3934634
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.3934667
+    }
+  ],
+  "v16-box-same-g48-TS10190314-a22d209-r500": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.152059,
+      "note": "\u4ece v15-fullft@4000 \u70ed\u542f\u52a8\u7684\u540c\u8272\u5168\u6846\u53e0\u52a0\uff0c\u88ab rotr/shake \u7eed\u8bad\u53d6\u4ee3"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.1520603,
+      "note": "\u4ece v15-fullft@4000 \u70ed\u542f\u52a8\u7684\u540c\u8272\u5168\u6846\u53e0\u52a0\uff0c\u88ab rotr/shake \u7eed\u8bad\u53d6\u4ee3"
+    },
+    {
+      "tag": "ablation-box-same",
+      "by": "claude",
+      "t": 1792401731.1520607,
+      "note": "\u4ece v15-fullft@4000 \u70ed\u542f\u52a8\u7684\u540c\u8272\u5168\u6846\u53e0\u52a0\uff0c\u88ab rotr/shake \u7eed\u8bad\u53d6\u4ee3"
+    },
+    {
+      "tag": "bbox",
+      "by": "claude",
+      "t": 1792401731.152061,
+      "note": "\u4ece v15-fullft@4000 \u70ed\u542f\u52a8\u7684\u540c\u8272\u5168\u6846\u53e0\u52a0\uff0c\u88ab rotr/shake \u7eed\u8bad\u53d6\u4ee3"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.1520612,
+      "note": "\u4ece v15-fullft@4000 \u70ed\u542f\u52a8\u7684\u540c\u8272\u5168\u6846\u53e0\u52a0\uff0c\u88ab rotr/shake \u7eed\u8bad\u53d6\u4ee3"
+    },
+    {
+      "tag": "all-box",
+      "by": "claude",
+      "t": 1792552434.3982615
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.3982642
+    }
+  ],
+  "v16-box-same-g24-TS10190313-a22d209-r500": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.1548328,
+      "note": "g24 \u7248\u672c\u542f\u52a8\u5931\u8d25\uff0c\u6539\u7528 g48"
+    },
+    {
+      "tag": "ablation-box-same",
+      "by": "claude",
+      "t": 1792401731.1548336,
+      "note": "g24 \u7248\u672c\u542f\u52a8\u5931\u8d25\uff0c\u6539\u7528 g48"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.1548343,
+      "note": "g24 \u7248\u672c\u542f\u52a8\u5931\u8d25\uff0c\u6539\u7528 g48"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.1548347,
+      "note": "g24 \u7248\u672c\u542f\u52a8\u5931\u8d25\uff0c\u6539\u7528 g48"
+    }
+  ],
+  "v16-box-all-g24-TS10190201-d5aa2fa": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.157612,
+      "note": "\u4ece v15-fullft \u70ed\u542f\u52a8\u7684\u5168\u6846\u53e0\u52a0\uff0c\u88ab box-same \u53d6\u4ee3"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.157613,
+      "note": "\u4ece v15-fullft \u70ed\u542f\u52a8\u7684\u5168\u6846\u53e0\u52a0\uff0c\u88ab box-same \u53d6\u4ee3"
+    },
+    {
+      "tag": "ablation-box-all",
+      "by": "claude",
+      "t": 1792401731.1576135,
+      "note": "\u4ece v15-fullft \u70ed\u542f\u52a8\u7684\u5168\u6846\u53e0\u52a0\uff0c\u88ab box-same \u53d6\u4ee3"
+    },
+    {
+      "tag": "bbox",
+      "by": "claude",
+      "t": 1792401731.1576138,
+      "note": "\u4ece v15-fullft \u70ed\u542f\u52a8\u7684\u5168\u6846\u53e0\u52a0\uff0c\u88ab box-same \u53d6\u4ee3"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.1576142,
+      "note": "\u4ece v15-fullft \u70ed\u542f\u52a8\u7684\u5168\u6846\u53e0\u52a0\uff0c\u88ab box-same \u53d6\u4ee3"
+    },
+    {
+      "tag": "deployed",
+      "by": "claude",
+      "t": 1792401770.0751662,
+      "note": "served at /v16-box-all/ (ckpt 500) on huzhou4090"
+    },
+    {
+      "tag": "ep-v16-box-all",
+      "by": "claude",
+      "t": 1792401770.0751672,
+      "note": "served at /v16-box-all/ (ckpt 500) on huzhou4090"
+    },
+    {
+      "tag": "all-box",
+      "by": "claude",
+      "t": 1792552434.402295
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.4022968
+    }
+  ],
+  "v15-pi-rtc-g24-TS10182047-7c3eef2": [
+    {
+      "tag": "pi0.5-rtc",
+      "by": "claude",
+      "t": 1792401731.160329,
+      "note": "model:PI05RTC\uff0c\u8bad\u7ec3\u65f6 RTC \u6d88\u878d"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.16033,
+      "note": "model:PI05RTC\uff0c\u8bad\u7ec3\u65f6 RTC \u6d88\u878d"
+    },
+    {
+      "tag": "rtc",
+      "by": "claude",
+      "t": 1792401731.1603305,
+      "note": "model:PI05RTC\uff0c\u8bad\u7ec3\u65f6 RTC \u6d88\u878d"
+    },
+    {
+      "tag": "ablation-rtc",
+      "by": "claude",
+      "t": 1792401731.1603308,
+      "note": "model:PI05RTC\uff0c\u8bad\u7ec3\u65f6 RTC \u6d88\u878d"
+    },
+    {
+      "tag": "frz-vis",
+      "by": "claude",
+      "t": 1792401731.160331,
+      "note": "model:PI05RTC\uff0c\u8bad\u7ec3\u65f6 RTC \u6d88\u878d"
+    },
+    {
+      "tag": "top3-box",
+      "by": "claude",
+      "t": 1792552434.4060495
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.4060512
+    }
+  ],
+  "v15-fullft-pi-g24-TS10182015-7c3eef2": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.1631444,
+      "note": "\u4e0d\u51bb\u7ed3\u89c6\u89c9\u7684\u5168\u53c2\u5fae\u8c03\u6d88\u878d\uff0c\u662f v16 \u7684\u7236\u6a21\u578b"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.1631455,
+      "note": "\u4e0d\u51bb\u7ed3\u89c6\u89c9\u7684\u5168\u53c2\u5fae\u8c03\u6d88\u878d\uff0c\u662f v16 \u7684\u7236\u6a21\u578b"
+    },
+    {
+      "tag": "ablation-fullft",
+      "by": "claude",
+      "t": 1792401731.1631458,
+      "note": "\u4e0d\u51bb\u7ed3\u89c6\u89c9\u7684\u5168\u53c2\u5fae\u8c03\u6d88\u878d\uff0c\u662f v16 \u7684\u7236\u6a21\u578b"
+    },
+    {
+      "tag": "heads",
+      "by": "claude",
+      "t": 1792401731.163146,
+      "note": "\u4e0d\u51bb\u7ed3\u89c6\u89c9\u7684\u5168\u53c2\u5fae\u8c03\u6d88\u878d\uff0c\u662f v16 \u7684\u7236\u6a21\u578b"
+    },
+    {
+      "tag": "deployed",
+      "by": "claude",
+      "t": 1792401770.0731606,
+      "note": "served at /v15-fullft-pi/ (ckpt 4000) on huzhou4090"
+    },
+    {
+      "tag": "ep-v15-fullft-pi",
+      "by": "claude",
+      "t": 1792401770.073162,
+      "note": "served at /v15-fullft-pi/ (ckpt 4000) on huzhou4090"
+    },
+    {
+      "tag": "top3-box",
+      "by": "claude",
+      "t": 1792552434.452081
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.4520826
+    }
+  ],
+  "v14-recovery-g24-TS10181503-c3cf34f": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.168771,
+      "note": "\u4ece v13-heads-box@2000 \u70ed\u542f\u52a8\u7684\u5931\u8d25\u6062\u590d\u6570\u636e\u6d88\u878d"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.168772,
+      "note": "\u4ece v13-heads-box@2000 \u70ed\u542f\u52a8\u7684\u5931\u8d25\u6062\u590d\u6570\u636e\u6d88\u878d"
+    },
+    {
+      "tag": "recovery",
+      "by": "claude",
+      "t": 1792401731.1687727,
+      "note": "\u4ece v13-heads-box@2000 \u70ed\u542f\u52a8\u7684\u5931\u8d25\u6062\u590d\u6570\u636e\u6d88\u878d"
+    },
+    {
+      "tag": "ablation-recovery",
+      "by": "claude",
+      "t": 1792401731.168773,
+      "note": "\u4ece v13-heads-box@2000 \u70ed\u542f\u52a8\u7684\u5931\u8d25\u6062\u590d\u6570\u636e\u6d88\u878d"
+    },
+    {
+      "tag": "frz-vis",
+      "by": "claude",
+      "t": 1792401731.1687732,
+      "note": "\u4ece v13-heads-box@2000 \u70ed\u542f\u52a8\u7684\u5931\u8d25\u6062\u590d\u6570\u636e\u6d88\u878d"
+    },
+    {
+      "tag": "top3-box",
+      "by": "claude",
+      "t": 1792552434.461328
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.4613297
+    }
+  ],
+  "v14-recovery-g40-TS10181449-c3cf34f": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.1716032,
+      "note": "\u542f\u52a8\u5373\u53d6\u6d88\uff0c\u6539\u6210 g24 \u7248\u672c"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.171604,
+      "note": "\u542f\u52a8\u5373\u53d6\u6d88\uff0c\u6539\u6210 g24 \u7248\u672c"
+    },
+    {
+      "tag": "recovery",
+      "by": "claude",
+      "t": 1792401731.1716044,
+      "note": "\u542f\u52a8\u5373\u53d6\u6d88\uff0c\u6539\u6210 g24 \u7248\u672c"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.1716046,
+      "note": "\u542f\u52a8\u5373\u53d6\u6d88\uff0c\u6539\u6210 g24 \u7248\u672c"
+    },
+    {
+      "tag": "top3-box",
+      "by": "claude",
+      "t": 1792552434.465718
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.4657204
+    }
+  ],
+  "v13-heads-box-p2r-g40-TS10181439-b543e1d": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.1744633,
+      "note": "\u4ece v7v9@3000 \u70ed\u542f\u52a8\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.174464,
+      "note": "\u4ece v7v9@3000 \u70ed\u542f\u52a8\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "heads",
+      "by": "claude",
+      "t": 1792401731.1744645,
+      "note": "\u4ece v7v9@3000 \u70ed\u542f\u52a8\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "bbox",
+      "by": "claude",
+      "t": 1792401731.1744647,
+      "note": "\u4ece v7v9@3000 \u70ed\u542f\u52a8\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.174465,
+      "note": "\u4ece v7v9@3000 \u70ed\u542f\u52a8\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.1744652,
+      "note": "\u4ece v7v9@3000 \u70ed\u542f\u52a8\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "top3-box",
+      "by": "claude",
+      "t": 1792552434.4699311
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.4699335
+    }
+  ],
+  "v13-heads-box-v8recov-g40-TS10181405-c23193e": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.1773238,
+      "note": "exps.md\uff1av13-heads-box \u914d\u65b9\u52a0 v8 \u5931\u8d25\u6062\u590d\u6570\u636e"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.1773245,
+      "note": "exps.md\uff1av13-heads-box \u914d\u65b9\u52a0 v8 \u5931\u8d25\u6062\u590d\u6570\u636e"
+    },
+    {
+      "tag": "heads",
+      "by": "claude",
+      "t": 1792401731.177325,
+      "note": "exps.md\uff1av13-heads-box \u914d\u65b9\u52a0 v8 \u5931\u8d25\u6062\u590d\u6570\u636e"
+    },
+    {
+      "tag": "recovery",
+      "by": "claude",
+      "t": 1792401731.1773252,
+      "note": "exps.md\uff1av13-heads-box \u914d\u65b9\u52a0 v8 \u5931\u8d25\u6062\u590d\u6570\u636e"
+    },
+    {
+      "tag": "ablation-recovery",
+      "by": "claude",
+      "t": 1792401731.1773255,
+      "note": "exps.md\uff1av13-heads-box \u914d\u65b9\u52a0 v8 \u5931\u8d25\u6062\u590d\u6570\u636e"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.177326,
+      "note": "exps.md\uff1av13-heads-box \u914d\u65b9\u52a0 v8 \u5931\u8d25\u6062\u590d\u6570\u636e"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.4758377
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.47584
+    }
+  ],
+  "v13-heads-box-v7v9-g40-r2000-TS10181133-50f0a47": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.1802297,
+      "note": "exps.md\uff1a\u4ece v13-heads-box step 2000 \u7eed\u8bad\u5e76\u52a0\u5165 v7/v9\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "resume",
+      "by": "claude",
+      "t": 1792401731.1802304,
+      "note": "exps.md\uff1a\u4ece v13-heads-box step 2000 \u7eed\u8bad\u5e76\u52a0\u5165 v7/v9\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "heads",
+      "by": "claude",
+      "t": 1792401731.1802309,
+      "note": "exps.md\uff1a\u4ece v13-heads-box step 2000 \u7eed\u8bad\u5e76\u52a0\u5165 v7/v9\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "v7v9",
+      "by": "claude",
+      "t": 1792401731.180231,
+      "note": "exps.md\uff1a\u4ece v13-heads-box step 2000 \u7eed\u8bad\u5e76\u52a0\u5165 v7/v9\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "real-bad",
+      "by": "claude",
+      "t": 1792401731.1802313,
+      "note": "exps.md\uff1a\u4ece v13-heads-box step 2000 \u7eed\u8bad\u5e76\u52a0\u5165 v7/v9\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.4823475
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.48235
+    }
+  ],
+  "v13-heads-box-g40-TS10180628-68ffb5f": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.1830773,
+      "note": "\u4ece v12-pi-sparse-box@8000 \u70ed\u542f\u52a8\uff0c\u52a0\u6280\u80fd/\u8fdb\u5ea6\u5934\uff0c\u5b9e\u673a\u8f83\u597d"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.183078,
+      "note": "\u4ece v12-pi-sparse-box@8000 \u70ed\u542f\u52a8\uff0c\u52a0\u6280\u80fd/\u8fdb\u5ea6\u5934\uff0c\u5b9e\u673a\u8f83\u597d"
+    },
+    {
+      "tag": "heads",
+      "by": "claude",
+      "t": 1792401731.1830783,
+      "note": "\u4ece v12-pi-sparse-box@8000 \u70ed\u542f\u52a8\uff0c\u52a0\u6280\u80fd/\u8fdb\u5ea6\u5934\uff0c\u5b9e\u673a\u8f83\u597d"
+    },
+    {
+      "tag": "bbox",
+      "by": "claude",
+      "t": 1792401731.1830788,
+      "note": "\u4ece v12-pi-sparse-box@8000 \u70ed\u542f\u52a8\uff0c\u52a0\u6280\u80fd/\u8fdb\u5ea6\u5934\uff0c\u5b9e\u673a\u8f83\u597d"
+    },
+    {
+      "tag": "real-good",
+      "by": "claude",
+      "t": 1792401731.183079,
+      "note": "\u4ece v12-pi-sparse-box@8000 \u70ed\u542f\u52a8\uff0c\u52a0\u6280\u80fd/\u8fdb\u5ea6\u5934\uff0c\u5b9e\u673a\u8f83\u597d"
+    },
+    {
+      "tag": "deployed",
+      "by": "claude",
+      "t": 1792401731.1830795,
+      "note": "\u4ece v12-pi-sparse-box@8000 \u70ed\u542f\u52a8\uff0c\u52a0\u6280\u80fd/\u8fdb\u5ea6\u5934\uff0c\u5b9e\u673a\u8f83\u597d"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.4885962
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.4885983
+    },
+    {
+      "tag": "locating-good",
+      "by": "user",
+      "t": 1792555397.0010035,
+      "note": "\u771f\u673a\u53cd\u9988\uff1a\u5b9a\u4f4d\u51c6\uff08\u90e8\u7f72 /v13-heads-box/ @2000\uff09"
+    }
+  ],
+  "v13-heads-box-g40-TS10180542-08a1f17": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.1859567,
+      "note": "\u65e0\u6b65\u6570\u8bb0\u5f55\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.1859574,
+      "note": "\u65e0\u6b65\u6570\u8bb0\u5f55\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "heads",
+      "by": "claude",
+      "t": 1792401731.185958,
+      "note": "\u65e0\u6b65\u6570\u8bb0\u5f55\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "bbox",
+      "by": "claude",
+      "t": 1792401731.185958,
+      "note": "\u65e0\u6b65\u6570\u8bb0\u5f55\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.1859581,
+      "note": "\u65e0\u6b65\u6570\u8bb0\u5f55\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.1859586,
+      "note": "\u65e0\u6b65\u6570\u8bb0\u5f55\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.4938319
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.4938343
+    }
+  ],
+  "v13-heads-TS10180514-08a1f17": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.188945,
+      "note": "\u65e0\u6846\u5bf9\u7167\u7ec4\uff0c\u88ab\u53d6\u4ee3"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.188946,
+      "note": "\u65e0\u6846\u5bf9\u7167\u7ec4\uff0c\u88ab\u53d6\u4ee3"
+    },
+    {
+      "tag": "heads",
+      "by": "claude",
+      "t": 1792401731.1889462,
+      "note": "\u65e0\u6846\u5bf9\u7167\u7ec4\uff0c\u88ab\u53d6\u4ee3"
+    },
+    {
+      "tag": "ablation-bbox",
+      "by": "claude",
+      "t": 1792401731.1889467,
+      "note": "\u65e0\u6846\u5bf9\u7167\u7ec4\uff0c\u88ab\u53d6\u4ee3"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.188947,
+      "note": "\u65e0\u6846\u5bf9\u7167\u7ec4\uff0c\u88ab\u53d6\u4ee3"
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.500911
+    }
+  ],
+  "v13-heads-box-TS10180514-08a1f17": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.1918516,
+      "note": "\u65e9\u671f heads-box\uff0c\u88ab g40 \u7248\u672c\u53d6\u4ee3"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.1918523,
+      "note": "\u65e9\u671f heads-box\uff0c\u88ab g40 \u7248\u672c\u53d6\u4ee3"
+    },
+    {
+      "tag": "heads",
+      "by": "claude",
+      "t": 1792401731.1918526,
+      "note": "\u65e9\u671f heads-box\uff0c\u88ab g40 \u7248\u672c\u53d6\u4ee3"
+    },
+    {
+      "tag": "bbox",
+      "by": "claude",
+      "t": 1792401731.1918528,
+      "note": "\u65e9\u671f heads-box\uff0c\u88ab g40 \u7248\u672c\u53d6\u4ee3"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.191853,
+      "note": "\u65e9\u671f heads-box\uff0c\u88ab g40 \u7248\u672c\u53d6\u4ee3"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.5054877
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.505489
+    }
+  ],
+  "v12-boxrel-nobox-TS10171852-d440d52": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.197692,
+      "note": "\u4ece v12-pi-spase@1000 \u70ed\u542f\u52a8\u7684\u65e0\u6846\u6d88\u878d"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.1976926,
+      "note": "\u4ece v12-pi-spase@1000 \u70ed\u542f\u52a8\u7684\u65e0\u6846\u6d88\u878d"
+    },
+    {
+      "tag": "sparse",
+      "by": "claude",
+      "t": 1792401731.197693,
+      "note": "\u4ece v12-pi-spase@1000 \u70ed\u542f\u52a8\u7684\u65e0\u6846\u6d88\u878d"
+    },
+    {
+      "tag": "ablation-bbox",
+      "by": "claude",
+      "t": 1792401731.1976933,
+      "note": "\u4ece v12-pi-spase@1000 \u70ed\u542f\u52a8\u7684\u65e0\u6846\u6d88\u878d"
+    }
+  ],
+  "v12-pi-spase-recov1x-TS10171843-2988697": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2006361,
+      "note": "exps.md\uff1a\u4ece v12-pi-spase step 1000 \u7eed\u8bad\u3001\u6570\u636e\u4e0d\u91cd\u590d\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "resume",
+      "by": "claude",
+      "t": 1792401731.2006369,
+      "note": "exps.md\uff1a\u4ece v12-pi-spase step 1000 \u7eed\u8bad\u3001\u6570\u636e\u4e0d\u91cd\u590d\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "sparse",
+      "by": "claude",
+      "t": 1792401731.200637,
+      "note": "exps.md\uff1a\u4ece v12-pi-spase step 1000 \u7eed\u8bad\u3001\u6570\u636e\u4e0d\u91cd\u590d\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "recovery",
+      "by": "claude",
+      "t": 1792401731.2006376,
+      "note": "exps.md\uff1a\u4ece v12-pi-spase step 1000 \u7eed\u8bad\u3001\u6570\u636e\u4e0d\u91cd\u590d\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "real-bad",
+      "by": "claude",
+      "t": 1792401731.200638,
+      "note": "exps.md\uff1a\u4ece v12-pi-spase step 1000 \u7eed\u8bad\u3001\u6570\u636e\u4e0d\u91cd\u590d\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.2006385,
+      "note": "exps.md\uff1a\u4ece v12-pi-spase step 1000 \u7eed\u8bad\u3001\u6570\u636e\u4e0d\u91cd\u590d\uff0c\u5b9e\u673a\u8f83\u5dee"
+    }
+  ],
+  "v12-pi-spase-recov-TS10171833-efda698": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2036426,
+      "note": "exps.md\uff1a\u7b2c\u4e00\u6b65\u4e4b\u524d\u5c31\u88ab\u53d6\u6d88\uff0c\u6362\u6210 recov1x"
+    },
+    {
+      "tag": "resume",
+      "by": "claude",
+      "t": 1792401731.2036433,
+      "note": "exps.md\uff1a\u7b2c\u4e00\u6b65\u4e4b\u524d\u5c31\u88ab\u53d6\u6d88\uff0c\u6362\u6210 recov1x"
+    },
+    {
+      "tag": "sparse",
+      "by": "claude",
+      "t": 1792401731.2036438,
+      "note": "exps.md\uff1a\u7b2c\u4e00\u6b65\u4e4b\u524d\u5c31\u88ab\u53d6\u6d88\uff0c\u6362\u6210 recov1x"
+    },
+    {
+      "tag": "recovery",
+      "by": "claude",
+      "t": 1792401731.2036443,
+      "note": "exps.md\uff1a\u7b2c\u4e00\u6b65\u4e4b\u524d\u5c31\u88ab\u53d6\u6d88\uff0c\u6362\u6210 recov1x"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.2036445,
+      "note": "exps.md\uff1a\u7b2c\u4e00\u6b65\u4e4b\u524d\u5c31\u88ab\u53d6\u6d88\uff0c\u6362\u6210 recov1x"
+    }
+  ],
+  "v12-pi-spase-TS10171608-0f8193e": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2066128,
+      "note": "exps.md\uff1astep 1688 \u51fa\u73b0 NaN \u68af\u5ea6\u540e NCCL \u8d85\u65f6\u5d29\u6e83"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.2066135,
+      "note": "exps.md\uff1astep 1688 \u51fa\u73b0 NaN \u68af\u5ea6\u540e NCCL \u8d85\u65f6\u5d29\u6e83"
+    },
+    {
+      "tag": "sparse",
+      "by": "claude",
+      "t": 1792401731.206614,
+      "note": "exps.md\uff1astep 1688 \u51fa\u73b0 NaN \u68af\u5ea6\u540e NCCL \u8d85\u65f6\u5d29\u6e83"
+    },
+    {
+      "tag": "diverged",
+      "by": "claude",
+      "t": 1792401731.2066143,
+      "note": "exps.md\uff1astep 1688 \u51fa\u73b0 NaN \u68af\u5ea6\u540e NCCL \u8d85\u65f6\u5d29\u6e83"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.2066145,
+      "note": "exps.md\uff1astep 1688 \u51fa\u73b0 NaN \u68af\u5ea6\u540e NCCL \u8d85\u65f6\u5d29\u6e83"
+    }
+  ],
+  "v10-plain-cmdgrip-24g-TS10171300-000a07f": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2096071,
+      "note": "\u5939\u722a\u7528\u9065\u64cd\u6307\u4ee4\u7684\u6d88\u878d\uff0c24 \u5361\u7248\u672c"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.2096078,
+      "note": "\u5939\u722a\u7528\u9065\u64cd\u6307\u4ee4\u7684\u6d88\u878d\uff0c24 \u5361\u7248\u672c"
+    },
+    {
+      "tag": "ablation-cmdgrip",
+      "by": "claude",
+      "t": 1792401731.2096086,
+      "note": "\u5939\u722a\u7528\u9065\u64cd\u6307\u4ee4\u7684\u6d88\u878d\uff0c24 \u5361\u7248\u672c"
+    },
+    {
+      "tag": "teleop",
+      "by": "claude",
+      "t": 1792401731.2096088,
+      "note": "\u5939\u722a\u7528\u9065\u64cd\u6307\u4ee4\u7684\u6d88\u878d\uff0c24 \u5361\u7248\u672c"
+    }
+  ],
+  "v10-cmdgrip-sft-TS10171254-67cbd65": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2126167,
+      "note": "exps.md\uff1a\u4ece v10-plain@2000 \u70ed\u542f\u52a8\u505a\u9065\u64cd\u5939\u722a SFT"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.2126174,
+      "note": "exps.md\uff1a\u4ece v10-plain@2000 \u70ed\u542f\u52a8\u505a\u9065\u64cd\u5939\u722a SFT"
+    },
+    {
+      "tag": "ablation-cmdgrip",
+      "by": "claude",
+      "t": 1792401731.2126179,
+      "note": "exps.md\uff1a\u4ece v10-plain@2000 \u70ed\u542f\u52a8\u505a\u9065\u64cd\u5939\u722a SFT"
+    },
+    {
+      "tag": "teleop",
+      "by": "claude",
+      "t": 1792401731.2126184,
+      "note": "exps.md\uff1a\u4ece v10-plain@2000 \u70ed\u542f\u52a8\u505a\u9065\u64cd\u5939\u722a SFT"
+    },
+    {
+      "tag": "deployed",
+      "by": "claude",
+      "t": 1792401770.0670142,
+      "note": "served at /v11-telop/ (ckpt 1000) on huzhou4090"
+    },
+    {
+      "tag": "ep-v11-telop",
+      "by": "claude",
+      "t": 1792401770.0670161,
+      "note": "served at /v11-telop/ (ckpt 1000) on huzhou4090"
+    }
+  ],
+  "v10-plain-cmdgrip-TS10171229-000a07f": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2156622,
+      "note": "exps.md\uff1astep 65 \u88ab\u53d6\u6d88\u3001\u65e0 ckpt\uff0c\u6362\u6210 24g \u7248\u672c"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.2156632,
+      "note": "exps.md\uff1astep 65 \u88ab\u53d6\u6d88\u3001\u65e0 ckpt\uff0c\u6362\u6210 24g \u7248\u672c"
+    },
+    {
+      "tag": "ablation-cmdgrip",
+      "by": "claude",
+      "t": 1792401731.2156637,
+      "note": "exps.md\uff1astep 65 \u88ab\u53d6\u6d88\u3001\u65e0 ckpt\uff0c\u6362\u6210 24g \u7248\u672c"
+    },
+    {
+      "tag": "teleop",
+      "by": "claude",
+      "t": 1792401731.2156637,
+      "note": "exps.md\uff1astep 65 \u88ab\u53d6\u6d88\u3001\u65e0 ckpt\uff0c\u6362\u6210 24g \u7248\u672c"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.2156641,
+      "note": "exps.md\uff1astep 65 \u88ab\u53d6\u6d88\u3001\u65e0 ckpt\uff0c\u6362\u6210 24g \u7248\u672c"
+    }
+  ],
+  "v10-plain-TS10170943-a1f32cf": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2187498,
+      "note": "naming.md\uff1aRun P \u914d\u65b9\uff0c\u4ece v6-B-box \u521d\u59cb\u5316"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.2187505,
+      "note": "naming.md\uff1aRun P \u914d\u65b9\uff0c\u4ece v6-B-box \u521d\u59cb\u5316"
+    },
+    {
+      "tag": "baseline",
+      "by": "claude",
+      "t": 1792401731.2187507,
+      "note": "naming.md\uff1aRun P \u914d\u65b9\uff0c\u4ece v6-B-box \u521d\u59cb\u5316"
+    },
+    {
+      "tag": "frz-vis",
+      "by": "claude",
+      "t": 1792401731.218751,
+      "note": "naming.md\uff1aRun P \u914d\u65b9\uff0c\u4ece v6-B-box \u521d\u59cb\u5316"
+    },
+    {
+      "tag": "deployed",
+      "by": "claude",
+      "t": 1792401770.064686,
+      "note": "served at /v10-plain/ (ckpt 2000) on huzhou4090"
+    },
+    {
+      "tag": "ep-v10-plain",
+      "by": "claude",
+      "t": 1792401770.064688,
+      "note": "served at /v10-plain/ (ckpt 2000) on huzhou4090"
+    }
+  ],
+  "pi05-ubt-boxpickplace-runP-TS10170705-7545b1b": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2218776,
+      "note": "naming.md\uff1astep 500 \u4ee5 v9-pi-it500 \u90e8\u7f72"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.2218783,
+      "note": "naming.md\uff1astep 500 \u4ee5 v9-pi-it500 \u90e8\u7f72"
+    },
+    {
+      "tag": "frz-vis",
+      "by": "claude",
+      "t": 1792401731.2218788,
+      "note": "naming.md\uff1astep 500 \u4ee5 v9-pi-it500 \u90e8\u7f72"
+    },
+    {
+      "tag": "deployed",
+      "by": "claude",
+      "t": 1792401731.221879,
+      "note": "naming.md\uff1astep 500 \u4ee5 v9-pi-it500 \u90e8\u7f72"
+    },
+    {
+      "tag": "ep-v9-pi-it500",
+      "by": "claude",
+      "t": 1792401770.0908473,
+      "note": "served at /v9-pi-it500/ (ckpt 1100) on huzhou4090"
+    }
+  ],
+  "pi05-ubt-boxpickplace-runBftg-TS10170548-32bd209": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.224962,
+      "note": "\u4ece runB@4250 \u70ed\u542f\u52a8\u5e76\u52a0 gripper head"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.2249627,
+      "note": "\u4ece runB@4250 \u70ed\u542f\u52a8\u5e76\u52a0 gripper head"
+    },
+    {
+      "tag": "ablation-bbox",
+      "by": "claude",
+      "t": 1792401731.2249632,
+      "note": "\u4ece runB@4250 \u70ed\u542f\u52a8\u5e76\u52a0 gripper head"
+    },
+    {
+      "tag": "bbox",
+      "by": "claude",
+      "t": 1792401731.2249634,
+      "note": "\u4ece runB@4250 \u70ed\u542f\u52a8\u5e76\u52a0 gripper head"
+    },
+    {
+      "tag": "heads",
+      "by": "claude",
+      "t": 1792401731.2249637,
+      "note": "\u4ece runB@4250 \u70ed\u542f\u52a8\u5e76\u52a0 gripper head"
+    },
+    {
+      "tag": "deployed",
+      "by": "claude",
+      "t": 1792401770.0889008,
+      "note": "served at /v8-Bft-box/ (ckpt 400) on huzhou4090"
+    },
+    {
+      "tag": "ep-v8-Bft-box",
+      "by": "claude",
+      "t": 1792401770.088902,
+      "note": "served at /v8-Bft-box/ (ckpt 400) on huzhou4090"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.5668445
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.5668507
+    }
+  ],
+  "pi05-ubt-boxpickplace-runCg-TS10170424-99b6a00": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.228148,
+      "note": "runC \u52a0 gripper head\uff0c\u5e26\u76ee\u6807\u6846"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.2281487,
+      "note": "runC \u52a0 gripper head\uff0c\u5e26\u76ee\u6807\u6846"
+    },
+    {
+      "tag": "ablation-bbox",
+      "by": "claude",
+      "t": 1792401731.2281492,
+      "note": "runC \u52a0 gripper head\uff0c\u5e26\u76ee\u6807\u6846"
+    },
+    {
+      "tag": "bbox",
+      "by": "claude",
+      "t": 1792401731.2281494,
+      "note": "runC \u52a0 gripper head\uff0c\u5e26\u76ee\u6807\u6846"
+    },
+    {
+      "tag": "heads",
+      "by": "claude",
+      "t": 1792401731.2281494,
+      "note": "runC \u52a0 gripper head\uff0c\u5e26\u76ee\u6807\u6846"
+    },
+    {
+      "tag": "deployed",
+      "by": "claude",
+      "t": 1792401770.0867732,
+      "note": "served at /v7-C-box/ (ckpt 2000) on huzhou4090"
+    },
+    {
+      "tag": "ep-v7-C-box",
+      "by": "claude",
+      "t": 1792401770.086774,
+      "note": "served at /v7-C-box/ (ckpt 2000) on huzhou4090"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.572532
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.5725331
+    }
+  ],
+  "pi05-ubt-boxpickplace-runAftg-TS10170403-c5424b2": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2312553,
+      "note": "\u4ece runA@4000 \u70ed\u542f\u52a8\u7684\u65e0\u6846\u5bf9\u7167"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.231256,
+      "note": "\u4ece runA@4000 \u70ed\u542f\u52a8\u7684\u65e0\u6846\u5bf9\u7167"
+    },
+    {
+      "tag": "ablation-bbox",
+      "by": "claude",
+      "t": 1792401731.2312565,
+      "note": "\u4ece runA@4000 \u70ed\u542f\u52a8\u7684\u65e0\u6846\u5bf9\u7167"
+    },
+    {
+      "tag": "heads",
+      "by": "claude",
+      "t": 1792401731.2312567,
+      "note": "\u4ece runA@4000 \u70ed\u542f\u52a8\u7684\u65e0\u6846\u5bf9\u7167"
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.576167
+    }
+  ],
+  "pi05-ubt-boxpickplace-runAft-TS10170312-435e33b": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2344174,
+      "note": "\u4ece runA@4000 \u70ed\u542f\u52a8\uff0c\u88ab runAftg \u53d6\u4ee3"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.2344184,
+      "note": "\u4ece runA@4000 \u70ed\u542f\u52a8\uff0c\u88ab runAftg \u53d6\u4ee3"
+    },
+    {
+      "tag": "ablation-bbox",
+      "by": "claude",
+      "t": 1792401731.2344189,
+      "note": "\u4ece runA@4000 \u70ed\u542f\u52a8\uff0c\u88ab runAftg \u53d6\u4ee3"
+    },
+    {
+      "tag": "heads",
+      "by": "claude",
+      "t": 1792401731.234419,
+      "note": "\u4ece runA@4000 \u70ed\u542f\u52a8\uff0c\u88ab runAftg \u53d6\u4ee3"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.2344193,
+      "note": "\u4ece runA@4000 \u70ed\u542f\u52a8\uff0c\u88ab runAftg \u53d6\u4ee3"
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.5798192
+    }
+  ],
+  "pi05-ubt-boxpickplace-runD-TS10170310-9390934": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.237625,
+      "note": "\u65e0\u8bad\u7ec3\u8bb0\u5f55\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.2376268,
+      "note": "\u65e0\u8bad\u7ec3\u8bb0\u5f55\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.2376277,
+      "note": "\u65e0\u8bad\u7ec3\u8bb0\u5f55\uff0c\u542f\u52a8\u5931\u8d25"
+    }
+  ],
+  "pi05-ubt-boxpickplace-runC-TS10170147-03fe9bd": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.240798,
+      "note": "\u5e26\u76ee\u6807\u6846\u7684 runC\uff0c\u88ab runCg \u53d6\u4ee3"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.2407987,
+      "note": "\u5e26\u76ee\u6807\u6846\u7684 runC\uff0c\u88ab runCg \u53d6\u4ee3"
+    },
+    {
+      "tag": "ablation-bbox",
+      "by": "claude",
+      "t": 1792401731.240799,
+      "note": "\u5e26\u76ee\u6807\u6846\u7684 runC\uff0c\u88ab runCg \u53d6\u4ee3"
+    },
+    {
+      "tag": "bbox",
+      "by": "claude",
+      "t": 1792401731.2407992,
+      "note": "\u5e26\u76ee\u6807\u6846\u7684 runC\uff0c\u88ab runCg \u53d6\u4ee3"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.2407994,
+      "note": "\u5e26\u76ee\u6807\u6846\u7684 runC\uff0c\u88ab runCg \u53d6\u4ee3"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.5841415
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.5841434
+    }
+  ],
+  "pi05-smoke-mixc-bs32-TS10170144-03fe9bd": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.243984,
+      "note": "mix-c \u7684 20 \u6b65\u5192\u70df\u6d4b\u8bd5"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.2439847,
+      "note": "mix-c \u7684 20 \u6b65\u5192\u70df\u6d4b\u8bd5"
+    },
+    {
+      "tag": "smoke",
+      "by": "claude",
+      "t": 1792401731.243985,
+      "note": "mix-c \u7684 20 \u6b65\u5192\u70df\u6d4b\u8bd5"
+    },
+    {
+      "tag": "bbox",
+      "by": "claude",
+      "t": 1792401731.2439852,
+      "note": "mix-c \u7684 20 \u6b65\u5192\u70df\u6d4b\u8bd5"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.5886872
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.5886893
+    }
+  ],
+  "pi05-ubt-boxpickplace-runC-TS10170130-cbec256": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2472222,
+      "note": "\u65e0\u6b65\u6570\u8bb0\u5f55\uff0c\u7528 03fe9bd \u91cd\u63d0"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.247223,
+      "note": "\u65e0\u6b65\u6570\u8bb0\u5f55\uff0c\u7528 03fe9bd \u91cd\u63d0"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.2472234,
+      "note": "\u65e0\u6b65\u6570\u8bb0\u5f55\uff0c\u7528 03fe9bd \u91cd\u63d0"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.2472236,
+      "note": "\u65e0\u6b65\u6570\u8bb0\u5f55\uff0c\u7528 03fe9bd \u91cd\u63d0"
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.591933
+    }
+  ],
+  "pi05-ubt-boxpickplace-runB-TS10161743-8742d6c": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2504363,
+      "note": "naming.md\uff1astep 4250 \u4ee5 /v6-B-box/ \u90e8\u7f72\uff0c\u662f v10 \u7684\u9884\u8bad\u7ec3\u6765\u6e90"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.250437,
+      "note": "naming.md\uff1astep 4250 \u4ee5 /v6-B-box/ \u90e8\u7f72\uff0c\u662f v10 \u7684\u9884\u8bad\u7ec3\u6765\u6e90"
+    },
+    {
+      "tag": "ablation-bbox",
+      "by": "claude",
+      "t": 1792401731.2504373,
+      "note": "naming.md\uff1astep 4250 \u4ee5 /v6-B-box/ \u90e8\u7f72\uff0c\u662f v10 \u7684\u9884\u8bad\u7ec3\u6765\u6e90"
+    },
+    {
+      "tag": "bbox",
+      "by": "claude",
+      "t": 1792401731.2504377,
+      "note": "naming.md\uff1astep 4250 \u4ee5 /v6-B-box/ \u90e8\u7f72\uff0c\u662f v10 \u7684\u9884\u8bad\u7ec3\u6765\u6e90"
+    },
+    {
+      "tag": "deployed",
+      "by": "claude",
+      "t": 1792401731.250438,
+      "note": "naming.md\uff1astep 4250 \u4ee5 /v6-B-box/ \u90e8\u7f72\uff0c\u662f v10 \u7684\u9884\u8bad\u7ec3\u6765\u6e90"
+    },
+    {
+      "tag": "ep-v6-B-box",
+      "by": "claude",
+      "t": 1792401770.0828872,
+      "note": "served at /v6-B-box/ (ckpt 4250) on huzhou4090"
+    },
+    {
+      "tag": "ep-v6-B-box-yft",
+      "by": "claude",
+      "t": 1792401770.0848246,
+      "note": "served at /v6-B-box-yft/ (ckpt 4250) on huzhou4090"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.5961106
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.596116
+    }
+  ],
+  "pi05-ubt-boxpickplace-runA-TS10161743-8742d6c": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.253711,
+      "note": "\u6846\u6d88\u878d\u91cc\u7684\u65e0\u6846\u57fa\u7ebf"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.253712,
+      "note": "\u6846\u6d88\u878d\u91cc\u7684\u65e0\u6846\u57fa\u7ebf"
+    },
+    {
+      "tag": "baseline",
+      "by": "claude",
+      "t": 1792401731.2537124,
+      "note": "\u6846\u6d88\u878d\u91cc\u7684\u65e0\u6846\u57fa\u7ebf"
+    },
+    {
+      "tag": "ablation-bbox",
+      "by": "claude",
+      "t": 1792401731.2537127,
+      "note": "\u6846\u6d88\u878d\u91cc\u7684\u65e0\u6846\u57fa\u7ebf"
+    },
+    {
+      "tag": "deployed",
+      "by": "claude",
+      "t": 1792401770.0809805,
+      "note": "served at /v5-IF/ (ckpt 4000) on huzhou4090"
+    },
+    {
+      "tag": "ep-v5-IF",
+      "by": "claude",
+      "t": 1792401770.0809815,
+      "note": "served at /v5-IF/ (ckpt 4000) on huzhou4090"
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.6004758
+    }
+  ],
+  "pi05-smoke-mixb-bs32-TS10161735-d14e0d2": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2570267,
+      "note": "\u5192\u70df\u6d4b\u8bd5\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.2570274,
+      "note": "\u5192\u70df\u6d4b\u8bd5\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "smoke",
+      "by": "claude",
+      "t": 1792401731.2570276,
+      "note": "\u5192\u70df\u6d4b\u8bd5\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.257028,
+      "note": "\u5192\u70df\u6d4b\u8bd5\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.6054902
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.605493
+    }
+  ],
+  "pi05-ubt-boxpickplace-runB-TS10161733-bd457ec": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2603228,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u7528 8742d6c \u91cd\u63d0"
+    },
+    {
+      "tag": "ablation-bbox",
+      "by": "claude",
+      "t": 1792401731.2603235,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u7528 8742d6c \u91cd\u63d0"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.260324,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u7528 8742d6c \u91cd\u63d0"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.2603242,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u7528 8742d6c \u91cd\u63d0"
+    }
+  ],
+  "pi05-ubt-boxpickplace-runA-TS10161733-bd457ec": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2635846,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u7528 8742d6c \u91cd\u63d0"
+    },
+    {
+      "tag": "ablation-bbox",
+      "by": "claude",
+      "t": 1792401731.2635853,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u7528 8742d6c \u91cd\u63d0"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.2635856,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u7528 8742d6c \u91cd\u63d0"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.263586,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u7528 8742d6c \u91cd\u63d0"
+    }
+  ],
+  "pi05-ubt-boxpickplace-runA-TS10161732": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2668805,
+      "note": "\u540d\u5b57\u4e0d\u5e26 commit\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "ablation-bbox",
+      "by": "claude",
+      "t": 1792401731.2668815,
+      "note": "\u540d\u5b57\u4e0d\u5e26 commit\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.266882,
+      "note": "\u540d\u5b57\u4e0d\u5e26 commit\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.2668824,
+      "note": "\u540d\u5b57\u4e0d\u5e26 commit\uff0c\u542f\u52a8\u5931\u8d25"
+    }
+  ],
+  "pi05-smoke-mixb-bs32-TS10161720-bd457ec": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2701786,
+      "note": "mix-b\uff08\u5e26\u6846\uff0920 \u6b65\u5192\u70df\u6d4b\u8bd5"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.2701795,
+      "note": "mix-b\uff08\u5e26\u6846\uff0920 \u6b65\u5192\u70df\u6d4b\u8bd5"
+    },
+    {
+      "tag": "smoke",
+      "by": "claude",
+      "t": 1792401731.2701797,
+      "note": "mix-b\uff08\u5e26\u6846\uff0920 \u6b65\u5192\u70df\u6d4b\u8bd5"
+    },
+    {
+      "tag": "bbox",
+      "by": "claude",
+      "t": 1792401731.27018,
+      "note": "mix-b\uff08\u5e26\u6846\uff0920 \u6b65\u5192\u70df\u6d4b\u8bd5"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.6549683
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.6549714
+    }
+  ],
+  "pi05-smoke-mixa-bs32-TS10161720-bd457ec": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2734983,
+      "note": "mix-a\uff08\u65e0\u6846\uff0920 \u6b65\u5192\u70df\u6d4b\u8bd5"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.2734993,
+      "note": "mix-a\uff08\u65e0\u6846\uff0920 \u6b65\u5192\u70df\u6d4b\u8bd5"
+    },
+    {
+      "tag": "smoke",
+      "by": "claude",
+      "t": 1792401731.2734997,
+      "note": "mix-a\uff08\u65e0\u6846\uff0920 \u6b65\u5192\u70df\u6d4b\u8bd5"
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.660213
+    }
+  ],
+  "pi05-smoke-mixb-bs48-nopool-TS10161658-8e9737b": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2769587,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "smoke",
+      "by": "claude",
+      "t": 1792401731.2769594,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "bs-probe",
+      "by": "claude",
+      "t": 1792401731.27696,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.2769604,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.6654253
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.6654308
+    }
+  ],
+  "pi05-smoke-mixb-bs40-TS10161658-8e9737b": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2803183,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "smoke",
+      "by": "claude",
+      "t": 1792401731.2803187,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "bs-probe",
+      "by": "claude",
+      "t": 1792401731.2803192,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.2803195,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.6703591
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.6703613
+    }
+  ],
+  "pi05-smoke-mixb-bs48-TS10161658-8e9737b": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2837033,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "smoke",
+      "by": "claude",
+      "t": 1792401731.283704,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "bs-probe",
+      "by": "claude",
+      "t": 1792401731.2837043,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.2837045,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.6748343
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.6748376
+    }
+  ],
+  "pi05-smoke-mixb-bs32-TS10161658-8e9737b": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.287051,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\u4e2d\u552f\u4e00\u8dd1\u5b8c 20 \u6b65\u7684 bs32"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.2870517,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\u4e2d\u552f\u4e00\u8dd1\u5b8c 20 \u6b65\u7684 bs32"
+    },
+    {
+      "tag": "smoke",
+      "by": "claude",
+      "t": 1792401731.2870524,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\u4e2d\u552f\u4e00\u8dd1\u5b8c 20 \u6b65\u7684 bs32"
+    },
+    {
+      "tag": "bs-probe",
+      "by": "claude",
+      "t": 1792401731.2870526,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\u4e2d\u552f\u4e00\u8dd1\u5b8c 20 \u6b65\u7684 bs32"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.679787
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.6797945
+    }
+  ],
+  "pi05-smoke-mixb-bs64-TS10161650-8e9737b": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2904153,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "smoke",
+      "by": "claude",
+      "t": 1792401731.2904162,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "bs-probe",
+      "by": "claude",
+      "t": 1792401731.2904167,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.290417,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.6850939
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.6851008
+    }
+  ],
+  "pi05-smoke-mixb-bs96-TS10161650-8e9737b": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2938213,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "smoke",
+      "by": "claude",
+      "t": 1792401731.2938225,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "bs-probe",
+      "by": "claude",
+      "t": 1792401731.293823,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.2938232,
+      "note": "\u6279\u5927\u5c0f\u63a2\u6d4b\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.6911614
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.6911666
+    }
+  ],
+  "pi05-smoke-mixb-TS10161639-47f8997": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.2972274,
+      "note": "\u5192\u70df\u6d4b\u8bd5\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "smoke",
+      "by": "claude",
+      "t": 1792401731.2972283,
+      "note": "\u5192\u70df\u6d4b\u8bd5\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "bbox",
+      "by": "claude",
+      "t": 1792401731.2972286,
+      "note": "\u5192\u70df\u6d4b\u8bd5\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.2972288,
+      "note": "\u5192\u70df\u6d4b\u8bd5\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.6964066
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.6964087
+    }
+  ],
+  "pi05-smoke-mixa-TS10161639-47f8997": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.3006585,
+      "note": "\u5192\u70df\u6d4b\u8bd5\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "smoke",
+      "by": "claude",
+      "t": 1792401731.3006592,
+      "note": "\u5192\u70df\u6d4b\u8bd5\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.3006594,
+      "note": "\u5192\u70df\u6d4b\u8bd5\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.700903
+    }
+  ],
+  "pi05-ubt-boxpickplace-mixV2s8-TS10161631-043de9e": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.3041036,
+      "note": "\u65e0\u6b65\u6570\u8bb0\u5f55\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.3041046,
+      "note": "\u65e0\u6b65\u6570\u8bb0\u5f55\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "heads",
+      "by": "claude",
+      "t": 1792401731.304105,
+      "note": "\u65e0\u6b65\u6570\u8bb0\u5f55\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.3041053,
+      "note": "\u65e0\u6b65\u6570\u8bb0\u5f55\uff0c\u542f\u52a8\u5931\u8d25"
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.7053134
+    }
+  ],
+  "pi05-ubt-boxpickplace-mixV2-TS10161439-723cecf": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.3075218,
+      "note": "box-pick-place \u7684\u9996\u4e2a mix\uff0c\u88ab runA/B \u53d6\u4ee3"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.3075225,
+      "note": "box-pick-place \u7684\u9996\u4e2a mix\uff0c\u88ab runA/B \u53d6\u4ee3"
+    },
+    {
+      "tag": "heads",
+      "by": "claude",
+      "t": 1792401731.307523,
+      "note": "box-pick-place \u7684\u9996\u4e2a mix\uff0c\u88ab runA/B \u53d6\u4ee3"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.3075235,
+      "note": "box-pick-place \u7684\u9996\u4e2a mix\uff0c\u88ab runA/B \u53d6\u4ee3"
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.7536922
+    }
+  ],
+  "switch_study": [
+    {
+      "tag": "not-a-run",
+      "by": "claude",
+      "t": 1792401731.3109918,
+      "note": "\u975e\u8bad\u7ec3\u76ee\u5f55"
+    },
+    {
+      "tag": "analysis",
+      "by": "claude",
+      "t": 1792401731.3109927,
+      "note": "\u975e\u8bad\u7ec3\u76ee\u5f55"
+    },
+    {
+      "tag": "switch",
+      "by": "claude",
+      "t": 1792401731.3109932,
+      "note": "\u975e\u8bad\u7ec3\u76ee\u5f55"
+    }
+  ],
+  "if_probe": [
+    {
+      "tag": "not-a-run",
+      "by": "claude",
+      "t": 1792401731.3144588,
+      "note": "\u975e\u8bad\u7ec3\u76ee\u5f55\uff0c\u662f IF \u63a2\u6d4b"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.3144596,
+      "note": "\u975e\u8bad\u7ec3\u76ee\u5f55\uff0c\u662f IF \u63a2\u6d4b"
+    },
+    {
+      "tag": "probe",
+      "by": "claude",
+      "t": 1792401731.3144598,
+      "note": "\u975e\u8bad\u7ec3\u76ee\u5f55\uff0c\u662f IF \u63a2\u6d4b"
+    }
+  ],
+  "skill_replay": [
+    {
+      "tag": "not-a-run",
+      "by": "claude",
+      "t": 1792401731.317955,
+      "note": "\u975e\u8bad\u7ec3\u76ee\u5f55"
+    },
+    {
+      "tag": "skill",
+      "by": "claude",
+      "t": 1792401731.3179557,
+      "note": "\u975e\u8bad\u7ec3\u76ee\u5f55"
+    },
+    {
+      "tag": "replay",
+      "by": "claude",
+      "t": 1792401731.3179562,
+      "note": "\u975e\u8bad\u7ec3\u76ee\u5f55"
+    }
+  ],
+  "eval_result": [
+    {
+      "tag": "not-a-run",
+      "by": "claude",
+      "t": 1792401731.321474,
+      "note": "\u975e\u8bad\u7ec3\u76ee\u5f55"
+    },
+    {
+      "tag": "eval",
+      "by": "claude",
+      "t": 1792401731.321475,
+      "note": "\u975e\u8bad\u7ec3\u76ee\u5f55"
+    },
+    {
+      "tag": "analysis",
+      "by": "claude",
+      "t": 1792401731.3214755,
+      "note": "\u975e\u8bad\u7ec3\u76ee\u5f55"
+    }
+  ],
+  "pi05-ubt-boxpickrot-ifB-L8X-e0k8-TS10160417-c8f7054": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.3249812,
+      "note": "\u4ece ifB-E0@8000 \u70ed\u542f\u52a8\uff0c\u4ee5 V4 \u90e8\u7f72\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.324982,
+      "note": "\u4ece ifB-E0@8000 \u70ed\u542f\u52a8\uff0c\u4ee5 V4 \u90e8\u7f72\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.3249826,
+      "note": "\u4ece ifB-E0@8000 \u70ed\u542f\u52a8\uff0c\u4ee5 V4 \u90e8\u7f72\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "l8x",
+      "by": "claude",
+      "t": 1792401731.324983,
+      "note": "\u4ece ifB-E0@8000 \u70ed\u542f\u52a8\uff0c\u4ee5 V4 \u90e8\u7f72\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "deployed",
+      "by": "claude",
+      "t": 1792401731.3249831,
+      "note": "\u4ece ifB-E0@8000 \u70ed\u542f\u52a8\uff0c\u4ee5 V4 \u90e8\u7f72\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "real-bad",
+      "by": "claude",
+      "t": 1792401731.3249836,
+      "note": "\u4ece ifB-E0@8000 \u70ed\u542f\u52a8\uff0c\u4ee5 V4 \u90e8\u7f72\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "ep-v4-L8X",
+      "by": "claude",
+      "t": 1792401770.079013,
+      "note": "served at /v4-L8X/ (ckpt 7000) on huzhou4090"
+    }
+  ],
+  "pi05-smoke-l8x-train-TS10160407-c8f7054": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.3286173,
+      "note": "L8X \u7684 20 \u6b65\u5192\u70df\u6d4b\u8bd5"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.328618,
+      "note": "L8X \u7684 20 \u6b65\u5192\u70df\u6d4b\u8bd5"
+    },
+    {
+      "tag": "smoke",
+      "by": "claude",
+      "t": 1792401731.3286185,
+      "note": "L8X \u7684 20 \u6b65\u5192\u70df\u6d4b\u8bd5"
+    },
+    {
+      "tag": "l8x",
+      "by": "claude",
+      "t": 1792401731.3286188,
+      "note": "L8X \u7684 20 \u6b65\u5192\u70df\u6d4b\u8bd5"
+    },
+    {
+      "tag": "target-box",
+      "by": "claude",
+      "t": 1792552434.7583022
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.7583044
+    }
+  ],
+  "pi05-ubt-boxpickrot-ifB-L8E-ft22k-TS10151430-ddda731": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.3326938,
+      "note": "\u4ece ifprop16g@22000 \u70ed\u542f\u52a8\u7684 IF-B \u5fae\u8c03"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.3326945,
+      "note": "\u4ece ifprop16g@22000 \u70ed\u542f\u52a8\u7684 IF-B \u5fae\u8c03"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.332695,
+      "note": "\u4ece ifprop16g@22000 \u70ed\u542f\u52a8\u7684 IF-B \u5fae\u8c03"
+    },
+    {
+      "tag": "ifb",
+      "by": "claude",
+      "t": 1792401731.3326952,
+      "note": "\u4ece ifprop16g@22000 \u70ed\u542f\u52a8\u7684 IF-B \u5fae\u8c03"
+    }
+  ],
+  "pi05-ubt-boxpickrot-ifB-E3nw-sd-ft22k-TS10151430-ddda731": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.3375087,
+      "note": "\u4ece ifprop16g@22000 \u70ed\u542f\u52a8\u7684 IF-B \u5fae\u8c03"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.3375103,
+      "note": "\u4ece ifprop16g@22000 \u70ed\u542f\u52a8\u7684 IF-B \u5fae\u8c03"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.3375108,
+      "note": "\u4ece ifprop16g@22000 \u70ed\u542f\u52a8\u7684 IF-B \u5fae\u8c03"
+    },
+    {
+      "tag": "ifb",
+      "by": "claude",
+      "t": 1792401731.3375115,
+      "note": "\u4ece ifprop16g@22000 \u70ed\u542f\u52a8\u7684 IF-B \u5fae\u8c03"
+    }
+  ],
+  "pi05-ubt-boxpickrot-ifB-E3nw-sd-ft22k-TS10151236-076fac1": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.341172,
+      "note": "step 100 \u505c\u4e0b\uff0c\u88ab ddda731 \u91cd\u63d0"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.341173,
+      "note": "step 100 \u505c\u4e0b\uff0c\u88ab ddda731 \u91cd\u63d0"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.3411734,
+      "note": "step 100 \u505c\u4e0b\uff0c\u88ab ddda731 \u91cd\u63d0"
+    },
+    {
+      "tag": "ifb",
+      "by": "claude",
+      "t": 1792401731.3411736,
+      "note": "step 100 \u505c\u4e0b\uff0c\u88ab ddda731 \u91cd\u63d0"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.3411741,
+      "note": "step 100 \u505c\u4e0b\uff0c\u88ab ddda731 \u91cd\u63d0"
+    }
+  ],
+  "pi05-ubt-boxpickrot-ifB-E0nw-ft22k-TS10151236-076fac1": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.3447874,
+      "note": "\u4ece ifprop16g@22000 \u70ed\u542f\u52a8\u7684 IF-B \u5fae\u8c03"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.3447883,
+      "note": "\u4ece ifprop16g@22000 \u70ed\u542f\u52a8\u7684 IF-B \u5fae\u8c03"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.3447888,
+      "note": "\u4ece ifprop16g@22000 \u70ed\u542f\u52a8\u7684 IF-B \u5fae\u8c03"
+    },
+    {
+      "tag": "ifb",
+      "by": "claude",
+      "t": 1792401731.344789,
+      "note": "\u4ece ifprop16g@22000 \u70ed\u542f\u52a8\u7684 IF-B \u5fae\u8c03"
+    }
+  ],
+  "pi05-ubt-boxpickrot-ifB-E3-sd-ft22k-TS10151003-40593f6": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.3483481,
+      "note": "\u4ece ifprop16g@22000 \u70ed\u542f\u52a8\u7684 IF-B \u5fae\u8c03"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.3483489,
+      "note": "\u4ece ifprop16g@22000 \u70ed\u542f\u52a8\u7684 IF-B \u5fae\u8c03"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.3483493,
+      "note": "\u4ece ifprop16g@22000 \u70ed\u542f\u52a8\u7684 IF-B \u5fae\u8c03"
+    },
+    {
+      "tag": "ifb",
+      "by": "claude",
+      "t": 1792401731.3483498,
+      "note": "\u4ece ifprop16g@22000 \u70ed\u542f\u52a8\u7684 IF-B \u5fae\u8c03"
+    }
+  ],
+  "pi05-ubt-boxpickrot-ifB-E0-ft22k-TS10151003-40593f6": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.3520932,
+      "note": "IF-B \u5fae\u8c03\uff0c\u662f L8X \u7684\u7236\u6a21\u578b"
+    },
+    {
+      "tag": "ft",
+      "by": "claude",
+      "t": 1792401731.3520942,
+      "note": "IF-B \u5fae\u8c03\uff0c\u662f L8X \u7684\u7236\u6a21\u578b"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.3520947,
+      "note": "IF-B \u5fae\u8c03\uff0c\u662f L8X \u7684\u7236\u6a21\u578b"
+    },
+    {
+      "tag": "ifb",
+      "by": "claude",
+      "t": 1792401731.352095,
+      "note": "IF-B \u5fae\u8c03\uff0c\u662f L8X \u7684\u7236\u6a21\u578b"
+    }
+  ],
+  "pi05-ubt-boxpickrot-if16g-nowait-r22k-TS10150856-b09458b": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.3557534,
+      "note": "\u4ece 22k \u7eed\u8bad\uff0cIF-A \u9065\u64cd\u52a8\u4f5c\uff0c\u53bb\u6389 wait"
+    },
+    {
+      "tag": "resume",
+      "by": "claude",
+      "t": 1792401731.3557541,
+      "note": "\u4ece 22k \u7eed\u8bad\uff0cIF-A \u9065\u64cd\u52a8\u4f5c\uff0c\u53bb\u6389 wait"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.3557549,
+      "note": "\u4ece 22k \u7eed\u8bad\uff0cIF-A \u9065\u64cd\u52a8\u4f5c\uff0c\u53bb\u6389 wait"
+    },
+    {
+      "tag": "teleop",
+      "by": "claude",
+      "t": 1792401731.355755,
+      "note": "\u4ece 22k \u7eed\u8bad\uff0cIF-A \u9065\u64cd\u52a8\u4f5c\uff0c\u53bb\u6389 wait"
+    },
+    {
+      "tag": "nowait",
+      "by": "claude",
+      "t": 1792401731.3557553,
+      "note": "\u4ece 22k \u7eed\u8bad\uff0cIF-A \u9065\u64cd\u52a8\u4f5c\uff0c\u53bb\u6389 wait"
+    }
+  ],
+  "pi05-ubt-boxpickrot-ifprop16g-nowait-r22k-TS10150856-b09458b": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.3593955,
+      "note": "\u4ece 22k \u7eed\u8bad\u5e76\u53bb\u6389 wait\uff0c\u4ee5 V3 \u90e8\u7f72\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "resume",
+      "by": "claude",
+      "t": 1792401731.3593965,
+      "note": "\u4ece 22k \u7eed\u8bad\u5e76\u53bb\u6389 wait\uff0c\u4ee5 V3 \u90e8\u7f72\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.359397,
+      "note": "\u4ece 22k \u7eed\u8bad\u5e76\u53bb\u6389 wait\uff0c\u4ee5 V3 \u90e8\u7f72\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "nowait",
+      "by": "claude",
+      "t": 1792401731.3593972,
+      "note": "\u4ece 22k \u7eed\u8bad\u5e76\u53bb\u6389 wait\uff0c\u4ee5 V3 \u90e8\u7f72\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "deployed",
+      "by": "claude",
+      "t": 1792401731.3593974,
+      "note": "\u4ece 22k \u7eed\u8bad\u5e76\u53bb\u6389 wait\uff0c\u4ee5 V3 \u90e8\u7f72\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "real-bad",
+      "by": "claude",
+      "t": 1792401731.359398,
+      "note": "\u4ece 22k \u7eed\u8bad\u5e76\u53bb\u6389 wait\uff0c\u4ee5 V3 \u90e8\u7f72\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "ep-v3-IF",
+      "by": "claude",
+      "t": 1792401770.0625727,
+      "note": "served at /v3-IF/ (ckpt 30000) on huzhou4090"
+    }
+  ],
+  "pi05-ubt-boxpickrot-ifprop16g-nowait-r22k-TS10150851-6459e9e": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.3631098,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u7528 b09458b \u91cd\u63d0"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.3631105,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u7528 b09458b \u91cd\u63d0"
+    },
+    {
+      "tag": "nowait",
+      "by": "claude",
+      "t": 1792401731.3631113,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u7528 b09458b \u91cd\u63d0"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.3631115,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u7528 b09458b \u91cd\u63d0"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.363112,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u7528 b09458b \u91cd\u63d0"
+    }
+  ],
+  "pi05-ubt-boxpickrot-if16g-nowait-r22k-TS10150851-6459e9e": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.3667705,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u7528 b09458b \u91cd\u63d0"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.3667712,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u7528 b09458b \u91cd\u63d0"
+    },
+    {
+      "tag": "nowait",
+      "by": "claude",
+      "t": 1792401731.3667717,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u7528 b09458b \u91cd\u63d0"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.366772,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u7528 b09458b \u91cd\u63d0"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.3667722,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u7528 b09458b \u91cd\u63d0"
+    }
+  ],
+  "pi05-ubt-boxpickrot-ifprop-valsmoke-TS10150348-27510be": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.3704772,
+      "note": "\u9a8c\u8bc1\u6d41\u7a0b\u7684\u5192\u70df\u6d4b\u8bd5"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.3704782,
+      "note": "\u9a8c\u8bc1\u6d41\u7a0b\u7684\u5192\u70df\u6d4b\u8bd5"
+    },
+    {
+      "tag": "smoke",
+      "by": "claude",
+      "t": 1792401731.3704784,
+      "note": "\u9a8c\u8bc1\u6d41\u7a0b\u7684\u5192\u70df\u6d4b\u8bd5"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.3704786,
+      "note": "\u9a8c\u8bc1\u6d41\u7a0b\u7684\u5192\u70df\u6d4b\u8bd5"
+    },
+    {
+      "tag": "ifb",
+      "by": "claude",
+      "t": 1792401731.3704789,
+      "note": "\u9a8c\u8bc1\u6d41\u7a0b\u7684\u5192\u70df\u6d4b\u8bd5"
+    }
+  ],
+  "pi05-ubt-boxpickrot-if16g-TS10150257-fadbf81": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.3780189,
+      "note": "IF-A \u9065\u64cd\u52a8\u4f5c\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.3780196,
+      "note": "IF-A \u9065\u64cd\u52a8\u4f5c\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.37802,
+      "note": "IF-A \u9065\u64cd\u52a8\u4f5c\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "teleop",
+      "by": "claude",
+      "t": 1792401731.3780203,
+      "note": "IF-A \u9065\u64cd\u52a8\u4f5c\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "real-bad",
+      "by": "claude",
+      "t": 1792401731.3780205,
+      "note": "IF-A \u9065\u64cd\u52a8\u4f5c\uff0c\u5b9e\u673a\u8f83\u5dee"
+    },
+    {
+      "tag": "deployed",
+      "by": "claude",
+      "t": 1792401770.0604942,
+      "note": "served at /v2-IF-telop/ (ckpt 21000) on huzhou4090"
+    },
+    {
+      "tag": "ep-v2-IF-telop",
+      "by": "claude",
+      "t": 1792401770.060496,
+      "note": "served at /v2-IF-telop/ (ckpt 21000) on huzhou4090"
+    }
+  ],
+  "eval_tasks": [
+    {
+      "tag": "not-a-run",
+      "by": "claude",
+      "t": 1792401731.381789,
+      "note": "\u975e\u8bad\u7ec3\u76ee\u5f55"
+    },
+    {
+      "tag": "eval",
+      "by": "claude",
+      "t": 1792401731.3817902,
+      "note": "\u975e\u8bad\u7ec3\u76ee\u5f55"
+    },
+    {
+      "tag": "tasks",
+      "by": "claude",
+      "t": 1792401731.3817904,
+      "note": "\u975e\u8bad\u7ec3\u76ee\u5f55"
+    }
+  ],
+  "pi05-ubt-boxpickrot-ifprop16g-TS10150206-a00bde6": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.3855252,
+      "note": "\u8bad\u7ec3\u53d1\u6563\uff0c\u88ab\u91cd\u63d0"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.3855262,
+      "note": "\u8bad\u7ec3\u53d1\u6563\uff0c\u88ab\u91cd\u63d0"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.3855264,
+      "note": "\u8bad\u7ec3\u53d1\u6563\uff0c\u88ab\u91cd\u63d0"
+    },
+    {
+      "tag": "ifb",
+      "by": "claude",
+      "t": 1792401731.385527,
+      "note": "\u8bad\u7ec3\u53d1\u6563\uff0c\u88ab\u91cd\u63d0"
+    },
+    {
+      "tag": "diverged",
+      "by": "claude",
+      "t": 1792401731.3855271,
+      "note": "\u8bad\u7ec3\u53d1\u6563\uff0c\u88ab\u91cd\u63d0"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.3855276,
+      "note": "\u8bad\u7ec3\u53d1\u6563\uff0c\u88ab\u91cd\u63d0"
+    }
+  ],
+  "pi05-ubt-boxpickrot-if16g-TS10150146-b62a8a5": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.3892798,
+      "note": "IF-A \u65e9\u671f\u7248\u672c\uff0c\u88ab fadbf81 \u53d6\u4ee3"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.3892808,
+      "note": "IF-A \u65e9\u671f\u7248\u672c\uff0c\u88ab fadbf81 \u53d6\u4ee3"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.389281,
+      "note": "IF-A \u65e9\u671f\u7248\u672c\uff0c\u88ab fadbf81 \u53d6\u4ee3"
+    },
+    {
+      "tag": "teleop",
+      "by": "claude",
+      "t": 1792401731.3892813,
+      "note": "IF-A \u65e9\u671f\u7248\u672c\uff0c\u88ab fadbf81 \u53d6\u4ee3"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.3892815,
+      "note": "IF-A \u65e9\u671f\u7248\u672c\uff0c\u88ab fadbf81 \u53d6\u4ee3"
+    }
+  ],
+  "pi05-ubt-boxpickrot-ifprop16g-TS10150146-b62a8a5": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.393036,
+      "note": "\u8bad\u7ec3\u53d1\u6563\uff0c\u88ab\u91cd\u63d0"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.3930364,
+      "note": "\u8bad\u7ec3\u53d1\u6563\uff0c\u88ab\u91cd\u63d0"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.3930368,
+      "note": "\u8bad\u7ec3\u53d1\u6563\uff0c\u88ab\u91cd\u63d0"
+    },
+    {
+      "tag": "ifb",
+      "by": "claude",
+      "t": 1792401731.393037,
+      "note": "\u8bad\u7ec3\u53d1\u6563\uff0c\u88ab\u91cd\u63d0"
+    },
+    {
+      "tag": "diverged",
+      "by": "claude",
+      "t": 1792401731.3930373,
+      "note": "\u8bad\u7ec3\u53d1\u6563\uff0c\u88ab\u91cd\u63d0"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.3930378,
+      "note": "\u8bad\u7ec3\u53d1\u6563\uff0c\u88ab\u91cd\u63d0"
+    }
+  ],
+  "pi05-ubt-boxpickrot-if16g-TS10150022-1ba7cce": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.3968515,
+      "note": "IF-A \u6700\u65e9\u7248\u672c\uff0c\u88ab\u53d6\u4ee3"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.3968525,
+      "note": "IF-A \u6700\u65e9\u7248\u672c\uff0c\u88ab\u53d6\u4ee3"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.3968527,
+      "note": "IF-A \u6700\u65e9\u7248\u672c\uff0c\u88ab\u53d6\u4ee3"
+    },
+    {
+      "tag": "teleop",
+      "by": "claude",
+      "t": 1792401731.396853,
+      "note": "IF-A \u6700\u65e9\u7248\u672c\uff0c\u88ab\u53d6\u4ee3"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.3968532,
+      "note": "IF-A \u6700\u65e9\u7248\u672c\uff0c\u88ab\u53d6\u4ee3"
+    }
+  ],
+  "pi05-ubt-boxpickrot-if-smoke-TS10150022-1ba7cce": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.4006994,
+      "note": "IF \u5192\u70df\u6d4b\u8bd5\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "smoke",
+      "by": "claude",
+      "t": 1792401731.4007,
+      "note": "IF \u5192\u70df\u6d4b\u8bd5\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.4007006,
+      "note": "IF \u5192\u70df\u6d4b\u8bd5\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.400701,
+      "note": "IF \u5192\u70df\u6d4b\u8bd5\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    }
+  ],
+  "pi05-ubt-boxpickrot-if-smoke-TS10141425-3cf7848": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.4046566,
+      "note": "IF \u5192\u70df\u6d4b\u8bd5\u8dd1\u5b8c 30 \u6b65"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.4046576,
+      "note": "IF \u5192\u70df\u6d4b\u8bd5\u8dd1\u5b8c 30 \u6b65"
+    },
+    {
+      "tag": "smoke",
+      "by": "claude",
+      "t": 1792401731.404658,
+      "note": "IF \u5192\u70df\u6d4b\u8bd5\u8dd1\u5b8c 30 \u6b65"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.4046583,
+      "note": "IF \u5192\u70df\u6d4b\u8bd5\u8dd1\u5b8c 30 \u6b65"
+    }
+  ],
+  "pi05-ubt-boxpickrot-if-smoke-TS10141420-f042b31": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.408747,
+      "note": "IF \u5192\u70df\u6d4b\u8bd5\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "smoke",
+      "by": "claude",
+      "t": 1792401731.4087484,
+      "note": "IF \u5192\u70df\u6d4b\u8bd5\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.4087489,
+      "note": "IF \u5192\u70df\u6d4b\u8bd5\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.4087493,
+      "note": "IF \u5192\u70df\u6d4b\u8bd5\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    }
+  ],
+  "pi05-ubt-boxpickrot-if-smoke-TS10141415-59b2ff7": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.4127622,
+      "note": "IF \u5192\u70df\u6d4b\u8bd5\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "smoke",
+      "by": "claude",
+      "t": 1792401731.4127629,
+      "note": "IF \u5192\u70df\u6d4b\u8bd5\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "if",
+      "by": "claude",
+      "t": 1792401731.4127634,
+      "note": "IF \u5192\u70df\u6d4b\u8bd5\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.4127638,
+      "note": "IF \u5192\u70df\u6d4b\u8bd5\uff0c\u6ca1\u8dd1\u51fa\u6b65\u6570"
+    }
+  ],
+  "pi05-ubt-boxpickrot-sft32g-TS1014.0846-bab6e70": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.4168909,
+      "note": "\u4e0d\u5e26\u6307\u4ee4/\u8f85\u52a9\u5934\u7684 SFT \u57fa\u7ebf\uff0c32 \u5361"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.4168916,
+      "note": "\u4e0d\u5e26\u6307\u4ee4/\u8f85\u52a9\u5934\u7684 SFT \u57fa\u7ebf\uff0c32 \u5361"
+    },
+    {
+      "tag": "baseline",
+      "by": "claude",
+      "t": 1792401731.416892,
+      "note": "\u4e0d\u5e26\u6307\u4ee4/\u8f85\u52a9\u5934\u7684 SFT \u57fa\u7ebf\uff0c32 \u5361"
+    },
+    {
+      "tag": "sft",
+      "by": "claude",
+      "t": 1792401731.4168928,
+      "note": "\u4e0d\u5e26\u6307\u4ee4/\u8f85\u52a9\u5934\u7684 SFT \u57fa\u7ebf\uff0c32 \u5361"
+    },
+    {
+      "tag": "deployed",
+      "by": "claude",
+      "t": 1792401770.0420508,
+      "note": "served at /v1-noIF/ (ckpt 9000) on huzhou4090"
+    },
+    {
+      "tag": "ep-v1-noIF",
+      "by": "claude",
+      "t": 1792401770.0420527,
+      "note": "served at /v1-noIF/ (ckpt 9000) on huzhou4090"
+    }
+  ],
+  "pi05-ubt-boxpickrot-sft-TS1014.0810-5c64fa4": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.4208765,
+      "note": "SFT \u57fa\u7ebf\uff0c\u88ab 32g \u7248\u672c\u53d6\u4ee3"
+    },
+    {
+      "tag": "scratch",
+      "by": "claude",
+      "t": 1792401731.4208775,
+      "note": "SFT \u57fa\u7ebf\uff0c\u88ab 32g \u7248\u672c\u53d6\u4ee3"
+    },
+    {
+      "tag": "baseline",
+      "by": "claude",
+      "t": 1792401731.4208782,
+      "note": "SFT \u57fa\u7ebf\uff0c\u88ab 32g \u7248\u672c\u53d6\u4ee3"
+    },
+    {
+      "tag": "sft",
+      "by": "claude",
+      "t": 1792401731.4208784,
+      "note": "SFT \u57fa\u7ebf\uff0c\u88ab 32g \u7248\u672c\u53d6\u4ee3"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.4208786,
+      "note": "SFT \u57fa\u7ebf\uff0c\u88ab 32g \u7248\u672c\u53d6\u4ee3"
+    }
+  ],
+  "pi05-ubt-boxpickrot-sft-TS1014.0802-d52b4aa": [
+    {
+      "tag": "pi0.5",
+      "by": "claude",
+      "t": 1792401731.4249341,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u88ab\u91cd\u63d0"
+    },
+    {
+      "tag": "sft",
+      "by": "claude",
+      "t": 1792401731.424935,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u88ab\u91cd\u63d0"
+    },
+    {
+      "tag": "launch-failed",
+      "by": "claude",
+      "t": 1792401731.4249356,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u88ab\u91cd\u63d0"
+    },
+    {
+      "tag": "superseded",
+      "by": "claude",
+      "t": 1792401731.4249358,
+      "note": "\u542f\u52a8\u5931\u8d25\uff0c\u88ab\u91cd\u63d0"
+    }
+  ],
+  "v15-enc-recap-pi05-g24-TS10201335-150c56b": [
+    {
+      "tag": "top3-box",
+      "by": "claude",
+      "t": 1792552434.3616598
+    },
+    {
+      "tag": "aux-head",
+      "by": "claude",
+      "t": 1792552434.3616614
+    },
+    {
+      "tag": "1w-iter",
+      "by": "claude",
+      "t": 1792552434.361662
+    }
+  ],
+  "v15-enc-pi-g24-TS10201323-7c77ff4": [
+    {
+      "tag": "top3-box",
+      "by": "claude",
+      "t": 1792552434.3650527
+    },
+    {
+      "tag": "1w-iter",
+      "by": "claude",
+      "t": 1792552434.365054
+    }
+  ],
+  "v18-recap-enc-g40-TS10200929-d683eb7": [
+    {
+      "tag": "all-box",
+      "by": "claude",
+      "t": 1792552434.3683228
+    }
+  ],
+  "v18-recap-g40-TS10200744-d683eb7": [
+    {
+      "tag": "all-box",
+      "by": "claude",
+      "t": 1792552434.3710866
+    }
+  ],
+  "v17-pi-frz-rtc-g40-TS10200138-0a92eca": [
+    {
+      "tag": "all-box",
+      "by": "claude",
+      "t": 1792552434.3749363
+    }
+  ],
+  "v17-b1-cont-g48-TS10191632-0a92eca": [
+    {
+      "tag": "all-box",
+      "by": "claude",
+      "t": 1792552434.3786664
+    }
+  ],
+  "v17-pi-frz-noval-b1-g48-r500-TS10190954-33f4c56": [
+    {
+      "tag": "all-box",
+      "by": "claude",
+      "t": 1792552434.3829954
+    }
+  ]
+}

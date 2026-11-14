@@ -1,0 +1,4 @@
+{
+  "patterns": ["pickrot"],
+  "_doc": "experiments whose name contains any pattern are hidden from /exps (list, chat, autotag); files are untouched"
+}
